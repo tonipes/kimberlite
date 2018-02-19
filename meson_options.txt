@@ -1,0 +1,4 @@
+option('enable_audio',      type : 'boolean', value : true,   description : 'Enable audio')
+option('package_data',      type : 'boolean', value : false,  description : 'Compress assets')
+option('static',            type : 'boolean', value : false,  description : 'Build statically linked executable')
+option('debug_opengl',      type : 'boolean', value : true,   description : 'Enable OpenGL debugging')
