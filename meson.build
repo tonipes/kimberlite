@@ -1,16 +1,20 @@
 project('traingrid',
-        'cpp',
-        version : '0.0.1',
-        license : 'MIT',
-        default_options : ['cpp_std=c++1z'])
+  'cpp',
+  version : '0.0.1',
+  license : 'MIT',
+  default_options : ['cpp_std=c++1z'])
 
 # Scripts
-script_common_args = ['--dir', meson.source_root()]
-scripts_dir = 'scripts'
+script_common_args = []
+scripts_dir = join_paths(meson.source_root(), 'scripts')
 
+# Configuration
 config_vars = [
-  ['version.py', 'build_version'],
-  ['hash.py', 'build_hash'],
+  ['build_version.py',  'build_version'],
+  ['build_hash.py',     'build_hash'],
+  ['build_time.py',     'build_time'],
+  ['build_uuid.py',     'build_uuid'],
+  ['build_sysinfo.py',  'build_sysinfo'],
 ]
 
 confs = []
@@ -21,11 +25,11 @@ foreach p : config_vars
   c_res = run_command(c_command, '{string}')
 
   if c_res.stderr() != ''
-      message(c_res.stderr().strip())
+    message(c_res.stderr().strip())
   endif
 
   if c_res.returncode() != 0
-      error('Couldn\'t get @0@: error @1@'.format(p[1], c_res.returncode()))
+    error('Couldn\'t get @0@: error @1@'.format(p[1], c_res.returncode()))
   endif
 
   c_str = c_res.stdout().strip()
@@ -38,23 +42,31 @@ foreach c : confs
   build_config.set(c[0], '"@0@"'.format(c[1]))
 endforeach
 
+build_config.set('log_level', 0)
+
+# Build options
+enable_audio = get_option('enable_audio')
+enable_profiling = get_option('enable_profiling')
+enable_asset_pack = get_option('enable_asset_pack')
 
 # Dependencies
 static = get_option('static')
+deps = []
 
-sdl2_dep        = dependency('sdl2',        version : '>=2.0.5',    static : static)
-sdl2_mixer_dep  = dependency('SDL2_mixer',                          static : static)
-glew_dep        = dependency('glew',                                static : static)
+deps += dependency('sdl2',            static : static)
+deps += dependency('glew',            static : static)
+deps += dependency('gl',              static : static)
+deps += dependency('libzip',          static : static)
 
-deps = [sdl2_dep, glew_dep]
-
+if enable_audio
+  deps += dependency('SDL2_mixer',  static : static)
+endif
 
 include_dirs = [
   include_directories('src')
 ]
 
-link_libs = [
-
-]
+link_libs = []
 
 subdir('src')
+subdir('assets')

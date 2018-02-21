@@ -1,4 +1,5 @@
 option('enable_audio',      type : 'boolean', value : true,   description : 'Enable audio')
-option('package_data',      type : 'boolean', value : false,  description : 'Compress assets')
+option('enable_profiling',  type : 'boolean', value : true,   description : 'Enable profiling')
+option('enable_asset_pack', type : 'boolean', value : true,   description : 'Compress assets')
 option('static',            type : 'boolean', value : false,  description : 'Build statically linked executable')
 option('debug_opengl',      type : 'boolean', value : true,   description : 'Enable OpenGL debugging')
