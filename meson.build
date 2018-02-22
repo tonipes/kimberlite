@@ -2,7 +2,7 @@ project('traingrid',
   'cpp',
   version : '0.0.1',
   license : 'MIT',
-  default_options : ['cpp_std=c++1z'])
+  default_options : ['cpp_std=c++14'])
 
 # Scripts
 script_common_args = []
