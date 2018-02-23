@@ -1,8 +1,9 @@
-project('traingrid',
+project('mathtest',
   'cpp',
   version : '0.0.1',
   license : 'MIT',
-  default_options : ['cpp_std=c++14'])
+  default_options : ['cpp_std=c++17'])
+
 
 # Scripts
 script_common_args = []
@@ -62,11 +63,21 @@ if enable_audio
   deps += dependency('SDL2_mixer',  static : static)
 endif
 
+
 include_dirs = [
-  include_directories('src')
+  # include_directories('src')
 ]
 
 link_libs = []
 
-subdir('src')
+
 subdir('assets')
+subdir('src')
+
+configure_file(configuration : build_config, output : 'build_config.h')
+
+traingrid_exe = executable('traingrid',
+                            launcher_src,
+                            include_directories : include_dirs,
+                            link_with : link_libs,
+                            dependencies: deps)
