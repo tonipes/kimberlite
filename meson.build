@@ -1,5 +1,5 @@
 project('mathtest',
-  'cpp',
+  'cpp', 'c',
   version : '0.0.1',
   license : 'MIT',
   default_options : ['cpp_std=c++17'])
@@ -44,6 +44,7 @@ foreach c : confs
 endforeach
 
 build_config.set('log_level', 0)
+build_config.set('log_cache', 1000)
 
 # Build options
 enable_audio = get_option('enable_audio')
@@ -58,6 +59,7 @@ deps += dependency('sdl2',            static : static)
 deps += dependency('glew',            static : static)
 deps += dependency('gl',              static : static)
 deps += dependency('libzip',          static : static)
+deps += dependency('threads',          static : static)
 
 if enable_audio
   deps += dependency('SDL2_mixer',  static : static)
