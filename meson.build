@@ -2,7 +2,7 @@ project('mathtest',
   'cpp', 'c',
   version : '0.0.1',
   license : 'MIT',
-  default_options : ['cpp_std=c++17'])
+  default_options : ['cpp_std=c++1z'])
 
 
 # Scripts
