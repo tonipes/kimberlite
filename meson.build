@@ -2,7 +2,7 @@ project('mathtest',
   'cpp', 'c',
   version : '0.0.1',
   license : 'MIT',
-  default_options : ['cpp_std=c++1z'])
+  default_options : ['cpp_std=c++17'])
 
 
 # Scripts
@@ -61,13 +61,13 @@ deps += dependency('gl',              static : static)
 deps += dependency('libzip',          static : static)
 deps += dependency('threads',          static : static)
 
-if enable_audio
+# if enable_audio
   deps += dependency('SDL2_mixer',  static : static)
-endif
+# endif
 
 
 include_dirs = [
-  # include_directories('src')
+  include_directories('src')
 ]
 
 link_libs = []
