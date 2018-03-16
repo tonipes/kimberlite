@@ -44,10 +44,11 @@ foreach c : confs
 endforeach
 
 build_config.set('log_level', 0)
-build_config.set('log_cache', 1000)
+build_config.set('log_cache', 100)
+build_config.set('profiler_cache', 1000)
 build_config.set('entity_start_count', 10)
 build_config.set('max_component_types', 8192)
-# build_config.set('welcome_text', '"@0@\nconcept demonstration"'.format(title, version)
+build_config.set('max_event_types', 8192)
 
 # Build options
 enable_audio = get_option('enable_audio')
@@ -63,6 +64,7 @@ deps += dependency('sdl2',            static : static)
 deps += dependency('glew',            static : static)
 deps += dependency('gl',              static : static)
 deps += dependency('libzip',          static : static)
+deps += dependency('zlib',            static : static)
 deps += dependency('threads',         static : static)
 
 # if enable_audio
