@@ -48,3 +48,6 @@ __pycache__/
 # Meson
 /subprojects/*
 !/subprojects/*.wrap
+
+# Blends
+*.blend1
