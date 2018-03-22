@@ -59,16 +59,17 @@ enable_asset_pack = get_option('enable_asset_pack')
 static = get_option('static')
 deps = []
 
-deps += dependency('lua',             static : static)
-deps += dependency('sdl2',            static : static)
-deps += dependency('glew',            static : static)
-deps += dependency('gl',              static : static)
-deps += dependency('libzip',          static : static)
-deps += dependency('zlib',            static : static)
-deps += dependency('threads',         static : static)
+deps += dependency('lua',   fallback : ['lua',  'lua_dep'])
+deps += dependency('json',  fallback : ['json', 'json_dep'])
+deps += dependency('sdl2',  fallback : ['sdl2', 'sdl2_dep'])
+deps += dependency('zlib',  fallback : ['zlib', 'zlib_dep'])
+deps += dependency('glew')
+deps += dependency('gl')
+deps += dependency('libzip')
+deps += dependency('threads')
 
 # if enable_audio
-  deps += dependency('SDL2_mixer',  static : static)
+deps += dependency('SDL2_mixer')
 # endif
 
 

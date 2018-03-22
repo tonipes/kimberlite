@@ -44,3 +44,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Meson
+/subprojects/*
+!/subprojects/*.wrap
