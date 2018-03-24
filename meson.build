@@ -43,17 +43,18 @@ foreach c : confs
   build_config.set(c[0], '"@0@"'.format(c[1]))
 endforeach
 
-build_config.set('LOG_LEVEL', 0)
-build_config.set('LOG_CACHE', 100)
-build_config.set('PROFILER_CACHE', 1000)
-build_config.set('ENTITY_START_COUNT', 10)
+build_config.set('LOG_LEVEL',           0)
+build_config.set('LOG_CACHE',           100)
+build_config.set('PROFILER_CACHE',      1000)
+build_config.set('ENTITY_START_COUNT',  10)
 build_config.set('MAX_COMPONENT_TYPES', 8192)
-build_config.set('MAX_EVENT_TYPES', 8192)
-build_config.set('TITLE', '"@0@"'.format(meson.project_name()))
-build_config.set('DESCRIPTION', '"@0@"'.format(description))
+build_config.set('MAX_EVENT_TYPES',     8192)
+build_config.set('TITLE',               '"@0@"'.format(meson.project_name()))
+build_config.set('DESCRIPTION',         '"@0@"'.format(description))
 build_config.set('LOGO', '')
+build_config.set('RESOURCE_PACKAGE_EXT', '"zip"')
 
-# Build options
+# Build options. These are not implemented yet.
 enable_audio = get_option('enable_audio')
 enable_profiling = get_option('enable_profiling')
 enable_asset_pack = get_option('enable_asset_pack')
@@ -94,7 +95,7 @@ include_dirs = [
 
 link_libs = []
 
-
+subdir('config')
 subdir('assets')
 subdir('src')
 subdir('doc')
