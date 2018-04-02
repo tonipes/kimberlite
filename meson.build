@@ -1,5 +1,6 @@
 project('Traingrid',
   'cpp', 'c',
+  version: 'alpha',
   license : 'MIT',
   default_options : ['cpp_std=c++17'])
 
