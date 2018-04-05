@@ -51,3 +51,6 @@ __pycache__/
 
 # Blends
 *.blend1
+
+# virtualenv
+.venv

@@ -8,7 +8,7 @@ description = 'Some-day-a-game'
 
 # Scripts
 script_common_args = []
-scripts_dir = join_paths(meson.source_root(), 'scripts')
+scripts_dir = join_paths(meson.source_root(), 'build_scripts')
 
 # Configuration
 config_scripts = [
@@ -55,13 +55,7 @@ build_config.set('DESCRIPTION',         '"@0@"'.format(description))
 build_config.set('LOGO', '')
 build_config.set('RESOURCE_PACKAGE_EXT', '"zip"')
 
-# Build options. These are not implemented yet.
-enable_audio = get_option('enable_audio')
-enable_profiling = get_option('enable_profiling')
-enable_asset_pack = get_option('enable_asset_pack')
-
 # Dependencies
-static = get_option('static')
 deps = []
 
 deps += dependency('lua',   fallback : ['lua',  'lua_dep'])
@@ -73,10 +67,7 @@ deps += dependency('gl')
 deps += dependency('glm')
 deps += dependency('libzip')
 deps += dependency('threads')
-
-# if enable_audio
 deps += dependency('SDL2_mixer')
-# endif
 
 # Documentation
 doxygen = find_program('doxygen', required : false)
@@ -97,7 +88,6 @@ include_dirs = [
 link_libs = []
 
 subdir('config')
-subdir('assets')
 subdir('src')
 subdir('doc')
 

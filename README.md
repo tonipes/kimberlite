@@ -5,10 +5,11 @@ Some day this will be a game.
 # Build instructions
 
 ```
-$ meson build
-$ cd build
-$ ninja
-$ ./src/traingrid # runs the game
+
+$ build_init.sh   # Initialize build folder
+$ build.sh        # Build game
+$ assets.sh -b    # Build assets
+$ build/traingrid # Run game
 
 ```
 
