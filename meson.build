@@ -62,7 +62,6 @@ build_config.set('RESOURCE_PACKAGE_EXT', '"zip"')
 deps = []
 
 deps += dependency('lua',   fallback : ['lua',  'lua_dep'])
-deps += dependency('json',  fallback : ['json', 'json_dep'])
 deps += dependency('sdl2',  fallback : ['sdl2', 'sdl2_dep'])
 deps += dependency('zlib',  fallback : ['zlib', 'zlib_dep'])
 deps += dependency('glew')
