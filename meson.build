@@ -6,6 +6,8 @@ project('Traingrid',
 
 description = 'Some-day-a-game'
 
+asset_install_dir = 'dunno'
+
 # Scripts
 script_common_args = []
 scripts_dir = join_paths(meson.source_root(), 'build_scripts')
@@ -91,6 +93,17 @@ link_libs = []
 subdir('config')
 subdir('src')
 subdir('doc')
+
+# Asset target
+asset_build_script = find_program(join_paths(meson.source_root(), 'assets.sh'))
+
+asset_build_target = custom_target('asset build',
+  output      : 'build_assets',
+  input       : 'assets',
+  command     : [asset_build_script, '-b'],
+  install     : true,
+  install_dir : asset_install_dir
+)
 
 configure_file(configuration : build_config, output : 'build_config.h')
 
