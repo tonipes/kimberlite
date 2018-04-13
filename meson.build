@@ -11,40 +11,31 @@ asset_install_dir = 'dunno'
 # Scripts
 script_common_args = []
 scripts_dir = join_paths(meson.source_root(), 'build_scripts')
+build_info_header_dir = join_paths(meson.source_root(), 'build_info')
 
-# Configuration
-config_scripts = [
-  ['build_version.py',  'BUILD_VERSION'],
-  ['build_hash.py',     'BUILD_HASH'],
-  ['build_time.py',     'BUILD_TIME'],
-  ['build_uuid.py',     'BUILD_UUID'],
-  ['build_sysinfo.py',  'BUILD_SYSINFO'],
+# Version info
+version_info_def = [
+  ['build_version.py',  'build_version.cpp', '0'],
+  ['build_hash.py',     'build_hash.cpp',    '0'],
+  ['build_time.py',     'build_time.cpp',    '0'],
+  ['build_uuid.py',     'build_uuid.cpp',    '0'],
+  ['build_sysinfo.py',  'build_sysinfo.cpp', '0'],
 ]
 
-confs = []
+version_info_targets = []
 
-foreach p : config_scripts
-  c_script = find_program(join_paths(scripts_dir, p[0]))
-  c_command = [c_script, script_common_args]
-  c_res = run_command(c_command, '{string}')
-
-  if c_res.stderr() != ''
-    message(c_res.stderr().strip())
-  endif
-
-  if c_res.returncode() != 0
-    error('Couldn\'t get @0@: error @1@'.format(p[1], c_res.returncode()))
-  endif
-
-  c_str = c_res.stdout().strip()
-  confs += [[p[1], c_str]]
+foreach c: version_info_def
+  version_info_targets += vcs_tag('vcs_tag_@0@'.format(c[1].underscorify()),
+    input: join_paths(build_info_header_dir, c[1]),
+    fallback: c[2],
+    output: c[1],
+    command: [join_paths(scripts_dir, c[0])],
+    replace_string: '@IN@'
+  )
 endforeach
 
 # Configuration
 build_config = configuration_data()
-foreach c : confs
-  build_config.set(c[0], '"@0@"'.format(c[1]))
-endforeach
 
 build_config.set('LOG_LEVEL',           0)
 build_config.set('LOG_CACHE',           100)
@@ -71,6 +62,7 @@ deps += dependency('libzip')
 deps += dependency('threads')
 deps += dependency('SDL2_mixer')
 
+
 # Documentation
 doxygen = find_program('doxygen', required : false)
 if not doxygen.found()
@@ -89,14 +81,28 @@ include_dirs = [
 
 link_libs = []
 
-subdir('config')
 subdir('src')
+subdir('config')
 subdir('doc')
+subdir('test')
+
+src_base = src_base + version_info_targets
+
+# Tests
+test_exe = executable('unit_test',  
+    src_base + test_sources,
+    include_directories : include_dirs,
+    link_with : link_libs,
+    dependencies: deps
+)
+
+test('Unit Tests', test_exe)
+
 
 # Asset target
 asset_build_script = find_program(join_paths(meson.source_root(), 'assets.sh'))
 
-asset_build_target = custom_target('asset build',
+asset_build_target = custom_target('assets',
   output      : 'build_assets',
   input       : 'assets',
   command     : [asset_build_script, '-b'],
@@ -107,7 +113,7 @@ asset_build_target = custom_target('asset build',
 configure_file(configuration : build_config, output : 'build_config.h')
 
 traingrid_exe = executable('traingrid',
-                            launcher_src,
+                            launcher_src + src_base,
                             include_directories : include_dirs,
                             link_with : link_libs,
                             dependencies: deps)
