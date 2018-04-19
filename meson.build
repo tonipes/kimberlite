@@ -22,6 +22,7 @@ dep_gl          = dependency('gl')
 dep_glm         = dependency('glm')
 dep_libzip      = dependency('libzip')
 dep_threads     = dependency('threads')
+dep_filesystem = declare_dependency(link_args : ['-lstdc++fs'])
 dep_sdl2_mixer  = dependency('SDL2_mixer')
 
 # Configuration
