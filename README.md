@@ -2,28 +2,28 @@
 
 Some day this will be a game.
 
-# Build instructions
+## Instructions
 
-```
+### Build & Run
 
-$ build_init.sh   # Initialize build folder
-$ build.sh        # Build game
-$ assets.sh -b    # Build assets
-$ build/traingrid # Run game
+        $ ./build_init.sh   # Initialize build folder
+        $ ./build.sh        # Build game and assets
+        $ ./run.sh          # Run game
 
-```
+## Dependencies
 
-# Dependencies
+### Build
+
+- Meson
+- Python 3
+  - watchdog
+- Git LFS
+- Blender (must be in $PATH)
+- Doxygen
+
+### Runtime
 
 - SDL2
 - SDL2_mixer
 - GLEW
-- libzip
 - glm
-
-# Build dependencies
-
-- Meson
-- Python 3
-- Blender (for assets)
-- Doxygen (for documentation)
