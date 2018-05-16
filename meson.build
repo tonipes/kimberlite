@@ -22,19 +22,13 @@ dep_gl          = dependency('gl')
 dep_glm         = dependency('glm')
 dep_libzip      = dependency('libzip')
 dep_threads     = dependency('threads')
-dep_filesystem = declare_dependency(link_args : ['-lstdc++fs'])
 dep_sdl2_mixer  = dependency('SDL2_mixer')
+
+dep_filesystem  = declare_dependency(link_args : ['-lstdc++fs'])
 
 # Configuration
 build_config = configuration_data()
 
-build_config.set('LOG_LEVEL',           0)
-build_config.set('LOG_CACHE',           100)
-build_config.set('PROFILER_CACHE',      1000)
-build_config.set('ENTITY_START_COUNT',  10)
-build_config.set('MAX_COMPONENT_TYPES', 8192)
-build_config.set('MAX_EVENT_TYPES',     8192)
-build_config.set('MAX_GL_LOG_SIZE',     1024)
 build_config.set('TITLE',               '"@0@"'.format(meson.project_name()))
 build_config.set('DESCRIPTION',         '"@0@"'.format(description))
 build_config.set('LOGO', '')
