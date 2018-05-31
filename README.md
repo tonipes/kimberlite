@@ -6,9 +6,9 @@ Some day this will be a game.
 
 ### Build & Run
 
-        $ ./build_init.sh   # Initialize build folder
-        $ ./build.sh        # Build game and assets
-        $ ./run.sh          # Run game
+  $ ./build_init.sh   # Initialize build folder
+  $ ./build.sh        # Build game and assets
+  $ ./run.sh          # Run game
 
 ## Dependencies
 
