@@ -54,6 +54,7 @@ __pycache__/
 
 # virtualenv
 .venv
+venv
 
 # valgrind core
 vgcore.* 
