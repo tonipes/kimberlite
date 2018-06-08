@@ -1,29 +1,46 @@
 # Traingrid
 
-Some day this will be a game.
+An experimental game engine with extendable, easy-to-understand data structure and lua scripting.
 
 ## Instructions
 
 ### Build & Run
 
-  $ ./build_init.sh   # Initialize build folder
-  $ ./build.sh        # Build game and assets
-  $ ./run.sh          # Run game
+```bash
+  # Python env setup
+  $ virtualenv .venv 
+  $ source .venv/bin/activate
+
+  # Install python dependencies
+  $ pip install requirements.txt
+
+  # Build
+  $ ./build_init.sh
+  $ ./build.sh
+
+  # Run tests
+  $ ./test.sh    
+   
+  # Run game
+  $ ./run.sh
+```
 
 ## Dependencies
 
 ### Build
 
+- Python virtualenv (optional)
 - Meson
-- Python 3
+- Python 3 (for asset building)
   - watchdog
-- Git LFS
-- Blender (must be in $PATH)
+- Git LFS (used for binary assets)
+- Blender (for assets, must be in $PATH)
 - Doxygen
 
 ### Runtime
 
 - SDL2
+- Lua
 - SDL2_mixer
 - GLEW
 - glm
