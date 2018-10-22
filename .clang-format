@@ -4,6 +4,7 @@ BasedOnStyle:             LLVM
 IndentWidth:              2
 ---
 Language:                             Cpp
+IndentCaseLabels:                     true
 DisableFormat:                        false
 DerivePointerAlignment:               false
 PointerAlignment:                     Left
