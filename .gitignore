@@ -58,3 +58,6 @@ venv
 
 # valgrind core
 vgcore.* 
+
+# sourcetrail
+sourcetrail
