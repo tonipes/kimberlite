@@ -1,4 +1,4 @@
-project('Traingrid',
+project('Spacegrid',
   'cpp', 'c',
   version: 'alpha',
   license : 'MIT',

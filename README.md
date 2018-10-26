@@ -1,4 +1,4 @@
-# Traingrid
+# Spacegrid
 
 An experimental game engine with extendable, easy-to-understand data structure and lua scripting.
 
