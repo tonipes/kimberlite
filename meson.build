@@ -1,8 +1,10 @@
-project('Spacegrid',
+project(
+  'Wargrid',
   'cpp', 'c',
   version: 'alpha',
   license : 'MIT',
-  default_options : ['cpp_std=c++17'])
+  default_options : ['cpp_std=c++17']
+)
 
 description = 'Some-day-a-game'
 
