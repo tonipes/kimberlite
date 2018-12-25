@@ -20,13 +20,12 @@ dep_sdl2        = dependency('sdl2',  fallback : ['sdl2', 'sdl2_dep'])
 dep_glew        = dependency('glew')
 dep_gl          = dependency('gl')
 dep_glm         = dependency('glm')
-dep_libzip      = dependency('libzip')
 dep_threads     = dependency('threads')
 dep_sdl2_mixer  = dependency('SDL2_mixer')
 
 dep_filesystem  = declare_dependency(link_args : ['-lstdc++fs'])
 
-# Configuration
+# # Configuration
 build_config = configuration_data()
 
 build_config.set('TITLE',               '"@0@"'.format(meson.project_name()))
