@@ -27,7 +27,7 @@ dep_sdl2_mixer  = dependency('SDL2_mixer')
 
 dep_filesystem  = declare_dependency(link_args : ['-lstdc++fs'])
 
-# # Configuration
+# Configuration
 build_config = configuration_data()
 
 build_config.set('TITLE',               '"@0@"'.format(meson.project_name()))
