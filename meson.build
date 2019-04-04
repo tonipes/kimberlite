@@ -11,6 +11,30 @@ scripts_dir = join_paths(meson.source_root(), 'build_scripts')
 
 # Common compile args
 wg_cpp_args = []
+cppc = meson.get_compiler('cpp')
+
+foreach flag : [
+      '-Wparentheses',
+      '-Wtype-limits',
+      '-Wlong-long',
+      '-Winit-self',
+      '-Wnull-dereference',
+      '-Wformat-pedantic',
+      '-Wfloat-overflow-conversion',
+      '-Wfloat-zero-conversion',
+      '-Wfor-loop-analysis',
+      '-Wimplicit-fallthrough',
+      '-Wsometimes-uninitialized',
+      '-Wunneeded-internal-declaration',
+      '-Wunreachable-code',
+      '-Wunreachable-code-loop-increment',
+      '-Wcast-align',
+      '-Wno-long-long',
+    ]
+  if cppc.has_argument(flag)
+    wg_cpp_args += flag
+  endif
+endforeach
 
 # Dependencies
 dep_lua         = dependency('lua')
@@ -22,7 +46,9 @@ dep_filesystem  = declare_dependency(link_args : ['-lstdc++fs'])
 
 include_dirs = [
   include_directories('src'),
+  include_directories('build'),
 ]
 
+subdir('config')
 subdir('assets')
 subdir('src')
