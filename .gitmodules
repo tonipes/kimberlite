@@ -1,9 +1,0 @@
-[submodule "src/thirdparty/tweeny"]
-	path = src/thirdparty/tweeny
-	url = https://github.com/mobius3/tweeny.git
-[submodule "src/thirdparty/glm"]
-	path = src/thirdparty/glm
-	url = git@github.com:g-truc/glm.git
-[submodule "src/thirdparty/imgui"]
-	path = src/thirdparty/imgui
-	url = git@github.com:ocornut/imgui.git
