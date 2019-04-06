@@ -14,22 +14,8 @@ wg_cpp_args = []
 cppc = meson.get_compiler('cpp')
 
 foreach flag : [
-      '-Wparentheses',
-      '-Wtype-limits',
-      '-Wlong-long',
-      '-Winit-self',
-      '-Wnull-dereference',
-      '-Wformat-pedantic',
-      '-Wfloat-overflow-conversion',
-      '-Wfloat-zero-conversion',
-      '-Wfor-loop-analysis',
-      '-Wimplicit-fallthrough',
-      '-Wsometimes-uninitialized',
-      '-Wunneeded-internal-declaration',
-      '-Wunreachable-code',
-      '-Wunreachable-code-loop-increment',
-      '-Wcast-align',
-      '-Wno-long-long',
+      # '-Wall',
+      # '-Wextra',
     ]
   if cppc.has_argument(flag)
     wg_cpp_args += flag
@@ -39,7 +25,6 @@ endforeach
 # Dependencies
 dep_lua         = dependency('lua')
 dep_sdl2        = dependency('sdl2')
-dep_glew        = dependency('glew')
 dep_vulkan      = dependency('vulkan')
 dep_threads     = dependency('threads')
 dep_filesystem  = declare_dependency(link_args : ['-lstdc++fs'])
