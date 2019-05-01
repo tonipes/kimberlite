@@ -37,3 +37,4 @@ include_dirs = [
 subdir('config')
 subdir('assets')
 subdir('src')
+subdir('test')
