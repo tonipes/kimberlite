@@ -1,6 +1,6 @@
-# Spacegrid
+# Kimberlite
 
-An experimental game engine with extendable, easy-to-understand data structure and lua scripting.
+An experimental game engine with vulkan graphics, extendable, easy-to-understand data structure and lua scripting.
 
 ## Instructions
 
