@@ -1,10 +1,12 @@
 project(
-  'Wargrid',
+  'Kimberlite',
   'cpp', 'c',
   version: 'alpha',
   license : 'MIT',
   default_options : ['cpp_std=c++17']
 )
+
+kb_desc = 'Game engine'
 
 # Build Scripts
 scripts_dir = join_paths(meson.source_root(), 'build_scripts')
@@ -29,7 +31,7 @@ dep_vulkan      = dependency('vulkan')
 dep_threads     = dependency('threads')
 dep_filesystem  = declare_dependency(link_args : ['-lstdc++fs'])
 
-include_dirs = [
+include_dirs_kb = [
   include_directories('src'),
   include_directories('build'),
 ]
@@ -38,3 +40,4 @@ subdir('config')
 subdir('assets')
 subdir('src')
 subdir('test')
+subdir('doc')
