@@ -12,7 +12,7 @@ kb_desc = 'Game engine'
 scripts_dir = join_paths(meson.source_root(), 'build_scripts')
 
 # Common compile args
-wg_cpp_args = []
+kb_cpp_args = []
 cppc = meson.get_compiler('cpp')
 
 foreach flag : [
@@ -20,24 +20,26 @@ foreach flag : [
       # '-Wextra',
     ]
   if cppc.has_argument(flag)
-    wg_cpp_args += flag
+    kb_cpp_args += flag
   endif
 endforeach
 
 # Dependencies
-dep_lua         = dependency('lua')
-dep_sdl2        = dependency('sdl2')
+dep_sdl2        = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
 dep_vulkan      = dependency('vulkan')
 dep_threads     = dependency('threads')
 dep_filesystem  = declare_dependency(link_args : ['-lstdc++fs'])
 
+kb_deps = [dep_vulkan, dep_threads, dep_filesystem, dep_sdl2]
+
 include_dirs_kb = [
   include_directories('src'),
   include_directories('build'),
+  include_directories('src/thirdparty'),
 ]
 
 subdir('config')
 subdir('assets')
 subdir('src')
 subdir('test')
-subdir('doc')
+# subdir('doc')
