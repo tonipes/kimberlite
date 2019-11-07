@@ -1,0 +1,3 @@
+[submodule "asset_pipeline"]
+	path = asset_pipeline
+	url = git@github.com:tonipes/asset_pipeline.git
