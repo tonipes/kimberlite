@@ -1,22 +1,23 @@
 
 ---
-BasedOnStyle:             LLVM
-IndentWidth:              2
+BasedOnStyle:                         LLVM
+IndentWidth:                          2
 ---
 Language:                             Cpp
+TabWidth:                             2
+ContinuationIndentWidth:              2
 IndentCaseLabels:                     true
 DisableFormat:                        false
 DerivePointerAlignment:               false
 PointerAlignment:                     Left
-TabWidth:                             2
 UseTab:                               Never
 AlignTrailingComments:                true
-AlignAfterOpenBracket:                Align
+AlignAfterOpenBracket:                AlwaysBreak
 AlignConsecutiveAssignments:          true
+AlignConsecutiveDeclarations:         true
 AlignOperands:                        true
 AlignTrailingComments:                true
-ColumnLimit:                          120
-AlignConsecutiveDeclarations:         false
+ColumnLimit:                          100
 SpaceBeforeCtorInitializerColon:      false
 SpaceBeforeInheritanceColon:          false
 SpaceBeforeParens:                    ControlStatements
@@ -25,7 +26,24 @@ SpaceBeforeCpp11BracedList:           true
 AllowShortCaseLabelsOnASingleLine:    true
 AllowShortIfStatementsOnASingleLine:  true
 AllowShortLoopsOnASingleLine:         true
+AllowShortLambdasOnASingleLine:       true
 BreakConstructorInitializers:         BeforeColon
+AlignEscapedNewlines:                 Right
+SortIncludes:                         true
+NamespaceIndentation:                 All
+IncludeBlocks:                        Regroup
+IncludeCategories:
+  - Regex:           '^"core/'
+    Priority:        2
+  - Regex:           '^"framework/'
+    Priority:        3
+  - Regex:           '^"thirdparty/'
+    Priority:        4
+  - Regex:           '^<*>'
+    Priority:        5
+  - Regex:           '^"*"'
+    Priority:        1
+
 ---
 
 # Language:        Cpp
@@ -33,9 +51,9 @@ BreakConstructorInitializers:         BeforeColon
 # BasedOnStyle:  LLVM
 # AccessModifierOffset: -2
 # AlignAfterOpenBracket: Align
-# AlignConsecutiveAssignments: true
+
 # AlignConsecutiveDeclarations: true
-# AlignEscapedNewlines: Right
+
 # AlignOperands:   true
 # AlignTrailingComments: true
 # AllowAllParametersOfDeclarationOnNextLine: true
@@ -124,7 +142,6 @@ BreakConstructorInitializers:         BeforeColon
 # PenaltyReturnTypeOnItsOwnLine: 60
 # PointerAlignment: Right
 # ReflowComments:  true
-# SortIncludes:    true
 # SortUsingDeclarations: true
 # SpaceAfterCStyleCast: false
 # SpaceAfterTemplateKeyword: true
