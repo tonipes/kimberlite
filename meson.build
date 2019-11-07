@@ -28,9 +28,8 @@ endforeach
 dep_sdl2        = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
 dep_vulkan      = dependency('vulkan')
 dep_threads     = dependency('threads')
-dep_filesystem  = dependency('threads')
 
-kb_deps = [dep_vulkan, dep_threads, dep_filesystem, dep_sdl2]
+kb_deps = [dep_vulkan, dep_threads, dep_sdl2]
 
 include_dirs_kb = [
   include_directories('src'),
