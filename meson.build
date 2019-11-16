@@ -38,7 +38,7 @@ include_dirs_kb = [
 ]
 
 subdir('config')
-subdir('assets')
 subdir('src')
 subdir('test')
+# subdir('assets')
 # subdir('doc')
