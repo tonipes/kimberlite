@@ -9,3 +9,7 @@ charset = utf-8
 
 [*.py]
 indent_size = 4
+
+[*.ini]
+end_of_line = cr
+charset = latin1

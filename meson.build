@@ -46,15 +46,10 @@ kb_deps = [dep_vulkan, dep_threads, dep_sdl2] + apple_deps
 kb_include_dirs = [
   include_directories('src'),
   include_directories('build'),
-  include_directories('thirdparty/bgfx/include'),
-  include_directories('thirdparty/bimg/include'),
-  include_directories('thirdparty/bx/include'),
+  include_directories('thirdparty'),
 ]
 
 subdir('thirdparty')
 subdir('build_info')
 subdir('config')
 subdir('src')
-# subdir('test')
-# subdir('assets')
-# subdir('doc')

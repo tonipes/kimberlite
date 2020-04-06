@@ -1,0 +1,18 @@
+[binaries]
+c = 'emcc'
+cpp = 'em++'
+ar = 'emar' 
+strip = 'strip'
+ld = 'wasm-ld'
+
+[properties]
+c_args = ['-s', 'WASM=1', '-s', 'EXPORT_ALL=1', '--emrun']
+c_link_args = ['-s','EXPORT_ALL=1'] 
+cpp_args = ['-s', 'WASM=1', '-s', 'EXPORT_ALL=1']
+cpp_link_args = ['-s', 'EXPORT_ALL=1', '--emrun']
+
+[host_machine]
+system = 'emscripten'
+cpu_family = 'wasm32'
+cpu = 'wasm32'
+endian = 'little'

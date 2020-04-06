@@ -10,3 +10,6 @@
 [submodule "thirdparty/bgfx"]
 	path = thirdparty/bgfx
 	url = git://github.com/bkaradzic/bgfx.git
+[submodule "thirdparty/meta"]
+	path = thirdparty/meta
+	url = git@github.com:skypjack/meta.git
