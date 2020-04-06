@@ -34,12 +34,14 @@ dep_apple_metal        = dependency('appleframeworks', modules : ['Metal'])
 dep_apple_opengl       = dependency('appleframeworks', modules : ['OpenGL'])
 dep_apple_coregraphics = dependency('appleframeworks', modules : ['CoreGraphics'])
 dep_apple_quartzcore   = dependency('appleframeworks', modules : ['QuartzCore'])
+dep_apple_cocoa        = dependency('appleframeworks', modules : ['Cocoa'])
+
+apple_deps = [dep_apple_cocoa, dep_apple_foundation, dep_apple_metal, dep_apple_opengl, dep_apple_coregraphics, dep_apple_quartzcore]
 
 have_objcpp = add_languages('objcpp', required : false)
 have_objc   = add_languages('objc', required : false)
 
-
-kb_deps = [dep_vulkan, dep_threads, dep_sdl2]
+kb_deps = [dep_vulkan, dep_threads, dep_sdl2] + apple_deps
 
 kb_include_dirs = [
   include_directories('src'),
