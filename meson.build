@@ -25,6 +25,9 @@ foreach flag : [
 endforeach
 
 # Dependencies
+#sdl2_proj   = subproject('sdl2')
+#dep_sdl2    = sdl2_proj.get_variable('sdl2_dep')
+
 dep_sdl2        = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
 dep_vulkan      = dependency('vulkan')
 dep_threads     = dependency('threads')
