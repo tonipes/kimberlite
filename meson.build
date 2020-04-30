@@ -14,6 +14,7 @@ cppc = meson.get_compiler('cpp')
 
 foreach flag : [
       # TODO: Use proper options
+      '-Wall',
       '-fno-exceptions',
       '-DSPDLOG_NO_EXCEPTIONS', # TODO: Use spdlog build options
     ]
