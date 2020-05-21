@@ -32,12 +32,12 @@ subdir('libraries')
 kbdeps = []
 
 if host_machine.system() == 'darwin'
-    kbdeps += dependency('appleframeworks', modules : ['Metal', 'QuartzCore', 'Cocoa'])
+  kbdeps += dependency('appleframeworks', modules : ['Metal', 'QuartzCore', 'Cocoa'])
 endif
 
 dep_sdl2        = dependency('sdl2')
-dep_vulkan      = dependency('vulkan')
-dep_threads     = dependency('threads')
+# dep_vulkan      = dependency('vulkan')
+# dep_threads     = dependency('threads')
 
 
 incl_kb = [
