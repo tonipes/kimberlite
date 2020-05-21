@@ -23,12 +23,9 @@ foreach flag : [
   endif
 endforeach
 
-# Dependencies
-dep_bx            = subproject('bx').get_variable('bx_dep')
-dep_bimg          = subproject('bimg').get_variable('bimg_dep')
-dep_bgfx          = subproject('bgfx').get_variable('bgfx_dep')
-dep_meshoptimizer = subproject('bgfx').get_variable('meshoptimizer_dep')
-dep_spdlog        = subproject('spdlog').get_variable('spdlog_headeronly_dep')
+subdir('libraries')
+
+dep_applefw = dependency('appleframeworks', modules : ['Metal', 'QuartzCore', 'Cocoa'])
 
 dep_sdl2        = dependency('sdl2')
 dep_vulkan      = dependency('vulkan')
@@ -37,9 +34,8 @@ dep_threads     = dependency('threads')
 
 incl_kb = [
   include_directories('include'),
-  include_directories('thirdparty'),
-  include_directories('subprojects'),
 ]
 
 subdir('config')
 subdir('src')
+subdir('tools')
