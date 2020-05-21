@@ -6,6 +6,10 @@ project(
   default_options : ['cpp_std=c++17']
 )
 
+if meson.is_cross_build()
+  message('Crossbuild')
+endif
+
 kb_desc = 'Kimberlite Framework'
 
 # Common compile args
@@ -25,7 +29,11 @@ endforeach
 
 subdir('libraries')
 
-dep_applefw = dependency('appleframeworks', modules : ['Metal', 'QuartzCore', 'Cocoa'])
+kbdeps = []
+
+if host_machine.system() == 'darwin'
+    kbdeps += dependency('appleframeworks', modules : ['Metal', 'QuartzCore', 'Cocoa'])
+endif
 
 dep_sdl2        = dependency('sdl2')
 dep_vulkan      = dependency('vulkan')
