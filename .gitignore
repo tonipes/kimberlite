@@ -68,3 +68,5 @@ sourcetrail
 
 # tmp
 /tmp/*
+
+!/libraries/**/*.a
