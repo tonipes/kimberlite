@@ -57,7 +57,7 @@ __pycache__/
 venv
 
 # vscode
-.vscode
+# .vscode
 .vscode-build
 
 # valgrind core
