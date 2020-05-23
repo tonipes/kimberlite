@@ -70,5 +70,6 @@ sourcetrail
 /tmp/*
 
 !/libraries/**/*.a
+!/bin/**/*.exe
 
 /bin/current
