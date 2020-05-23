@@ -3,31 +3,27 @@ project(
   ['cpp', 'c'],
   version: 'alpha',
   license : 'MIT',
-  default_options : ['cpp_std=c++17']
+  default_options : [
+    'cpp_std=c++17'
+  ]
 )
 
 if meson.is_cross_build()
-  message('Crossbuild')
+  message('Is crossbuild')
 endif
+
+kb_build_machine = build_machine.system()
+kb_host_machine = host_machine.system()
+
+message('Build machine:\t' + kb_build_machine)
+message('Host machine:\t' + kb_host_machine)
 
 kb_desc = 'Kimberlite Framework'
 
-# Common compile args
-kb_cpp_args = []
 cppc = meson.get_compiler('cpp')
 
-foreach flag : [
-      # TODO: Use proper options
-      '-Wall',
-      '-fno-exceptions',
-      '-DSPDLOG_NO_EXCEPTIONS', # TODO: Use spdlog build options
-    ]
-  if cppc.has_argument(flag)
-    kb_cpp_args += flag
-  endif
-endforeach
+kb_cpp_args = [ ]
 
-subdir('libraries')
 
 kbdeps = []
 
@@ -35,15 +31,16 @@ if host_machine.system() == 'darwin'
   kbdeps += dependency('appleframeworks', modules : ['Metal', 'QuartzCore', 'Cocoa'])
 endif
 
-dep_sdl2        = dependency('sdl2')
+dep_sdl2  = dependency('sdl2')
+deps      = dependency('libzip')
+
 # dep_vulkan      = dependency('vulkan')
 # dep_threads     = dependency('threads')
 
-
-incl_kb = [
-  include_directories('include'),
-]
-
+subdir('libraries')
+subdir('bin')
+subdir('shader')
+subdir('scripts')
+subdir('source')
+subdir('assets')
 subdir('config')
-subdir('src')
-subdir('tools')

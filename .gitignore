@@ -70,3 +70,5 @@ sourcetrail
 /tmp/*
 
 !/libraries/**/*.a
+
+/bin/current
