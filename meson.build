@@ -24,7 +24,6 @@ cppc = meson.get_compiler('cpp')
 
 kb_cpp_args = [ ]
 
-
 kbdeps = []
 
 if host_machine.system() == 'darwin'
