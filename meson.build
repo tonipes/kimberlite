@@ -31,7 +31,8 @@ if host_machine.system() == 'darwin'
 endif
 
 dep_sdl2  = dependency('sdl2')
-deps      = dependency('libzip')
+
+# deps      = dependency('libzip')
 
 # dep_vulkan      = dependency('vulkan')
 # dep_threads     = dependency('threads')

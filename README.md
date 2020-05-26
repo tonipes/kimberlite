@@ -1,21 +1,20 @@
 # Kimberlite
 
-An experimental game engine with vulkan graphics, extendable, easy-to-understand data structure.
+An experimental game framework
 
 ## Instructions
 
 ### Build & Run
 
 ```bash
-  # Build
-  $ ./build_init.sh
-  $ ./build.sh
+  # Initialize build
+  $ ./init_build_clang debug
 
-  # Run tests
-  $ ./test.sh    
-   
+  # Build
+  $ ./build_target
+
   # Run launcher
-  $ ./run_launcher.sh
+  $ ./launcher
 ```
 
 ## Dependencies
@@ -23,8 +22,9 @@ An experimental game engine with vulkan graphics, extendable, easy-to-understand
 ### Build
 
 - Meson
-- Python 3 (for asset building)
-  - watchdog
-- Git LFS (used for binary assets)
-- Blender (for assets, must be in $PATH)
-- Doxygen (for documentation)
+- Git LFS
+
+### Asset build
+- Python 3
+- Blender (must be in $PATH)
+- Ffmpeg
