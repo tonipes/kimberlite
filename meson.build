@@ -4,7 +4,7 @@ project(
   version: 'alpha',
   license : 'MIT',
   default_options : [
-    'cpp_std=c++17'
+    'cpp_std=c++17',
   ]
 )
 
@@ -31,6 +31,9 @@ if host_machine.system() == 'darwin'
 endif
 
 dep_sdl2  = dependency('sdl2')
+dep_zip   = dependency('libzip')
+
+# dep_zip   = dependency('libzip', fallback : ['libzip', 'libzip_dep'])
 
 # deps      = dependency('libzip')
 
