@@ -8,7 +8,7 @@ An experimental game framework
 
 ```bash
   # Initialize build
-  $ ./init_build_clang debug
+  $ ./init_build debug
 
   # Build
   $ ./build_target
