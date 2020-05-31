@@ -24,6 +24,9 @@ cppc = meson.get_compiler('cpp')
 
 kb_cpp_args = [ ]
 
+kb_install_exec_dir = 'Contents/MacOS'
+kb_install_asset_dir = 'Contents/Resources'
+
 kbdeps = []
 
 if host_machine.system() == 'darwin'
@@ -47,3 +50,4 @@ subdir('scripts')
 subdir('source')
 subdir('assets')
 subdir('config')
+subdir('misc')
