@@ -1,5 +1,5 @@
 project(
-  'Kimberlite',
+  'kimberlite',
   ['cpp', 'c'],
   version: 'alpha',
   license : 'MIT',
@@ -8,12 +8,14 @@ project(
   ]
 )
 
+fs = import('fs')
+
 if meson.is_cross_build()
   message('Is crossbuild')
 endif
 
-kb_build_machine = build_machine.system()
-kb_host_machine = host_machine.system()
+kb_build_machine  = build_machine.system()
+kb_host_machine   = host_machine.system()
 
 message('Build machine:\t' + kb_build_machine)
 message('Host machine:\t' + kb_host_machine)
@@ -29,19 +31,22 @@ kb_install_asset_dir = 'Contents/Resources'
 
 kbdeps = []
 
-if host_machine.system() == 'darwin'
-  kbdeps += dependency('appleframeworks', modules : ['Metal', 'QuartzCore', 'Cocoa'])
+dep_sdl2 = []
+
+if host_machine.system() == 'emscripten'
+  dep_sdl2 = []
+  kb_cpp_args += ['-s', 'WASM=1']
+  kb_cpp_args += ['-s', 'USE_SDL=2']
+  kb_cpp_args += ['-s', 'MAX_WEBGL_VERSION=2']
+  kb_cpp_args += ['-s', 'ALLOW_MEMORY_GROWTH=1']
+else 
+  dep_sdl2 = dependency('sdl2', fallback: ['sdl2', 'sdl2_dep'])
 endif
 
-dep_sdl2  = dependency('sdl2')
-dep_zip   = dependency('libzip')
-
-# dep_zip   = dependency('libzip', fallback : ['libzip', 'libzip_dep'])
-
-# deps      = dependency('libzip')
-
-# dep_vulkan      = dependency('vulkan')
-# dep_threads     = dependency('threads')
+dep_bx      = subproject('bx')    .get_variable('bx_dep')
+dep_bimg    = subproject('bimg')  .get_variable('bimg_dep')
+dep_bgfx    = subproject('bgfx')  .get_variable('bgfx_dep')
+dep_fmt     = subproject('fmt')   .get_variable('fmt_dep')
 
 subdir('libraries')
 subdir('bin')
