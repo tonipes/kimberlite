@@ -1,1 +1,0 @@
-option('thread_support', type: 'boolean', value: true, description: 'Build with support for threads')
