@@ -22,18 +22,11 @@ cppc = meson.get_compiler('cpp')
 kb_cpp_args = [ ]
 
 dep_sdl2    = dependency('sdl2',  fallback: ['sdl2', 'sdl2_dep'])
-dep_bx      = dependency('bx',    fallback: ['bx', 'bx_dep'])
+dep_bx      = dependency('bx',    fallback: ['bx',   'bx_dep'])
 dep_bimg    = dependency('bimg',  fallback: ['bimg', 'bimg_dep'])
 dep_bgfx    = dependency('bgfx',  fallback: ['bgfx', 'bgfx_dep'])
-dep_fmt     = dependency('fmt',   fallback: ['fmt', 'fmt_dep'])
-
-
-# dep_bx      = subproject('bx')    .get_variable('bx_dep')
-# dep_bimg    = subproject('bimg')  .get_variable('bimg_dep')
-# dep_bgfx    = subproject('bgfx')  .get_variable('bgfx_dep')
-# dep_fmt     = subproject('fmt')   .get_variable('fmt_dep')
+dep_fmt     = dependency('fmt',   fallback: ['fmt',  'fmt_dep'])
 
 subdir('libraries')
 subdir('source')
-
 subdir('examples')
