@@ -27,6 +27,7 @@ dep_bimg    = dependency('bimg',    fallback: ['bimg',    'bimg_dep'])
 dep_bgfx    = dependency('bgfx',    fallback: ['bgfx',    'bgfx_dep'])
 dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
 dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
+# dep_yamlcpp = dependency('yamlcpp', fallback: ['yamlcpp',  'yamlcpp_dep'])
 
 subdir('libraries')
 subdir('source')
