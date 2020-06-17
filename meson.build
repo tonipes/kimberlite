@@ -19,6 +19,8 @@ kb_host_machine   = host_machine.system()
 
 cppc = meson.get_compiler('cpp')
 
+kb_build_tools = true
+
 kb_cpp_args = [ ]
 
 dep_sdl2    = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
@@ -27,7 +29,7 @@ dep_bimg    = dependency('bimg',    fallback: ['bimg',    'bimg_dep'])
 dep_bgfx    = dependency('bgfx',    fallback: ['bgfx',    'bgfx_dep'])
 dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
 dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
-# dep_yamlcpp = dependency('yamlcpp', fallback: ['yamlcpp',  'yamlcpp_dep'])
+dep_yaml    = dependency('libyaml', fallback: ['libyaml',  'libyaml_dep'])
 
 subdir('libraries')
 subdir('source')
