@@ -8,6 +8,8 @@ project(
   ]
 )
 
+fs = import('fs')
+
 kb_desc = 'Kimberlite Framework'
 
 if meson.is_cross_build()
@@ -31,6 +33,9 @@ dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
 dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
 dep_yaml    = dependency('libyaml', fallback: ['libyaml',  'libyaml_dep'])
 
+shaderc_exe = subproject('bgfx').get_variable('shaderc_exe')
+
+subdir('embed')
 subdir('libraries')
 subdir('source')
 subdir('examples')

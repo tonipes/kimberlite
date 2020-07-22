@@ -73,3 +73,5 @@ sourcetrail
 !/bin/**/*.exe
 
 /bin/current
+
+/bin
