@@ -1,12 +1,15 @@
 project(
   'kimberlite',
-  ['cpp', 'c'],
+  ['cpp', 'c', 'swift'],
   version: 'alpha',
   license : 'MIT',
   default_options : [
     'cpp_std=c++17',
   ]
 )
+
+# add_global_link_arguments(['-Xlinker', '-lc++'], language: 'swift')
+add_global_link_arguments(['-Xlinker', '-lc++', '-framework', 'Foundation'], language: 'swift')
 
 fs = import('fs')
 
@@ -31,7 +34,7 @@ dep_bimg    = dependency('bimg',    fallback: ['bimg',    'bimg_dep'])
 dep_bgfx    = dependency('bgfx',    fallback: ['bgfx',    'bgfx_dep'])
 dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
 dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
-dep_yaml    = dependency('libyaml', fallback: ['libyaml',  'libyaml_dep'])
+dep_yaml    = dependency('libyaml', fallback: ['libyaml', 'libyaml_dep'])
 
 shaderc_exe = subproject('bgfx').get_variable('shaderc_exe')
 
