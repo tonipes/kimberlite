@@ -8,8 +8,13 @@ project(
   ]
 )
 
-# add_global_link_arguments(['-Xlinker', '-lc++'], language: 'swift')
-add_global_link_arguments(['-Xlinker', '-lc++', '-framework', 'Foundation'], language: 'swift')
+# TODO:
+add_global_link_arguments([
+  '-Xlinker', '-lc++',  
+  '-Xlinker', '-ldl', 
+  '-Xlinker', '/usr/local/lib/libSDL2.dylib',
+  '-framework', 'Foundation',
+], language: 'swift')
 
 fs = import('fs')
 
