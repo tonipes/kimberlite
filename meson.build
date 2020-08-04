@@ -10,10 +10,16 @@ project(
 
 # TODO:
 add_global_link_arguments([
+  '-g',
+  '-sanitize=thread',
   '-Xlinker', '-lc++',  
   '-Xlinker', '-ldl', 
   '-Xlinker', '/usr/local/lib/libSDL2.dylib',
   '-framework', 'Foundation',
+  '-framework', 'Metal',
+  '-framework', 'Cocoa',
+  '-framework', 'QuartzCore',
+
 ], language: 'swift')
 
 fs = import('fs')
