@@ -9,18 +9,18 @@ project(
 )
 
 # TODO:
-add_global_link_arguments([
-  '-g',
-  '-sanitize=thread',
-  '-Xlinker', '-lc++',  
-  '-Xlinker', '-ldl', 
-  '-Xlinker', '/usr/local/lib/libSDL2.dylib',
-  '-framework', 'Foundation',
-  '-framework', 'Metal',
-  '-framework', 'Cocoa',
-  '-framework', 'QuartzCore',
+# add_global_link_arguments([
+#   '-g',
+#   '-sanitize=thread',
+#   '-Xlinker', '-lc++',  
+#   '-Xlinker', '-ldl', 
+#   '-Xlinker', '/usr/local/lib/libSDL2.dylib',
+#   '-framework', 'Foundation',
+#   '-framework', 'Metal',
+#   '-framework', 'Cocoa',
+#   '-framework', 'QuartzCore',
 
-], language: 'swift')
+# ], language: 'swift')
 
 fs = import('fs')
 
@@ -48,8 +48,9 @@ dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
 dep_yaml    = dependency('libyaml', fallback: ['libyaml', 'libyaml_dep'])
 
 shaderc_exe = subproject('bgfx').get_variable('shaderc_exe')
+bin2c_exe   = subproject('bx').get_variable('bin2c_exe')
 
 subdir('embed')
 subdir('libraries')
 subdir('source')
-subdir('examples')
+# subdir('examples')
