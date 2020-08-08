@@ -50,6 +50,7 @@ dep_yaml    = dependency('libyaml', fallback: ['libyaml', 'libyaml_dep'])
 shaderc_exe = subproject('bgfx').get_variable('shaderc_exe')
 bin2c_exe   = subproject('bx').get_variable('bin2c_exe')
 
+subdir('config')
 subdir('embed')
 subdir('libraries')
 subdir('source')
