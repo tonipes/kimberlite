@@ -4,23 +4,12 @@ project(
   version: 'alpha',
   license : 'MIT',
   default_options : [
-    'cpp_std=c++17',
+    'c_std=c11',
+    'cpp_std=c++14',
+    'cpp_rtti=false',
+    # 'cpp_eh=none',    # Disable exceptions
   ]
 )
-
-# TODO:
-# add_global_link_arguments([
-#   '-g',
-#   '-sanitize=thread',
-#   '-Xlinker', '-lc++',  
-#   '-Xlinker', '-ldl', 
-#   '-Xlinker', '/usr/local/lib/libSDL2.dylib',
-#   '-framework', 'Foundation',
-#   '-framework', 'Metal',
-#   '-framework', 'Cocoa',
-#   '-framework', 'QuartzCore',
-
-# ], language: 'swift')
 
 fs = import('fs')
 
@@ -40,18 +29,62 @@ kb_build_tools = true
 kb_cpp_args = [ ]
 
 dep_sdl2    = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
-dep_bx      = dependency('bx',      fallback: ['bx',      'bx_dep'])
-dep_bimg    = dependency('bimg',    fallback: ['bimg',    'bimg_dep'])
-dep_bgfx    = dependency('bgfx',    fallback: ['bgfx',    'bgfx_dep'])
 dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
 dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
-dep_yaml    = dependency('libyaml', fallback: ['libyaml', 'libyaml_dep'])
 
-shaderc_exe = subproject('bgfx').get_variable('shaderc_exe')
-bin2c_exe   = subproject('bx').get_variable('bin2c_exe')
+# dep_bx      = dependency('bx',      fallback: ['bx',      'bx_dep'])
+# dep_bimg    = dependency('bimg',    fallback: ['bimg',    'bimg_dep'])
+# dep_bgfx    = dependency('bgfx',    fallback: ['bgfx',    'bgfx_dep'])
+# dep_yaml    = dependency('libyaml', fallback: ['libyaml', 'libyaml_dep'])
 
-subdir('config')
-subdir('embed')
+# shaderc_exe = subproject('bgfx').get_variable('shaderc_exe')
+# bin2c_exe   = subproject('bx').get_variable('bin2c_exe')
+
+# subdir('embed')
 subdir('libraries')
-subdir('source')
-# subdir('examples')
+
+src_kimberlite = [
+  'source/audio.cpp',
+  'source/core.cpp',
+  'source/file.cpp',
+  'source/graphics.cpp',
+  'source/input.cpp',
+]
+
+incl_kimberlite = [
+  'include'
+]
+
+deps_kimberlite = [
+  # dep_kbshaderembed,
+  # dep_gamecontrollerdb,
+  dep_sdl2,
+  dep_fmt,
+  dep_soloud,
+
+  # dep_bx,
+  # dep_bimg, 
+  # dep_bgfx,
+]
+# + deps_embed
+
+lib_kimberlite = static_library(
+  'kimberlite',
+  src_kimberlite,
+  include_directories : incl_kimberlite,
+  dependencies        : deps_kimberlite,
+  cpp_args            : kb_cpp_args,
+)
+
+dep_kimberlite = declare_dependency(
+  link_with           : lib_kimberlite,
+  dependencies        : deps_kimberlite,
+  include_directories : incl_kimberlite,
+)
+
+exe_bin2c = executable(
+  'bin2c', 
+  ['source/bin2c.cpp'],
+  include_directories : incl_kimberlite,
+  dependencies        : deps_kimberlite,
+)
