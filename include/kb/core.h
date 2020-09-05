@@ -14,5 +14,6 @@
 #include "time.h"
 #include "noise.h"
 #include "thread.h"
+#include "rwops.h"
 
 #define KB_COUNTOF(arr) sizeof(arr) / sizeof(arr[0])

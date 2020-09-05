@@ -36,6 +36,8 @@
   }                                                                                               \
 
 #define KB_RESOURCE_CORE_FUNC_DEFS(name, handle_t, create_info_t, _container, _alloc)             \
+  void construct_##name(handle_t h, const create_info_t& info);                                   \
+  void destruct_##name(handle_t h);                                                               \
   handle_t allocate_##name() { return {_alloc.alloc()}; }                                         \
   void free_##name(handle_t handle) {                                                             \
     _alloc.free(handle.idx);                                                                      \
@@ -54,4 +56,7 @@
   }                                                                                               \
   uint32_t name##_count() {                                                                       \
     return _alloc.count();                                                                        \
+  }                                                                                               \
+  inline auto& name##_ref(handle_t handle) {                                                      \
+    return _container[handle.idx];                                                                \
   }                                                                                               \

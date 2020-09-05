@@ -26,11 +26,14 @@ cppc = meson.get_compiler('cpp')
 
 kb_build_tools = true
 
-kb_cpp_args = [ ]
+kb_cpp_args = [
+  '-Wno-nullability-completeness'
+]
 
 dep_sdl2    = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
 dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
 dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
+dep_vulkan  = dependency('vulkan')
 
 # dep_bx      = dependency('bx',      fallback: ['bx',      'bx_dep'])
 # dep_bimg    = dependency('bimg',    fallback: ['bimg',    'bimg_dep'])
@@ -59,14 +62,25 @@ deps_kimberlite = [
   # dep_kbshaderembed,
   # dep_gamecontrollerdb,
   dep_sdl2,
+  dep_vulkan,
   dep_fmt,
   dep_soloud,
+  dep_vkmemalloc,
+  dep_stb,
+  dep_spirvreflect,
 
   # dep_bx,
   # dep_bimg, 
   # dep_bgfx,
 ]
 # + deps_embed
+
+exe_bin2c = executable(
+  'bin2c', 
+  ['source/bin2c.cpp'],
+  include_directories : incl_kimberlite,
+  dependencies        : deps_kimberlite,
+)
 
 lib_kimberlite = static_library(
   'kimberlite',
@@ -82,9 +96,5 @@ dep_kimberlite = declare_dependency(
   include_directories : incl_kimberlite,
 )
 
-exe_bin2c = executable(
-  'bin2c', 
-  ['source/bin2c.cpp'],
-  include_directories : incl_kimberlite,
-  dependencies        : deps_kimberlite,
-)
+subdir('assets')
+subdir('examples')
