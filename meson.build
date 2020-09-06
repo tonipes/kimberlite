@@ -27,7 +27,8 @@ cppc = meson.get_compiler('cpp')
 kb_build_tools = true
 
 kb_cpp_args = [
-  '-Wno-nullability-completeness'
+  '-Wno-nullability-completeness',
+  '-Werror=return-type'
 ]
 
 dep_sdl2    = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
