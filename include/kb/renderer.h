@@ -128,9 +128,6 @@ KB_API void                 kb_command_buffer_set_program       (CommandBufferHa
 KB_API void                 kb_command_buffer_set_viewport      (CommandBufferHandle command_buffer, Float2 size, Float2 depth_range);
 KB_API void                 kb_command_buffer_set_scissors      (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
 
-// KB_API void       kb_command_buffer_begin_call        (CommandBufferHandle command_buffer);
-// KB_API void       kb_command_buffer_end_call          (CommandBufferHandle command_buffer);
-
 KB_API void       kb_command_buffer_push_uniform      (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
 KB_API void       kb_command_buffer_push_texture      (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);
 
