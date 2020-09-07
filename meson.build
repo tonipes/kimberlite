@@ -69,18 +69,20 @@ deps_kimberlite = [
   dep_vkmemalloc,
   dep_stb,
   dep_spirvreflect,
-
-  # dep_bx,
-  # dep_bimg, 
-  # dep_bgfx,
 ]
-# + deps_embed
 
 exe_bin2c = executable(
   'bin2c', 
   ['source/bin2c.cpp'],
   include_directories : incl_kimberlite,
   dependencies        : deps_kimberlite,
+)
+
+exe_geomc = executable(
+  'geomc', 
+  ['source/geomc.cpp'],
+  include_directories : incl_kimberlite,
+  dependencies        : deps_kimberlite + [ dep_meshoptimizer, dep_cgltf ],
 )
 
 lib_kimberlite = static_library(

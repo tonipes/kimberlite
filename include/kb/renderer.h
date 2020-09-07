@@ -121,14 +121,14 @@ KB_RESOURCE_CORE_FUNC_DECLS   (vertex_buffer  , VertexBufferHandle  , VertexBuff
 KB_API CommandBufferHandle  kb_command_buffer_begin             ();
 KB_API void                 kb_command_buffer_end               (CommandBufferHandle command_buffer);
 
-KB_API void                 kb_command_buffer_bind_vertex_buffer (CommandBufferHandle command_buffer, VertexBufferHandle handle);
-KB_API void                 kb_command_buffer_bind_index_buffer  (CommandBufferHandle command_buffer, IndexBufferHandle handle);
-KB_API void                 kb_command_buffer_set_mesh          (CommandBufferHandle command_buffer, MeshHandle handle);
-KB_API void                 kb_command_buffer_bind_program       (CommandBufferHandle command_buffer, ProgramHandle handle);
-KB_API void                 kb_command_buffer_set_viewport      (CommandBufferHandle command_buffer, Float2 size, Float2 depth_range);
-KB_API void                 kb_command_buffer_set_scissors      (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
-KB_API void                 kb_command_buffer_set_push_constants(CommandBufferHandle command_buffer, void* data, size_t size);
-KB_API void                 kb_command_buffer_submit            (CommandBufferHandle command_buffer);
+KB_API void                 kb_command_buffer_bind_vertex_buffer  (CommandBufferHandle command_buffer, VertexBufferHandle handle);
+KB_API void                 kb_command_buffer_bind_index_buffer   (CommandBufferHandle command_buffer, IndexBufferHandle handle);
+KB_API void                 kb_command_buffer_set_mesh            (CommandBufferHandle command_buffer, MeshHandle handle);
+KB_API void                 kb_command_buffer_bind_program        (CommandBufferHandle command_buffer, ProgramHandle handle);
+KB_API void                 kb_command_buffer_set_viewport        (CommandBufferHandle command_buffer, Int2 size, Float2 depth_range);
+KB_API void                 kb_command_buffer_set_scissors        (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
+KB_API void                 kb_command_buffer_set_push_constants  (CommandBufferHandle command_buffer, void* data, size_t size);
+KB_API void                 kb_command_buffer_submit              (CommandBufferHandle command_buffer);
 
 KB_API void                 kb_command_buffer_push_uniform      (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
 KB_API void                 kb_command_buffer_push_texture      (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);

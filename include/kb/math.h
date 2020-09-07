@@ -185,9 +185,9 @@ typedef struct {
 } Hit;
 
 typedef struct {
-  Float3 pos;
-  Float3 scale;
-  Quaternion orientation;
+  Float3      position;
+  Float3      scale;
+  Quaternion  rotation;
 } XForm;
 
 const extern Float3 DirRight;
