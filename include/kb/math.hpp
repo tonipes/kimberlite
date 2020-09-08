@@ -1,3 +1,5 @@
+#pragma once
+
 #include "math.h"
 
 #define FUNC1_DEF(F, RT, T1, func)          inline RT F(const T1& a) { return func(a); }
@@ -65,6 +67,7 @@ FUNC2_DEF(equal,        auto, Float3, Float3,   equal_float3        );
 FUNC2_DEF(dot,          auto, Float3, Float3,   dot_float3          );
 FUNC2_DEF(min,          auto, Float3, Float3,   min_float3          );
 FUNC2_DEF(max,          auto, Float3, Float3,   max_float3          );
+FUNC2_DEF(cross,        auto, Float3, Float3,   cross_float3        );
 FUNC1_DEF(abs,          auto, Float3,           abs_float3          );
 FUNC1_DEF(floor,        auto, Float3,           floor_float3        );
 FUNC1_DEF(length,       auto, Float3,           len_float3          );

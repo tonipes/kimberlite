@@ -467,7 +467,7 @@ KB_API Float4x4     transpose_float4x4(const Float4x4 a);
 
 KB_API void         translate       (Float4x4* mtx, const Float3 pos);
 KB_API void         scale           (Float4x4* mtx, const Float3 scale);
-KB_API void         rotation        (Float4x4* mtx, const Quaternion rotation);
+KB_API void         rotate          (Float4x4* mtx, const Quaternion rotation);
 
 KB_API Float4x4     transform_mtx   (const Float3 v);
 KB_API Float4x4     scaling_mtx     (const Float3 v);
