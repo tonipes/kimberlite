@@ -8,6 +8,7 @@ extern "C" {
 
 void kb_memset(void* dst, uint8_t ch, size_t count);
 void kb_memcpy(void* dst, const void* src, size_t count);
+void kb_memcpy_with_stride(void* dst, const void* src, size_t count, size_t index, size_t stride, size_t offset);
 
 int   kb_strcmp(const char* a, const char* b);
 int   kb_strlen(const char* a);

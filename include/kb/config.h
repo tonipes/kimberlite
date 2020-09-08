@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+#define KB_FOURCC(a, b, c, d) (((uint32_t)(a) | ((uint32_t)(b) << 8) | ((uint32_t)(c) << 16) | ((uint32_t)(d) << 24)))
+
 #define KB_CONFIG_MAX_GAMEPADS                  8
 #define KB_CONFIG_MAX_INDEX_BUFFERS             1024
 #define KB_CONFIG_MAX_MATERIALS                 1024
@@ -16,6 +18,7 @@ extern "C" {
 #define KB_CONFIG_MAX_MUSICS                    1024
 #define KB_CONFIG_MAX_SOUNDS                    1024
 #define KB_CONFIG_FILE_ROOT_SIZE                512
+#define KB_CONFIG_MAX_NAME_SIZE                 512
 #define KB_CONFIG_MAX_GIZMOS                    1024
 #define KB_CONFIG_GIZMO_CACHE_SIZE              1024
 #define KB_CONFIG_GIZMO_STACK_SIZE              16
@@ -34,14 +37,7 @@ extern "C" {
 #define KB_CONFIG_MAX_PUSH_CONSTANT_SIZE        1024
 #define KB_CONFIG_MAX_DESCRIPTOR_WRITES         16
 
-// #define KB_CONFIG_MAX_VIEWS                     1024
-// #define KB_CONFIG_MAX_UNIFORMS                  1024
-// #define KB_CONFIG_MAX_UNIFORM_BLOCKS            1024
-// #define KB_CONFIG_MAX_SHADERS                   1024
-// #define KB_CONFIG_MAX_BATCHES                   1024
-// #define KB_CONFIG_MAX_ENCODERS                  1024
-// #define KB_CONFIG_MAX_FRAMEBUFFERS              1024
-// #define KB_VERTEX_ATTRIB_COUNT       18
+#define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 
 #ifdef __cplusplus
 }

@@ -9,7 +9,8 @@ extern "C" {
 
 typedef enum {
   KB_ATTRIB_FLOAT = 0,
-  // TODO: Support more
+  KB_ATTRIB_SINT  = 1,
+  KB_ATTRIB_UINT  = 2,
 } AttributeType;
 
 typedef struct {
@@ -18,20 +19,24 @@ typedef struct {
   uint32_t      offset;
   uint32_t      size;
   AttributeType type;
-} VertexInputAttribute;
+} VertexAttribute;
 
 typedef struct {
   uint32_t attrib_count;
-  VertexInputAttribute attribs[KB_CONFIG_MAX_VERTEX_ATTRIBS];
+  VertexAttribute attribs[KB_CONFIG_MAX_VERTEX_ATTRIBS];
 } VertexLayout;
 
 uint32_t kb_vertex_layout_attrib_size(AttributeType type, uint32_t num);
 
-void kb_vertex_layout_begin (VertexLayout* layout);
-void kb_vertex_layout_add   (VertexLayout* layout, AttributeType type, uint32_t num);
-void kb_vertex_layout_end   (VertexLayout* layout);
+void      kb_vertex_layout_begin (VertexLayout* layout);
+uint32_t  kb_vertex_layout_add   (VertexLayout* layout, AttributeType type, uint32_t num);
+void      kb_vertex_layout_end   (VertexLayout* layout);
 
 uint32_t kb_vertex_layout_stride(const VertexLayout* layout);
+uint32_t kb_vertex_layout_offset(const VertexLayout* layout, uint32_t attrib);
+uint32_t kb_vertex_layout_size  (const VertexLayout* layout, uint32_t attrib);
+
+void kb_vertex_layout_dump(const VertexLayout* layout);
 
 #ifdef __cplusplus
 }
