@@ -11,7 +11,7 @@ struct DataSampler {
   void reset() {
     offset = 0;
 
-    memset(values, 0, sizeof(values));
+    kb_memset(values, 0, sizeof(values));
 
     min = 0.0f;
     max = 0.0f;

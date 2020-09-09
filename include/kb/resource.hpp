@@ -13,7 +13,7 @@
     _table.remove(handle.idx);                                                                    \
   }                                                                                               \
   bool kb_##t_name##_has(const char* name) {                                                      \
-    return _table.find(kb_hash_string(name)) == InvalidHandle;                                    \
+    return _table.find(kb_hash_string(name)) != InvalidHandle;                                    \
   }                                                                                               \
   handle_t kb_##t_name##_get(const char* name) {                                                  \
     handle_t handle = {_table.find(kb_hash_string(name))};                                        \

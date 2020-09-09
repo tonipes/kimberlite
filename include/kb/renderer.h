@@ -35,6 +35,14 @@ typedef enum {
 } DrawMode;
 
 typedef enum {
+  KB_BIND_TYPE_UNSUPPORTED    = 0,
+  KB_BIND_TYPE_UNIFORM_BUFFER = 1,
+  KB_BIND_TYPE_PUSH_CONSTANT  = 2,
+  KB_BIND_TYPE_SAMPLER        = 3,
+  KB_BIND_TYPE_STORAGE_BUFFER = 4,
+} BindType;
+
+typedef enum {
   KB_CULL_NONE    = 0,
   KB_CULL_BACK    = 1,
   KB_CULL_FRONT   = 2,
@@ -94,12 +102,21 @@ typedef struct {
 } ProgramCreateInfo;
 
 typedef struct {
-  uint32_t msaa;
+  uint32_t  msaa;
+  bool      vsync;
 } GraphicsInitInfo;
 
 typedef struct {
 
 } BeginInfo;
+
+typedef struct {
+  BindType  type;
+  uint32_t  set;
+  uint32_t  binding;
+  uint32_t  size;
+  uint32_t  offset;
+} BindSlot;
 
 //#####################################################################################################################
 // Object management
@@ -134,11 +151,15 @@ KB_API void                 kb_command_buffer_bind_program        (CommandBuffer
 KB_API void                 kb_command_buffer_set_viewport        (CommandBufferHandle command_buffer, Int2 size, Float2 depth_range);
 KB_API void                 kb_command_buffer_set_scissors        (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
 KB_API void                 kb_command_buffer_set_push_constants  (CommandBufferHandle command_buffer, void* data, size_t size);
-// KB_API void                 kb_command_buffer_submit              (CommandBufferHandle command_buffer);
-KB_API void                 kb_command_buffer_submit(CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
+KB_API void                 kb_command_buffer_submit_mesh         (CommandBufferHandle command_buffer, MeshHandle mesh);
+
+// KB_API void                 kb_command_buffer_submit(CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
 
 KB_API void                 kb_command_buffer_push_uniform      (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
 KB_API void                 kb_command_buffer_push_texture      (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);
+
+KB_API void                 kb_command_buffer_bind_data         (CommandBufferHandle command_buffer, const BindSlot* slot, const void* data);
+KB_API void                 kb_command_buffer_bind_texture      (CommandBufferHandle command_buffer, const BindSlot* slot, TextureHandle texture);
 
 KB_API void                 kb_graphics_init                    (const GraphicsInitInfo info);
 KB_API void                 kb_graphics_deinit                  ();
@@ -146,6 +167,11 @@ KB_API void                 kb_graphics_frame                   ();
 KB_API void                 kb_graphics_frame_tmp_render        ();
 KB_API Int2                 kb_graphics_get_extent              ();
 KB_API void                 kb_graphics_wait_device_idle        ();
+
+KB_API bool                 kb_program_get_bind_slot            (ProgramHandle program, const char* name, BindSlot* bind_slot);
+
+KB_API VertexBufferHandle   kb_mesh_get_vertex_buffer           (MeshHandle handle);
+KB_API IndexBufferHandle    kb_mesh_get_index_buffer            (MeshHandle handle);
 
 #ifdef __cplusplus
 }
