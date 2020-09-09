@@ -1,10 +1,10 @@
 #pragma once
 
-#define KB_RESOURCE_DEFAULT_CONSTRUCT_FUNC(name, handle, create_info, data_container)             \
-  void construct_##name(handle h, const create_info info) { data_container[h.idx] = {}; } 
+// #define KB_RESOURCE_DEFAULT_CONSTRUCT_FUNC(name, handle, create_info, data_container)             \
+//   void construct_##name(handle h, const create_info info) { data_container[h.idx] = {}; } 
 
-#define KB_RESOURCE_DEFAULT_DESTRUCT_FUNC(name, handle, data_container)                           \
-  void destruct_##name(handle h) { data_container[h.idx] = {}; } 
+// #define KB_RESOURCE_DEFAULT_DESTRUCT_FUNC(name, handle, data_container)                           \
+//   void destruct_##name(handle h) { data_container[h.idx] = {}; } 
 
 #define KB_RESOURCE_NON_HASHED_FUNC_DEFS(name, handle_t)                                          \
   void remove_##name##_hash(handle_t handle) { }
