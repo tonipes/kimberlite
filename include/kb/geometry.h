@@ -24,6 +24,7 @@ struct Primitive {
 };
 
 struct Mesh {
+  char name[KB_CONFIG_MAX_NAME_SIZE];
   uint32_t primitive_count;
   Primitive* primitives;
 };

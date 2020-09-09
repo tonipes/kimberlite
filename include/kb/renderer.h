@@ -10,6 +10,7 @@ extern "C" {
 #include <kb/handle.h>
 #include <kb/math.h>
 #include <kb/rwops.h>
+#include <kb/geometry.h>
 
 //#####################################################################################################################
 // Structs
@@ -22,6 +23,7 @@ KB_HANDLE(MeshHandle);
 KB_HANDLE(ProgramHandle);
 KB_HANDLE(TextureHandle);
 KB_HANDLE(GeometryHandle);
+KB_HANDLE(UniformSetHandle);
 
 //#####################################################################################################################
 // Enums
@@ -61,6 +63,7 @@ typedef struct {
 
 typedef struct {
   RWops* rwops;
+  uint32_t index_size;
 } IndexBufferCreateInfo;
 
 typedef struct {
@@ -73,13 +76,9 @@ typedef struct {
 } VertexBufferCreateInfo;
 
 typedef struct {
-  uint32_t first_vertex;
-  uint32_t vertex_count;
-  VertexBufferHandle vertex_buffer;
-
-  uint32_t first_index;
-  uint32_t index_count;
-  IndexBufferHandle index_buffer;
+  GeometryHandle  geometry;
+  uint32_t        primitive_count;
+  Primitive*      primitives;
 } MeshCreateInfo;
 
 typedef struct {
