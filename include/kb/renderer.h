@@ -21,6 +21,7 @@ KB_HANDLE(VertexBufferHandle);
 KB_HANDLE(MeshHandle);
 KB_HANDLE(ProgramHandle);
 KB_HANDLE(TextureHandle);
+KB_HANDLE(GeometryHandle);
 
 //#####################################################################################################################
 // Enums
@@ -51,6 +52,10 @@ typedef enum {
 //#####################################################################################################################
 
 typedef struct {
+  RWops* rwops;
+} GeometryCreateInfo;
+
+typedef struct {
   int param;
 } CommandBufferCreateInfo;
 
@@ -60,6 +65,7 @@ typedef struct {
 
 typedef struct {
   RWops* rwops;
+  bool create_mipmaps;
 } TextureCreateInfo;
 
 typedef struct {
@@ -89,8 +95,7 @@ typedef struct {
 } ProgramCreateInfo;
 
 typedef struct {
-  bool debug;
-  bool profile;
+  uint32_t msaa;
 } GraphicsInitInfo;
 
 typedef struct {
@@ -106,6 +111,8 @@ KB_RESOURCE_HASHED_FUNC_DECLS (mesh           , MeshHandle          , MeshCreate
 KB_RESOURCE_HASHED_FUNC_DECLS (program        , ProgramHandle       , ProgramCreateInfo       )
 KB_RESOURCE_HASHED_FUNC_DECLS (texture        , TextureHandle       , TextureCreateInfo       )
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
+
+KB_RESOURCE_CORE_FUNC_DECLS   (geometry       , GeometryHandle      , GeometryCreateInfo      )
 
 KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , CommandBufferHandle , CommandBufferCreateInfo )
 KB_RESOURCE_CORE_FUNC_DECLS   (index_buffer   , IndexBufferHandle   , IndexBufferCreateInfo   )
@@ -129,7 +136,7 @@ KB_API void                 kb_command_buffer_set_viewport        (CommandBuffer
 KB_API void                 kb_command_buffer_set_scissors        (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
 KB_API void                 kb_command_buffer_set_push_constants  (CommandBufferHandle command_buffer, void* data, size_t size);
 // KB_API void                 kb_command_buffer_submit              (CommandBufferHandle command_buffer);
-KB_API void kb_command_buffer_submit(CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
+KB_API void                 kb_command_buffer_submit(CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
 
 KB_API void                 kb_command_buffer_push_uniform      (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
 KB_API void                 kb_command_buffer_push_texture      (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);

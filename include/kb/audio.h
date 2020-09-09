@@ -21,38 +21,33 @@ KB_HANDLE(SoundInstanceHandle);
 //#####################################################################################################################
 
 typedef struct {
-  int param;
+  float param;
 } AudioInitInfo;
 
 typedef struct {
-  int param;
-} SoundParams;
-
-typedef struct {
-  SoundParams params;
-  const Memory memory;
+  RWops* rwops;
 } SoundCreateInfo;
 
-typedef struct {
-  int param;
-} MusicCreateInfo;
+// typedef struct {
+//   int param;
+// } MusicCreateInfo;
 
 //#####################################################################################################################
 // Object management
 //#####################################################################################################################
 
 KB_RESOURCE_HASHED_FUNC_DECLS (sound, SoundHandle, SoundCreateInfo)
-KB_RESOURCE_HASHED_FUNC_DECLS (music, MusicHandle, MusicCreateInfo)
+// KB_RESOURCE_HASHED_FUNC_DECLS (music, MusicHandle, MusicCreateInfo)
 
 KB_RESOURCE_CORE_FUNC_DECLS   (sound, SoundHandle, SoundCreateInfo)
-KB_RESOURCE_CORE_FUNC_DECLS   (music, MusicHandle, MusicCreateInfo)
+// KB_RESOURCE_CORE_FUNC_DECLS   (music, MusicHandle, MusicCreateInfo)
 
 //#####################################################################################################################
 // API functions
 //#####################################################################################################################
 
-KB_API void                kb_init_audio                (const AudioInitInfo info);
-KB_API void                kb_deinit_audio              ();
+KB_API void                kb_audio_init                (const AudioInitInfo info);
+KB_API void                kb_audio_deinit              ();
 
 KB_API SoundInstanceHandle kb_sound_play                (SoundHandle handle);
 KB_API void                kb_sound_stop                (SoundInstanceHandle handle);
@@ -63,9 +58,9 @@ KB_API void                kb_sound_set_speed           (SoundInstanceHandle ins
 KB_API void                kb_sound_set_pan             (SoundInstanceHandle instance, float pan);
 KB_API void                kb_sound_wait                (SoundInstanceHandle instance);
 
-KB_API void                kb_music_set_track           (MusicHandle handle);
-KB_API void                kb_music_play                ();
-KB_API void                kb_music_stop                ();
+// KB_API void                kb_music_set_track           (MusicHandle handle);
+// KB_API void                kb_music_play                ();
+// KB_API void                kb_music_stop                ();
 
 #ifdef __cplusplus
 }

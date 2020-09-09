@@ -36,6 +36,7 @@ extern "C" {
 #define KB_CONFIG_MAX_PUSH_CONSTANT_RANGES      8
 #define KB_CONFIG_MAX_PUSH_CONSTANT_SIZE        1024
 #define KB_CONFIG_MAX_DESCRIPTOR_WRITES         16
+#define KB_CONFIG_MAX_GEOMETRIES                128
 
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 
