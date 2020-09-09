@@ -204,6 +204,7 @@ KB_API_INLINE bool      equal_integer     (Integer a, Integer b)          { retu
 KB_API_INLINE Integer   abs_integer       (Integer a)                     { return a < 0 ? -a : a;        }
 KB_API_INLINE Integer   max_integer       (Integer a, Integer b)          { return a > b ? a : b;         }
 KB_API_INLINE Integer   min_integer       (Integer a, Integer b)          { return b > a ? a : b;         }
+KB_API_INLINE Integer   log2_integer      (Integer a)                     { return log2(a);               }
 
 KB_API_INLINE Scalar    nms_scalar        (Scalar a, Scalar b, Scalar c)  { return c - a * b; }
 KB_API_INLINE Scalar    mad_scalar        (Scalar a, Scalar b, Scalar c)  { return a * b + c; }
@@ -241,6 +242,7 @@ KB_API_INLINE Scalar    dist_scalar       (Scalar a, Scalar b)            { retu
 KB_API_INLINE Scalar    pow_scalar        (Scalar a, Scalar b)            { return pow(a, b);             }
 KB_API_INLINE Scalar    exp_scalar        (Scalar a)                      { return exp(a);                }
 KB_API_INLINE Scalar    log_scalar        (Scalar a)                      { return log(a);                }
+KB_API_INLINE Scalar    log2_scalar       (Scalar a)                      { return log2(a);               }
 KB_API_INLINE Scalar    square_scalar     (Scalar a)                      { return a * a;                 }
 KB_API_INLINE Scalar    recip_scalar      (Scalar a)                      { return 1.0f / a;              }
 KB_API_INLINE Scalar    fmod_scalar       (Scalar a, Scalar b)            { return fmod(a, b);            }

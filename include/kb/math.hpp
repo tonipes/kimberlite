@@ -6,6 +6,9 @@
 #define FUNC2_DEF(F, RT, T1, T2, func)      inline RT F(const T1& a, const T2& b) { return func(a, b); }
 #define FUNC3_DEF(F, RT, T1, T2, T3, func)  inline RT F(const T1& a, const T2& b, const T3& c) { return func(a, b, c); }
 
+FUNC1_DEF(kb_log2,       auto, Integer,           log2_integer         );
+
+
 FUNC2_DEF(distance,   auto, Scalar, Scalar,   dist_scalar           );
 FUNC2_DEF(equal,      auto, Scalar, Scalar,   equal_scalar          );
 FUNC2_DEF(dot,        auto, Scalar, Scalar,   dot_scalar            );
@@ -13,6 +16,7 @@ FUNC2_DEF(min,        auto, Scalar, Scalar,   min_scalar            );
 FUNC2_DEF(max,        auto, Scalar, Scalar,   max_scalar            );
 // FUNC1_DEF(abs,        auto, Scalar,           abs_scalar            );
 // FUNC1_DEF(floor,      auto, Scalar,           floor_scalar          );
+FUNC1_DEF(kb_log2,       auto, Scalar,           log2_scalar           );
 FUNC1_DEF(recip,      auto, Scalar,           recip_scalar          );
 FUNC1_DEF(saturate,   auto, Scalar,           saturate_scalar       );
 FUNC1_DEF(smoothstep, auto, Scalar,           smoothstep_scalar     );
