@@ -16,6 +16,7 @@ char* kb_strcpy(char* dst, const char* src);
 
 int kb_printf(const char* format, ...);
 int kb_snprintf(char* out, int32_t max, const char* format, ...);
+int kb_vsnprintf(char* out, int32_t max, const char* format, va_list arg_list);
 
 bool kb_fromstr_bool  (bool*    dst, const char* str);
 bool kb_fromstr_int   (int32_t* dst, const char* str);

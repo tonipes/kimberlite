@@ -37,6 +37,9 @@ extern "C" {
 #define KB_CONFIG_MAX_PUSH_CONSTANT_SIZE        1024
 #define KB_CONFIG_MAX_DESCRIPTOR_WRITES         16
 #define KB_CONFIG_MAX_GEOMETRIES                128
+#define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
+#define KB_CONFIG_STATS_SAMPLE_COUNT            100
+#define KB_VGA_FONT_SMALL                       0
 
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 
