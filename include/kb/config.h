@@ -21,7 +21,7 @@ extern "C" {
 #define KB_CONFIG_MAX_NAME_SIZE                 512
 #define KB_CONFIG_MAX_GIZMOS                    1024
 #define KB_CONFIG_GIZMO_CACHE_SIZE              1024
-#define KB_CONFIG_GIZMO_STACK_SIZE              16
+#define KB_CONFIG_GIZMO_STACK_SIZE              32
 #define KB_CONFIG_MAX_TEXTURE_SAMPLERS          16
 #define KB_CONFIG_MAX_UNIFORM_BUFFERS           16
 #define KB_CONFIG_MAX_TEXTURE_SAMPLERS          16
