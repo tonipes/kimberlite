@@ -206,8 +206,8 @@ KB_API void                 kb_text_overlay_printf                (uint32_t x, u
 
 KB_API TextureHandle        kb_texture_load_png                   (const TextureCreateInfo& info);
 
-KB_API GizmoHandle          kb_gizmo_state_begin                  ();
-KB_API void                 kb_gizmo_state_end                    (GizmoHandle gizmo);
+KB_API GizmoHandle          kb_gizmo_begin                        (const Float4x4 view, const Float4x4 proj);
+KB_API void                 kb_gizmo_end                          (GizmoHandle gizmo);
 KB_API void                 kb_gizmo_state_push                   (GizmoHandle gizmo);
 KB_API void                 kb_gizmo_state_pop                    (GizmoHandle gizmo);
 KB_API void                 kb_gizmo_state_push_transform         (GizmoHandle gizmo, const Float4x4 mtx, bool flush);
@@ -222,12 +222,12 @@ KB_API void                 kb_gizmo_draw_arc                     (GizmoHandle g
 KB_API void                 kb_gizmo_draw_circle                  (GizmoHandle gizmo, const Float3 normal, const Float3 center, float radius, float weight);
 KB_API void                 kb_gizmo_draw_cone                    (GizmoHandle gizmo, const Float3 from, const Float3 to, float radius);
 KB_API void                 kb_gizmo_draw_cylinder                (GizmoHandle gizmo, const Float3 from, const Float3 to, float radius);
-KB_API void                 kb_gizmo_draw_axis                    (GizmoHandle gizmo, const Float3 pos, float len, float thickness);
+KB_API void                 kb_gizmo_draw_axis                    (GizmoHandle gizmo, const Float3 pos, float length);
 KB_API void                 kb_gizmo_draw_grid                    (GizmoHandle gizmo, Axis axis, const Float3 center, uint32_t size, float step);
+KB_API void                 kb_gizmo_draw_aabb                    (GizmoHandle gizmo, const Aabb aabb);
 KB_API void                 kb_gizmo_shape_draw_sphere            (GizmoHandle gizmo, const Sphere sphere);
 KB_API void                 kb_gizmo_shape_draw_cylinder          (GizmoHandle gizmo, const Cylinder cylinder);
 KB_API void                 kb_gizmo_shape_draw_disk              (GizmoHandle gizmo, const Disk disk);
-KB_API void                 kb_gizmo_shape_draw_aabb              (GizmoHandle gizmo, const Aabb aabb);
 KB_API void                 kb_gizmo_shape_draw_triangle          (GizmoHandle gizmo, const Triangle triangle);
 KB_API void                 kb_gizmo_shape_draw_ray               (GizmoHandle gizmo, const Ray ray);
 KB_API void                 kb_gizmo_flush                        (GizmoHandle gizmo);

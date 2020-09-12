@@ -496,6 +496,23 @@ KB_API_INLINE uint32_t align_up(uint32_t a, uint32_t align) {
   return uint32_t( (a + mask) & ~mask);
 }
 
+KB_API_INLINE Float2 circle_point(float angle) {
+  return { 
+    sin_scalar(angle), 
+    cos_scalar(angle) 
+  };
+}
+
+KB_API_INLINE Float2 squircle_point(float angle) {
+  float sa = sin_scalar(angle);
+  float ca = cos_scalar(angle);
+
+  return {
+    sqrt_scalar(abs_scalar(sa)) * sign_scalar(sa),
+    sqrt_scalar(abs_scalar(ca)) * sign_scalar(ca)
+  };
+}
+
 #ifdef __cplusplus
 }
 #endif
