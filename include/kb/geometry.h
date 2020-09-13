@@ -29,8 +29,13 @@ struct Mesh {
   Primitive* primitives;
 };
 
+// PBR metallic
 struct Material {
   char name[KB_CONFIG_MAX_NAME_SIZE];
+  Float4  color_factor;
+  float   metallic_factor;
+  float   roughness_factor;
+  float   alpha_cutoff;
 };
 
 struct Node {
