@@ -162,3 +162,5 @@ FUNC3_DEF(lerp,       auto, Float3, Float3, Scalar, lerp_float3      );
 FUNC3_DEF(lerp,       auto, Float4, Float4, Scalar, lerp_float4      );
 
 FUNC2_DEF(operator*,    auto, Float4x4, Float4x4,   mul_float4x4     );
+FUNC2_DEF(operator*,    auto, Quaternion, Float3,   act_quat         );
+FUNC2_DEF(operator*,    auto, Quaternion, Quaternion,   mul_quat     );

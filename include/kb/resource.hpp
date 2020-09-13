@@ -16,7 +16,8 @@
     return _table.find(kb_hash_string(name)) != InvalidHandle;                                    \
   }                                                                                               \
   handle_t kb_##t_name##_get(const char* name) {                                                  \
-    handle_t handle = {_table.find(kb_hash_string(name))};                                        \
+    Hash hash = kb_hash_string(name);                                                             \
+    handle_t handle = {_table.find(hash)};                                                        \
     return handle;                                                                                \
   }                                                                                               \
   handle_t kb_##t_name##_get_or_allocate(const char* name) {                                      \

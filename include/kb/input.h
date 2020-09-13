@@ -4,15 +4,14 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <kb/config.h>
+#include <kb/math.h>
+#include <kb/handle.h>
+#include <kb/scancodes.h>
 
-#include "kb/math.h"
-#include "kb/handle.h"
-
-#include "scancodes.h"
-
-#include "kb/config.h"
+typedef struct {
+  int param;
+} InputInitInfo;
 
 typedef enum {
   GamepadAxisInvalid,
@@ -67,43 +66,41 @@ typedef enum {
 
 KB_HANDLE(GamepadHandle);
 
-bool input_key_down                (Scancode scancode);
-bool input_key_up                  (Scancode scancode);
+bool          kb_input_key_down                 (Scancode scancode);
+bool          kb_input_key_up                   (Scancode scancode);
+bool          kb_input_key_released             (Scancode scancode);
+bool          kb_input_key_pressed              (Scancode scancode);
 
-bool input_key_released            (Scancode scancode);
-bool input_key_pressed             (Scancode scancode);
+bool          kb_input_mouse_button_down        (MouseButton button);
+bool          kb_input_mouse_button_up          (MouseButton button);
+bool          kb_input_mouse_button_released    (MouseButton button);
+bool          kb_input_mouse_button_pressed     (MouseButton button);
 
-bool input_mouse_button_down       (MouseButton button);
-bool input_mouse_button_up         (MouseButton button);
-bool input_mouse_button_released   (MouseButton button);
-bool input_mouse_button_pressed    (MouseButton button);
+Float2        kb_input_mouse_pos                ();
+Float2        kb_input_mouse_delta              ();
 
-Float2 input_mouse_pos();
-Float2 input_mouse_delta();
+Float2        kb_input_mouse_wheel              ();
+Float2        kb_input_mouse_wheel_delta        ();
 
-Float2 input_mouse_wheel();
-Float2 input_mouse_wheel_delta();
+bool          kb_input_gamepad_connected        (GamepadHandle gamepad);
+const char*   kb_input_gamepad_name             (GamepadHandle gamepad);
 
-bool input_gamepad_connected        (GamepadHandle gamepad);
-const char* input_gamepad_name      (GamepadHandle gamepad);
+bool          kb_input_gamepad_button_down      (GamepadHandle gamepad, GamepadButton button);
+bool          kb_input_gamepad_button_up        (GamepadHandle gamepad, GamepadButton button);
+bool          kb_input_gamepad_button_released  (GamepadHandle gamepad, GamepadButton button);
+bool          kb_input_gamepad_button_pressed   (GamepadHandle gamepad, GamepadButton button);
 
-bool input_gamepad_button_down      (GamepadHandle gamepad, GamepadButton button);
-bool input_gamepad_button_up        (GamepadHandle gamepad, GamepadButton button);
-bool input_gamepad_button_released  (GamepadHandle gamepad, GamepadButton button);
-bool input_gamepad_button_pressed   (GamepadHandle gamepad, GamepadButton button);
+Scalar        kb_input_gamepad_axis_value       (GamepadHandle gamepad, GamepadAxis axis);
+Scalar        kb_input_gamepad_axis_delta       (GamepadHandle gamepad, GamepadAxis axis);
 
-Scalar input_gamepad_axis_value     (GamepadHandle gamepad, GamepadAxis axis);
-Scalar input_gamepad_axis_delta     (GamepadHandle gamepad, GamepadAxis axis);
+Float2        kb_input_gamepad_joystick_value   (GamepadHandle gamepad, GamepadJoystick joystick);
+Float2        kb_input_gamepad_joystick_delta   (GamepadHandle gamepad, GamepadJoystick joystick);
 
-Float2 input_gamepad_joystick_value (GamepadHandle gamepad, GamepadJoystick joystick);
-Float2 input_gamepad_joystick_delta (GamepadHandle gamepad, GamepadJoystick joystick);
+GamepadHandle kb_input_gamepad_get              (uint32_t index);
 
-GamepadHandle get_gamepad(uint32_t index);
-
-void haptic_test(GamepadHandle handle);
-
-void input_init();
-void input_update();
+void          kb_input_init                     (const InputInitInfo info);
+void          kb_input_deinit                   ();
+void          kb_input_frame                    ();
 
 #ifdef __cplusplus
 }
