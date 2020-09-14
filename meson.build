@@ -60,8 +60,6 @@ incl_kimberlite = [
 ]
 
 deps_kimberlite = [
-  # dep_kbshaderembed,
-  # dep_gamecontrollerdb,
   dep_sdl2,
   dep_vulkan,
   dep_fmt,
@@ -69,6 +67,7 @@ deps_kimberlite = [
   dep_vkmemalloc,
   dep_stb,
   dep_spirvreflect,
+  dep_libyaml,
 ]
 
 exe_bin2c = executable(
@@ -76,6 +75,7 @@ exe_bin2c = executable(
   ['source/bin2c.cpp'],
   include_directories : incl_kimberlite,
   dependencies        : deps_kimberlite,
+  cpp_args            : kb_cpp_args,
 )
 
 exe_geomc = executable(
@@ -83,6 +83,7 @@ exe_geomc = executable(
   ['source/geomc.cpp'],
   include_directories : incl_kimberlite,
   dependencies        : deps_kimberlite + [ dep_meshoptimizer, dep_cgltf ],
+  cpp_args            : kb_cpp_args,
 )
 
 lib_kimberlite = static_library(

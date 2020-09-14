@@ -15,7 +15,6 @@ typedef enum {
   KB_WRITE  = 1
 } FileMode;
 
-
 typedef struct RWops {
   int64_t   (*size)   (struct RWops* rwops);
   int64_t   (*seek)   (struct RWops* rwops, int64_t offset, int whence);

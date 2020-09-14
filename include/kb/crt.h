@@ -22,6 +22,8 @@ bool kb_fromstr_bool  (bool*    dst, const char* str);
 bool kb_fromstr_int   (int32_t* dst, const char* str);
 bool kb_fromstr_float (float*   dst, const char* str);
 
+char* kb_copy_str(const char* src);
+
 #ifdef __cplusplus
 }
 #endif
