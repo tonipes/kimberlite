@@ -29,28 +29,32 @@ KB_API void           kb_variant_create_num     (Variant* variant, float value);
 
 KB_API void           kb_variant_destroy        (Variant* variant);
 
-// KB_API void           kb_variant_merge          (Variant* dst, Variant* src);
 KB_API void           kb_variant_copy           (Variant* dst, const Variant* src);
+KB_API void           kb_variant_merge          (Variant* dst, const Variant* src);
 
-KB_API float          kb_variant_get_num        (Variant* variant);
-KB_API bool           kb_variant_get_bool       (Variant* variant);
-KB_API const char*    kb_variant_get_str        (Variant* variant);
+KB_API float          kb_variant_get_num        (const Variant* variant);
+KB_API bool           kb_variant_get_bool       (const Variant* variant);
+KB_API const char*    kb_variant_get_str        (const Variant* variant);
 
-KB_API bool           kb_variant_is_num         (Variant* variant);
-KB_API bool           kb_variant_is_bool        (Variant* variant);
-KB_API bool           kb_variant_is_str         (Variant* variant);
-KB_API bool           kb_variant_is_arr         (Variant* variant);
-KB_API bool           kb_variant_is_obj         (Variant* variant);
+KB_API bool           kb_variant_is_num         (const Variant* variant);
+KB_API bool           kb_variant_is_bool        (const Variant* variant);
+KB_API bool           kb_variant_is_str         (const Variant* variant);
+KB_API bool           kb_variant_is_arr         (const Variant* variant);
+KB_API bool           kb_variant_is_obj         (const Variant* variant);
 
-KB_API uint32_t       kb_variant_obj_capacity   (Variant* variant);
-KB_API uint32_t       kb_variant_obj_count      (Variant* variant);
-KB_API Variant*       kb_variant_obj_put        (Variant* variant, const char* key);
+KB_API uint32_t       kb_variant_obj_capacity   (const Variant* variant);
+KB_API uint32_t       kb_variant_obj_count      (const Variant* variant);
 KB_API Variant*       kb_variant_obj_at         (Variant* variant, const char* key);
+KB_API Variant*       kb_variant_obj_put        (Variant* variant, const char* key);
+KB_API Variant*       kb_variant_obj_at_hash    (Variant* variant, Hash key);
+KB_API Variant*       kb_variant_obj_put_hash   (Variant* variant, Hash key);
 
-KB_API uint32_t       kb_variant_arr_capacity   (Variant* variant);
-KB_API uint32_t       kb_variant_arr_count      (Variant* variant);
+KB_API uint32_t       kb_variant_arr_capacity   (const Variant* variant);
+KB_API uint32_t       kb_variant_arr_count      (const Variant* variant);
 KB_API Variant*       kb_variant_arr_put        (Variant* variant);
 KB_API Variant*       kb_variant_arr_at         (Variant* variant, uint32_t index);
+
+KB_API void           kb_variant_dump           (const Variant* variant);
 
 #ifdef __cplusplus
 }
