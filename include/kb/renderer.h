@@ -13,6 +13,7 @@ extern "C" {
 
 #include <kb/geometry.h>
 #include <kb/texture.h>
+#include <kb/font.h>
 
 //#####################################################################################################################
 // Structs
@@ -25,9 +26,6 @@ KB_HANDLE(MeshHandle);
 KB_HANDLE(ProgramHandle);
 KB_HANDLE(UniformSetHandle);
 KB_HANDLE(GizmoHandle);
-
-// KB_HANDLE(TextureHandle);
-// KB_HANDLE(GeometryHandle);
 
 //#####################################################################################################################
 // Enums
@@ -113,6 +111,14 @@ typedef struct {
 } MeshCreateInfo;
 
 typedef struct {
+  TextureHandle atlas;
+  uint32_t      atlas_height;
+  uint32_t      atlas_width;
+  uint32_t      char_count;
+  FontChar*     chars;
+} FontCreateInfo;
+
+typedef struct {
   RWops* vert_code_rwops;
   RWops* frag_code_rwops;
   
@@ -154,7 +160,7 @@ KB_RESOURCE_HASHED_FUNC_DECLS (texture        , TextureHandle       , TextureCre
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
 
 KB_RESOURCE_CORE_FUNC_DECLS   (geometry       , GeometryHandle      , GeometryCreateInfo      )
-
+KB_RESOURCE_CORE_FUNC_DECLS   (font           , FontHandle          , FontCreateInfo          )
 KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , CommandBufferHandle , CommandBufferCreateInfo )
 KB_RESOURCE_CORE_FUNC_DECLS   (index_buffer   , IndexBufferHandle   , IndexBufferCreateInfo   )
 KB_RESOURCE_CORE_FUNC_DECLS   (mesh           , MeshHandle          , MeshCreateInfo          )
@@ -200,10 +206,11 @@ KB_API bool                 kb_program_get_bind_slot              (ProgramHandle
 KB_API VertexBufferHandle   kb_mesh_get_vertex_buffer             (MeshHandle handle);
 KB_API IndexBufferHandle    kb_mesh_get_index_buffer              (MeshHandle handle);
 
+KB_API TextureHandle        kb_font_get_atlas                     (FontHandle handle);
+KB_API void                 kb_text_render_test                   (FontHandle font, const char* str);
+
 KB_API void                 kb_text_overlay_print                 (uint32_t x, uint32_t y, const char* text);
 KB_API void                 kb_text_overlay_printf                (uint32_t x, uint32_t y, const char* fmt, ...);
-
-// KB_API TextureHandle        kb_texture_load_png                   (const TextureCreateInfo& info);
 
 KB_API GizmoHandle          kb_gizmo_begin                        (const Float4x4 view, const Float4x4 proj);
 KB_API void                 kb_gizmo_end                          (GizmoHandle gizmo);

@@ -136,7 +136,7 @@ typedef struct {
 
 typedef struct {
   Int2 from;
-  Int2 to;
+  Int2 size;
 } IntRect;
 
 typedef struct {

@@ -4,6 +4,7 @@
 extern "C" {
 #endif
 
+#include <kb/core.h>
 #include <kb/types.h>
 #include <kb/math.h>
 #include <kb/vertex_layout.h>
