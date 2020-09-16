@@ -86,6 +86,14 @@ exe_geomc = executable(
   cpp_args            : kb_cpp_args,
 )
 
+exe_texturec = executable(
+  'texturec', 
+  ['source/texturec.cpp'],
+  include_directories : incl_kimberlite,
+  dependencies        : deps_kimberlite + [ dep_stb ],
+  cpp_args            : kb_cpp_args,
+)
+
 lib_kimberlite = static_library(
   'kimberlite',
   src_kimberlite,

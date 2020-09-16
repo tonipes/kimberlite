@@ -10,7 +10,9 @@ extern "C" {
 #include <kb/handle.h>
 #include <kb/math.h>
 #include <kb/rwops.h>
+
 #include <kb/geometry.h>
+#include <kb/texture.h>
 
 //#####################################################################################################################
 // Structs
@@ -21,10 +23,11 @@ KB_HANDLE(IndexBufferHandle);
 KB_HANDLE(VertexBufferHandle);
 KB_HANDLE(MeshHandle);
 KB_HANDLE(ProgramHandle);
-KB_HANDLE(TextureHandle);
-KB_HANDLE(GeometryHandle);
 KB_HANDLE(UniformSetHandle);
 KB_HANDLE(GizmoHandle);
+
+// KB_HANDLE(TextureHandle);
+// KB_HANDLE(GeometryHandle);
 
 //#####################################################################################################################
 // Enums
@@ -58,26 +61,23 @@ typedef enum {
   KB_TOPOLOGY_POINT_LIST      = 4,
 } TopologyType;
 
-typedef enum {
-  KB_FORMAT_UNSUPPORTED       = 0,
-  KB_FORMAT_R8                = 1,
-  KB_FORMAT_R8G8              = 2,
-  KB_FORMAT_R8G8B8            = 3,
-  KB_FORMAT_R8G8B8A8          = 4,
-} Format;
-
-typedef enum {
-  KB_FILTER_NEAREST      = 0,
-  KB_FILTER_LINEAR       = 1,
-} Filter;
-
-
 //#####################################################################################################################
 // Structs
 //#####################################################################################################################
 
+// typedef struct {
+//   RWops* rwops;
+// } GeometryCreateInfo;
+
 typedef struct {
-  RWops* rwops;
+  VertexBufferHandle  vertex_buffer;
+  IndexBufferHandle   index_buffer;
+  
+  uint32_t            material_count;
+  UniformSetHandle*   materials;
+
+  uint32_t            mesh_count;
+  MeshHandle*         meshes;
 } GeometryCreateInfo;
 
 typedef struct {
@@ -85,12 +85,9 @@ typedef struct {
 } CommandBufferCreateInfo;
 
 typedef struct {
-  RWops*    rwops;
-  uint32_t  width;
-  uint32_t  height;
-  Format    format;
-  Filter    filter;
-  bool      create_mipmaps;
+  RWops*      rwops;
+  TextureInfo texture;
+  SamplerInfo sampler;
 } TextureCreateInfo;
 
 typedef struct {
@@ -108,9 +105,11 @@ typedef struct {
 } VertexBufferCreateInfo;
 
 typedef struct {
-  GeometryHandle  geometry;
-  uint32_t        primitive_count;
-  Primitive*      primitives;
+  VertexBufferHandle  vertex_buffer;
+  IndexBufferHandle   index_buffer;
+
+  uint32_t            primitive_count;
+  Primitive*          primitives;
 } MeshCreateInfo;
 
 typedef struct {
@@ -204,7 +203,7 @@ KB_API IndexBufferHandle    kb_mesh_get_index_buffer              (MeshHandle ha
 KB_API void                 kb_text_overlay_print                 (uint32_t x, uint32_t y, const char* text);
 KB_API void                 kb_text_overlay_printf                (uint32_t x, uint32_t y, const char* fmt, ...);
 
-KB_API TextureHandle        kb_texture_load_png                   (const TextureCreateInfo& info);
+// KB_API TextureHandle        kb_texture_load_png                   (const TextureCreateInfo& info);
 
 KB_API GizmoHandle          kb_gizmo_begin                        (const Float4x4 view, const Float4x4 proj);
 KB_API void                 kb_gizmo_end                          (GizmoHandle gizmo);

@@ -4,11 +4,13 @@
 extern "C" {
 #endif
 
-#include "types.h"
-#include "math.h"
-#include "vertex_layout.h"
-#include "rwops.h"
-#include "config.h"
+#include <kb/types.h>
+#include <kb/math.h>
+#include <kb/vertex_layout.h>
+#include <kb/rwops.h>
+#include <kb/config.h>
+
+KB_HANDLE(GeometryHandle);
 
 struct Primitive {
   uint32_t  first_vertex;
@@ -69,6 +71,8 @@ void kb_geometry_write(const Geometry* geometry, RWops* rwops);
 void kb_geometry_dump_info(const Geometry* geometry);
 
 void kb_geometry_deinit(Geometry* geometry);
+
+GeometryHandle kb_geometry_load(RWops* rwops);
 
 #ifdef __cplusplus
 }

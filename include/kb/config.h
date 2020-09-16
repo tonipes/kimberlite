@@ -43,6 +43,7 @@ extern "C" {
 #define KB_VGA_FONT_SMALL                       0
 
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
+#define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')
 
 #ifdef __cplusplus
 }
