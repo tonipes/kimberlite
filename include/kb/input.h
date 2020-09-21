@@ -1,13 +1,14 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <kb/config.h>
 #include <kb/math.h>
 #include <kb/handle.h>
 #include <kb/scancodes.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef struct {
   int param;

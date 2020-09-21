@@ -1,11 +1,12 @@
 #pragma once
 
+#include <kb/api.h>
+#include <kb/types.h>
+#include <kb/rwops.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <kb/types.h>
-#include <kb/rwops.h>
 
 KB_HANDLE(TextureHandle);
 
@@ -40,11 +41,11 @@ typedef struct {
   void*       pixel_data;
 } Texture;
 
-void kb_texture_read(Texture* dst, RWops* src);
+KB_API void kb_texture_read(Texture* dst, RWops* src);
 
-void kb_texture_write(const Texture* src, RWops* dst);
+KB_API void kb_texture_write(const Texture* src, RWops* dst);
 
-TextureHandle kb_texture_load(RWops* rwops);
+KB_API TextureHandle kb_texture_load(RWops* rwops);
 
 #ifdef __cplusplus
 }

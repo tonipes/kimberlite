@@ -1,10 +1,10 @@
 #pragma once
 
+#include <kb/core.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "core.h"
 
 typedef enum {
   KB_VARIANT_NULL     = 0, 

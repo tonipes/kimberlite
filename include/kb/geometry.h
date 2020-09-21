@@ -1,15 +1,14 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#include <kb/core.h>
 #include <kb/types.h>
 #include <kb/math.h>
 #include <kb/vertex_layout.h>
 #include <kb/rwops.h>
 #include <kb/config.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 KB_HANDLE(GeometryHandle);
 
@@ -67,13 +66,13 @@ struct Geometry {
   void*     vertex_data;
 };
 
-void kb_geometry_read(Geometry* geometry, RWops* rwops);
-void kb_geometry_write(const Geometry* geometry, RWops* rwops);
-void kb_geometry_dump_info(const Geometry* geometry);
+KB_API void kb_geometry_read(Geometry* geometry, RWops* rwops);
+KB_API void kb_geometry_write(const Geometry* geometry, RWops* rwops);
+KB_API void kb_geometry_dump_info(const Geometry* geometry);
 
-void kb_geometry_deinit(Geometry* geometry);
+KB_API void kb_geometry_deinit(Geometry* geometry);
 
-GeometryHandle kb_geometry_load(RWops* rwops);
+KB_API GeometryHandle kb_geometry_load(RWops* rwops);
 
 #ifdef __cplusplus
 }

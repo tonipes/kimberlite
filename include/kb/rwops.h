@@ -1,14 +1,17 @@
 #pragma once
 
+#include <kb/api.h>
+#include <kb/types.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "types.h"
-
-#define RWOPS_SEEK_SET 0
-#define RWOPS_SEEK_CUR 1
-#define RWOPS_SEEK_END 2
+typedef enum {
+  KB_RWOPS_SEEK_BEG = 0,
+  KB_RWOPS_SEEK_CUR = 1,
+  KB_RWOPS_SEEK_END = 2
+} FileWhence;
 
 typedef enum {
   KB_READ   = 0,
@@ -26,39 +29,52 @@ typedef struct RWops {
   void* impl;
 } RWops;
 
-RWops*  kb_rwops_open_file  (const char* path, FileMode mode);
-RWops*  kb_rwops_open_mem   (const void* dst, uint64_t size);
+KB_API RWops*  kb_rwops_open_file  (const char* path, FileMode mode);
+KB_API RWops*  kb_rwops_open_mem   (const void* dst, uint64_t size);
 
-inline uint64_t kb_rwops_seek(RWops* rwops, int64_t offset, int whence) {
+KB_API_INLINE uint64_t kb_rwops_seek(RWops* rwops, int64_t offset, FileWhence whence) {
   if (rwops == NULL) return 0;
   return rwops->seek(rwops, offset, whence);
 }
 
-inline uint64_t kb_rwops_read(RWops* rwops, void* dst, uint64_t size) {
+KB_API_INLINE uint64_t kb_rwops_read(RWops* rwops, void* dst, uint64_t size) {
   if (rwops == NULL) return 0;
   return rwops->read(rwops, dst, size);
 }
 
-inline uint64_t kb_rwops_write(RWops* rwops, const void* src, uint64_t size) {
+KB_API_INLINE uint64_t kb_rwops_write(RWops* rwops, const void* src, uint64_t size) {
   if (rwops == NULL) return 0;
   return rwops->write(rwops, src, size);
 }
 
-inline int kb_rwops_close(RWops* rwops) {
+KB_API_INLINE int kb_rwops_close(RWops* rwops) {
   if (rwops == NULL) return 0;
   return rwops->close(rwops);
 }
 
-inline int64_t kb_rwops_tell(RWops* rwops) {
+KB_API_INLINE int64_t kb_rwops_tell(RWops* rwops) {
   if (rwops == NULL) return -1;
   return rwops->tell(rwops);
 }
 
-inline int64_t kb_rwops_size(RWops* rwops) {
+KB_API_INLINE int64_t kb_rwops_size(RWops* rwops) {
   if (rwops == NULL) return -1;
   return rwops->size(rwops);
 }
 
 #ifdef __cplusplus
+}
+#endif
+
+// c++ implementation
+#ifdef __cplusplus
+template <typename T> 
+KB_API_INLINE uint64_t kb_write(RWops* rwops, const T& t) {
+  return kb_rwops_write(rwops, &t, sizeof(T));
+}
+
+template <typename T> 
+KB_API_INLINE uint64_t kb_read(RWops* rwops, T& t) {
+  return kb_rwops_read(rwops, &t, sizeof(T));
 }
 #endif

@@ -1,10 +1,11 @@
 #pragma once
 
+#include <kb/hash.h>
+#include <kb/types.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif  
-
-#include "core.h"
 
 typedef struct {
   uint32_t  capacity;
@@ -27,7 +28,6 @@ KB_API bool       kb_table_has          (Table* table, Hash key);
 KB_API uint32_t   kb_table_find_index   (Table* table, Hash key);
 
 KB_API bool       kb_table_remove       (Table* table, Hash key);
-
 
 #ifdef __cplusplus
 }

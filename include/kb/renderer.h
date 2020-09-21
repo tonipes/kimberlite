@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <kb/config.h>
 #include <kb/hash.h>
 #include <kb/resource.h>
@@ -14,6 +10,10 @@ extern "C" {
 #include <kb/geometry.h>
 #include <kb/texture.h>
 #include <kb/font.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 //#####################################################################################################################
 // Structs
@@ -62,10 +62,6 @@ typedef enum {
 //#####################################################################################################################
 // Structs
 //#####################################################################################################################
-
-// typedef struct {
-//   RWops* rwops;
-// } GeometryCreateInfo;
 
 typedef struct {
   VertexBufferHandle  vertex_buffer;

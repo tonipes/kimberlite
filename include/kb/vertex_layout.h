@@ -1,11 +1,12 @@
 #pragma once
 
+#include <kb/api.h>
+#include <kb/types.h>
+#include <kb/config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "types.h"
-#include "config.h"
 
 typedef enum {
   KB_ATTRIB_FLOAT = 0,
@@ -26,17 +27,17 @@ typedef struct {
   VertexAttribute attribs[KB_CONFIG_MAX_VERTEX_ATTRIBS];
 } VertexLayout;
 
-uint32_t kb_vertex_layout_attrib_size(AttributeType type, uint32_t num);
+KB_API uint32_t  kb_vertex_layout_attrib_size   (AttributeType type, uint32_t num);
 
-void      kb_vertex_layout_begin (VertexLayout* layout);
-uint32_t  kb_vertex_layout_add   (VertexLayout* layout, AttributeType type, uint32_t num);
-void      kb_vertex_layout_end   (VertexLayout* layout);
+KB_API void      kb_vertex_layout_begin         (VertexLayout* layout);
+KB_API uint32_t  kb_vertex_layout_add           (VertexLayout* layout, AttributeType type, uint32_t num);
+KB_API void      kb_vertex_layout_end           (VertexLayout* layout);
 
-uint32_t kb_vertex_layout_stride(const VertexLayout* layout);
-uint32_t kb_vertex_layout_offset(const VertexLayout* layout, uint32_t attrib);
-uint32_t kb_vertex_layout_size  (const VertexLayout* layout, uint32_t attrib);
+KB_API uint32_t  kb_vertex_layout_stride        (const VertexLayout* layout);
+KB_API uint32_t  kb_vertex_layout_offset        (const VertexLayout* layout, uint32_t attrib);
+KB_API uint32_t  kb_vertex_layout_size          (const VertexLayout* layout, uint32_t attrib);
 
-void kb_vertex_layout_dump(const VertexLayout* layout);
+KB_API void      kb_vertex_layout_dump          (const VertexLayout* layout);
 
 #ifdef __cplusplus
 }

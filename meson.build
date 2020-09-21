@@ -50,7 +50,6 @@ subdir('libraries')
 src_kimberlite = [
   'source/audio.cpp',
   'source/core.cpp',
-  'source/file.cpp',
   'source/graphics.cpp',
   'source/input.cpp',
 ]

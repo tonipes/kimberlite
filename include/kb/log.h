@@ -4,8 +4,6 @@
 extern "C" {
 #endif
 
-// #include "types.h"
-
 typedef enum {
   KBLogTrace  = 1,
   KBLogDebug  = 2,
@@ -15,9 +13,31 @@ typedef enum {
   KBLogFatal  = 6,
 } LogLevel;
 
-void log_line(LogLevel level, const char* msg);
-void set_log_level(LogLevel level);
+void kb_log_line      (LogLevel level, const char* msg);
+void kb_log_set_level (LogLevel level);
 
 #ifdef __cplusplus
 }
+#endif
+
+// c++ implementation
+#ifdef __cplusplus
+
+template <typename... T>
+inline auto kb_log_debug(const T&... args) -> void;
+
+template <typename... T>
+inline auto kb_log_info(const T&... args) -> void;
+
+template <typename... T>
+inline auto kb_log_warn(const T&... args) -> void;
+
+template <typename... T>
+inline auto kb_log_error(const T&... args) -> void;
+
+template <typename... T>
+inline auto kb_log_fatal(const T&... args) -> void;
+
+#include "inline/log.inl"
+
 #endif

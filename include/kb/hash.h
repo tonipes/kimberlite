@@ -1,11 +1,11 @@
 #pragma once
 
+#include <kb/types.h>
+#include <kb/memory.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "types.h"
-#include "memory.h"
 
 typedef uint32_t Hash;
 

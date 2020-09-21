@@ -1,6 +1,9 @@
 #pragma once
 
-#include "math.h"
+#include <kb/math.h>
+
+// c++ implementation
+#ifdef __cplusplus
 
 template <uint32_t SampleCount>
 struct DataSampler {
@@ -45,3 +48,5 @@ struct DataSampler {
   float max;
   float avg;
 };
+
+#endif

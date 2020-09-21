@@ -1,10 +1,10 @@
 #pragma once
 
+#include <kb/core.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <kb/core.h>
 
 KB_HANDLE(FontHandle);
 
@@ -34,13 +34,10 @@ typedef struct {
   void*     atlas_bitmap;
 } Font;
 
-void kb_font_read(Font* font, RWops* rwops);
-void kb_font_write(const Font* font, RWops* rwops);
-void kb_font_dump_info(const Font* font);
-
-// void kb_font_destroy(Font* font);
-
-FontHandle kb_font_load(RWops* rwops);
+KB_API void         kb_font_read      (Font* font, RWops* rwops);
+KB_API void         kb_font_write     (const Font* font, RWops* rwops);
+KB_API void         kb_font_dump_info (const Font* font);
+KB_API FontHandle   kb_font_load      (RWops* rwops);
 
 #ifdef __cplusplus
 }
