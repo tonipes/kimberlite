@@ -7,9 +7,9 @@
 extern "C" {
 #endif
 
-KB_API float   perlin_noise(Float2 v);
-KB_API float   simplex_noise(Float2 v);
-KB_API Float2  cellular_noise(Float2 v);
+KB_API float   kb_noise_perlin    (Float2 v);
+KB_API float   kb_noise_simplex   (Float2 v);
+KB_API Float2  kb_noise_cellular  (Float2 v);
 
 #ifdef __cplusplus
 }

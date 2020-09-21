@@ -45,10 +45,10 @@ typedef enum {
 } BindType;
 
 typedef enum {
-  KB_CULL_NONE    = 0,
-  KB_CULL_BACK    = 1,
-  KB_CULL_FRONT   = 2,
-  KB_CULL_BOTH    = 3,
+  KB_CULL_NONE  = 0,
+  KB_CULL_BACK  = 1,
+  KB_CULL_FRONT = 2,
+  KB_CULL_BOTH  = 3,
 } CullMode;
 
 typedef enum {

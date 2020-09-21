@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-bool kb_read_magic(RWops* rwops, uint32_t magic);
+bool kb_magic_read(RWops* rwops, uint32_t magic);
 
 #ifdef __cplusplus
 }

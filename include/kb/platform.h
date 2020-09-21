@@ -109,7 +109,7 @@
 #	undef  KB_PLATFORM_LINUX
 #	define KB_PLATFORM_LINUX 1
 #elif  defined(__ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__) \
-	|| defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__)
+  || defined(__ENVIRONMENT_TV_OS_VERSION_MIN_REQUIRED__)
 #	undef  KB_PLATFORM_IOS
 #	define KB_PLATFORM_IOS 1
 #elif defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__)
@@ -175,14 +175,14 @@
 
 #if KB_COMPILER_GCC
 #	define KB_COMPILER_NAME "GCC "       \
-		STRING(__GNUC__) "."       \
-		STRING(__GNUC_MINOR__) "." \
-		STRING(__GNUC_PATCHLEVEL__)
+    STRING(__GNUC__) "."       \
+    STRING(__GNUC_MINOR__) "." \
+    STRING(__GNUC_PATCHLEVEL__)
 #elif KB_COMPILER_CLANG
 #	define KB_COMPILER_NAME "Clang "      \
-		STRING(__clang_major__) "." \
-		STRING(__clang_minor__) "." \
-		STRING(__clang_patchlevel__)
+    STRING(__clang_major__) "." \
+    STRING(__clang_minor__) "." \
+    STRING(__clang_patchlevel__)
 #elif KB_COMPILER_MSVC
 #	if KB_COMPILER_MSVC >= 1920 // Visual Studio 2019
 #		define KB_COMPILER_NAME "MSVC 16.0"

@@ -5,12 +5,12 @@ extern "C" {
 #endif
 
 typedef enum {
-  KBLogTrace  = 1,
-  KBLogDebug  = 2,
-  KBLogInfo   = 3,
-  KBLogWarn   = 4,
-  KBLogError  = 5,
-  KBLogFatal  = 6,
+  KB_LOG_LEVEL_TRACE  = 1,
+  KB_LOG_LEVEL_DEBUG  = 2,
+  KB_LOG_LEVEL_INFO   = 3,
+  KB_LOG_LEVEL_WARN   = 4,
+  KB_LOG_LEVEL_ERROR  = 5,
+  KB_LOG_LEVEL_FATAL  = 6,
 } LogLevel;
 
 void kb_log_line      (LogLevel level, const char* msg);

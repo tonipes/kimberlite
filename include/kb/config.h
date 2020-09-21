@@ -38,7 +38,6 @@
 #define KB_CONFIG_TRANSIENT_BUFFER_SIZE         1024 * KB_CONFIG_MAX_DRAW_CALLS
 #define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
 #define KB_CONFIG_STATS_SAMPLE_COUNT            100
-#define KB_VGA_FONT_SMALL                       0
 
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 #define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')
