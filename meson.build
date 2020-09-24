@@ -28,7 +28,8 @@ kb_build_tools = true
 
 kb_cpp_args = [
   '-Wno-nullability-completeness',
-  '-Werror=return-type'
+  '-Werror=return-type',
+  '-Wno-missing-braces',
 ]
 
 dep_sdl2    = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])

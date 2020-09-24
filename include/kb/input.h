@@ -91,8 +91,8 @@ bool          kb_input_gamepad_button_up        (GamepadHandle gamepad, GamepadB
 bool          kb_input_gamepad_button_released  (GamepadHandle gamepad, GamepadButton button);
 bool          kb_input_gamepad_button_pressed   (GamepadHandle gamepad, GamepadButton button);
 
-Scalar        kb_input_gamepad_axis_value       (GamepadHandle gamepad, GamepadAxis axis);
-Scalar        kb_input_gamepad_axis_delta       (GamepadHandle gamepad, GamepadAxis axis);
+Real32        kb_input_gamepad_axis_value       (GamepadHandle gamepad, GamepadAxis axis);
+Real32        kb_input_gamepad_axis_delta       (GamepadHandle gamepad, GamepadAxis axis);
 
 Float2        kb_input_gamepad_joystick_value   (GamepadHandle gamepad, GamepadJoystick joystick);
 Float2        kb_input_gamepad_joystick_delta   (GamepadHandle gamepad, GamepadJoystick joystick);
