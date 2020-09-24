@@ -2,6 +2,7 @@
 
 #include <kb/types.h>
 #include <kb/math.h>
+#include <kb/handle.h>
 #include <kb/vertex_layout.h>
 #include <kb/rwops.h>
 #include <kb/config.h>

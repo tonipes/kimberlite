@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 #include <kb/types.h>
 #include <kb/api.h>
@@ -34,7 +34,22 @@ extern "C" {
 #define ELEMWISE_COMB_OP2_T3(func, comb) func(a.x, b.x) comb func(a.y, b.y) comb func(a.z, b.z)
 #define ELEMWISE_COMB_OP2_T4(func, comb) func(a.x, b.x) comb func(a.y, b.y) comb func(a.z, b.z) comb func(a.w, b.w)
 
+typedef float     Float32;
+typedef double    Float64;
+
+typedef int8_t    Int8;
+typedef int16_t   Int16;
+typedef int32_t   Int32;
+typedef int64_t   Int64;
+
+typedef uint8_t   Uint8;
+typedef uint16_t  Uint16;
+typedef uint32_t  Uint32;
+typedef uint64_t  Uint64;
+
 typedef float Scalar;
+// typedef float Real32;
+
 typedef int   Integer;
 
 #define PI         3.1415926535897932384626433832795f
@@ -55,20 +70,26 @@ typedef enum {
   AxisX, AxisY, AxisZ
 } Axis;
 
-typedef struct {
-  Integer x, y;
+typedef union {
+  struct { Integer x,     y;      };
+  struct { Integer width, height; };
+  struct { Integer u,     v;      };
 } Int2;
 
-typedef struct {
-  Integer x, y, z;
+typedef union {
+  struct { Integer x,     y,      z;      };
+  struct { Integer width, height, depth;  };
+  struct { Integer u,     v,      w;      };
 } Int3;
 
 typedef struct {
   Integer x, y, z, w;
 } Int4;
 
-typedef struct {
-  Scalar x, y;
+typedef union {
+  struct { Scalar x,     y;      };
+  struct { Scalar width, height; };
+  struct { Scalar u,     v;      };
 } Float2;
 
 typedef struct {
@@ -206,8 +227,8 @@ KB_API_INLINE Integer   max_integer       (Integer a, Integer b)                
 KB_API_INLINE Integer   min_integer       (Integer a, Integer b)                              { return b > a ? a : b;         }
 KB_API_INLINE Integer   log2_integer      (Integer a)                                         { return log2(a);               }
 
-KB_API_INLINE Scalar    nms_scalar        (Scalar a, Scalar b, Scalar c)                      { return c - a * b; }
-KB_API_INLINE Scalar    mad_scalar        (Scalar a, Scalar b, Scalar c)                      { return a * b + c; }
+KB_API_INLINE Scalar    nms_scalar        (Scalar a, Scalar b, Scalar c)                      { return c - a * b;             }
+KB_API_INLINE Scalar    mad_scalar        (Scalar a, Scalar b, Scalar c)                      { return a * b + c;             }
 KB_API_INLINE Scalar    neg_scalar        (Scalar a)                                          { return -a;                    }
 KB_API_INLINE Scalar    add_scalar        (Scalar a, Scalar b)                                { return a + b;                 }
 KB_API_INLINE Scalar    sub_scalar        (Scalar a, Scalar b)                                { return a - b;                 }
@@ -256,99 +277,99 @@ KB_API_INLINE Scalar    saturate_scalar   (Scalar a)                            
 KB_API_INLINE Scalar    wrap_scalar       (Scalar v, Scalar wrap)                             { const float tmp = mod_scalar(v, wrap); return tmp < 0.0f ? wrap + tmp : tmp; }
 KB_API_INLINE bool      equal_scalar      (Scalar a, Scalar b)                                { return abs_scalar(a - b) < FLT_EPSILON * max_scalar(max_scalar(1.0f, abs_scalar(a)), abs_scalar(b)); }
 
-KB_API_INLINE Int2      add_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(add_integer); }
-KB_API_INLINE Int2      sub_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(sub_integer); }
-KB_API_INLINE Int2      mul_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(mul_integer);}
-KB_API_INLINE Int2      min_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(min_integer);}
-KB_API_INLINE Int2      max_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(max_integer);}
-KB_API_INLINE Integer   dot_int2          (const Int2 a, const Int2 b)                        { return ELEMWISE_COMB_OP2_T2(mul_integer, +); }
-KB_API_INLINE bool      equal_int2        (const Int2 a, const Int2 b)                        { return ELEMWISE_COMB_OP2_T2(equal_integer, &&);}
-KB_API_INLINE Int2      scale_int2        (const Int2 a, const Integer f)                     { return (Int2) ELEMWISE_OP1_F_T2(mul_integer, f);}
-KB_API_INLINE Int2      neg_int2          (const Int2 a)                                      { return (Int2) ELEMWISE_OP1_T2(neg_integer); }
-KB_API_INLINE Int2      abs_int2          (const Int2 a)                                      { return (Int2) ELEMWISE_OP1_T2(abs_integer);}
-KB_API_INLINE Scalar    len_int2          (const Int2 a)                                      { return sqrt(dot_int2(a, a));}
+KB_API_INLINE Int2      add_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(add_integer);           }
+KB_API_INLINE Int2      sub_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(sub_integer);           }
+KB_API_INLINE Int2      mul_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(mul_integer);           }
+KB_API_INLINE Int2      min_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(min_integer);           }
+KB_API_INLINE Int2      max_int2          (const Int2 a, const Int2 b)                        { return (Int2) ELEMWISE_OP2_T2(max_integer);           }
+KB_API_INLINE Integer   dot_int2          (const Int2 a, const Int2 b)                        { return ELEMWISE_COMB_OP2_T2(mul_integer, +);          }
+KB_API_INLINE bool      equal_int2        (const Int2 a, const Int2 b)                        { return ELEMWISE_COMB_OP2_T2(equal_integer, &&);       }
+KB_API_INLINE Int2      scale_int2        (const Int2 a, const Integer f)                     { return (Int2) ELEMWISE_OP1_F_T2(mul_integer, f);      }
+KB_API_INLINE Int2      neg_int2          (const Int2 a)                                      { return (Int2) ELEMWISE_OP1_T2(neg_integer);           }
+KB_API_INLINE Int2      abs_int2          (const Int2 a)                                      { return (Int2) ELEMWISE_OP1_T2(abs_integer);           }
+KB_API_INLINE Scalar    len_int2          (const Int2 a)                                      { return sqrt(dot_int2(a, a));                          }
 
-KB_API_INLINE Int3      add_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(add_integer); }
-KB_API_INLINE Int3      sub_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(sub_integer); }
-KB_API_INLINE Int3      mul_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(mul_integer);}
-KB_API_INLINE Int3      min_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(min_integer);}
-KB_API_INLINE Int3      max_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(max_integer);}
-KB_API_INLINE Integer   dot_int3          (const Int3 a, const Int3 b)                        { return ELEMWISE_COMB_OP2_T3(mul_integer, +); }
-KB_API_INLINE bool      equal_int3        (const Int3 a, const Int3 b)                        { return ELEMWISE_COMB_OP2_T3(equal_integer, &&);}
-KB_API_INLINE Int3      scale_int3        (const Int3 a, const Integer f)                     { return (Int3) ELEMWISE_OP1_F_T3(mul_integer, f);}
-KB_API_INLINE Int3      neg_int3          (const Int3 a)                                      { return (Int3) ELEMWISE_OP1_T3(neg_integer); }
-KB_API_INLINE Int3      abs_int3          (const Int3 a)                                      { return (Int3) ELEMWISE_OP1_T3(abs_integer);}
-KB_API_INLINE Scalar    len_int3          (const Int3 a)                                      { return sqrt(dot_int3(a, a));}
+KB_API_INLINE Int3      add_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(add_integer);           }
+KB_API_INLINE Int3      sub_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(sub_integer);           }
+KB_API_INLINE Int3      mul_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(mul_integer);           }
+KB_API_INLINE Int3      min_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(min_integer);           }
+KB_API_INLINE Int3      max_int3          (const Int3 a, const Int3 b)                        { return (Int3) ELEMWISE_OP2_T3(max_integer);           }
+KB_API_INLINE Integer   dot_int3          (const Int3 a, const Int3 b)                        { return ELEMWISE_COMB_OP2_T3(mul_integer, +);          }
+KB_API_INLINE bool      equal_int3        (const Int3 a, const Int3 b)                        { return ELEMWISE_COMB_OP2_T3(equal_integer, &&);       }
+KB_API_INLINE Int3      scale_int3        (const Int3 a, const Integer f)                     { return (Int3) ELEMWISE_OP1_F_T3(mul_integer, f);      }
+KB_API_INLINE Int3      neg_int3          (const Int3 a)                                      { return (Int3) ELEMWISE_OP1_T3(neg_integer);           }
+KB_API_INLINE Int3      abs_int3          (const Int3 a)                                      { return (Int3) ELEMWISE_OP1_T3(abs_integer);           }
+KB_API_INLINE Scalar    len_int3          (const Int3 a)                                      { return sqrt(dot_int3(a, a));                          }
 
-KB_API_INLINE Int4      add_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(add_integer); }
-KB_API_INLINE Int4      sub_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(sub_integer); }
-KB_API_INLINE Int4      mul_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(mul_integer);}
-KB_API_INLINE Int4      min_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(min_integer);}
-KB_API_INLINE Int4      max_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(max_integer);}
-KB_API_INLINE Integer   dot_int4          (const Int4 a, const Int4 b)                        { return ELEMWISE_COMB_OP2_T4(mul_integer, +); }
-KB_API_INLINE bool      equal_int4        (const Int4 a, const Int4 b)                        { return ELEMWISE_COMB_OP2_T4(equal_integer, &&);}
-KB_API_INLINE Int4      scale_int4        (const Int4 a, const Integer f)                     { return (Int4) ELEMWISE_OP1_F_T4(mul_integer, f);}
-KB_API_INLINE Int4      neg_int4          (const Int4 a)                                      { return (Int4) ELEMWISE_OP1_T4(neg_integer); }
-KB_API_INLINE Int4      abs_int4          (const Int4 a)                                      { return (Int4) ELEMWISE_OP1_T4(abs_integer);}
-KB_API_INLINE Scalar    len_int4          (const Int4 a)                                      { return sqrt(dot_int4(a, a));}
+KB_API_INLINE Int4      add_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(add_integer);           }
+KB_API_INLINE Int4      sub_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(sub_integer);           }
+KB_API_INLINE Int4      mul_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(mul_integer);           }
+KB_API_INLINE Int4      min_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(min_integer);           }
+KB_API_INLINE Int4      max_int4          (const Int4 a, const Int4 b)                        { return (Int4) ELEMWISE_OP2_T4(max_integer);           }
+KB_API_INLINE Integer   dot_int4          (const Int4 a, const Int4 b)                        { return ELEMWISE_COMB_OP2_T4(mul_integer, +);          }
+KB_API_INLINE bool      equal_int4        (const Int4 a, const Int4 b)                        { return ELEMWISE_COMB_OP2_T4(equal_integer, &&);       }
+KB_API_INLINE Int4      scale_int4        (const Int4 a, const Integer f)                     { return (Int4) ELEMWISE_OP1_F_T4(mul_integer, f);      }
+KB_API_INLINE Int4      neg_int4          (const Int4 a)                                      { return (Int4) ELEMWISE_OP1_T4(neg_integer);           }
+KB_API_INLINE Int4      abs_int4          (const Int4 a)                                      { return (Int4) ELEMWISE_OP1_T4(abs_integer);           }
+KB_API_INLINE Scalar    len_int4          (const Int4 a)                                      { return sqrt(dot_int4(a, a));                          }
 
-KB_API_INLINE Float2    abs_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(abs_scalar); }
-KB_API_INLINE Float2    neg_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(neg_scalar); }
-KB_API_INLINE Float2    floor_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(floor_scalar); }
-KB_API_INLINE Float2    add_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(add_scalar); }
-KB_API_INLINE Float2    sub_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(sub_scalar); }
-KB_API_INLINE Float2    mul_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(mul_scalar); }
-KB_API_INLINE Float2    min_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(min_scalar); }
-KB_API_INLINE Float2    max_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(max_scalar); }
-KB_API_INLINE Float2    scale_float2      (const Float2 a, const Scalar f)                    { return (Float2) ELEMWISE_OP1_F_T2(mul_scalar, f); }
-KB_API_INLINE Float2    recip_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(recip_scalar); }
-KB_API_INLINE Float2    lerp_float2       (const Float2 a, const Float2 b, const Scalar v)    { return (Float2) ELEMWISE_OP2_F_T2(lerp_scalar, v); }
-KB_API_INLINE Float2    saturate_float2   (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(saturate_scalar); }
-KB_API_INLINE Float2    smoothstep_float2 (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(smoothstep_scalar); }
-KB_API_INLINE Float2    square_float2     (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(square_scalar); }
-KB_API_INLINE Float2    exp_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(exp_scalar); }
-KB_API_INLINE Float2    log_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(log_scalar); }
-KB_API_INLINE Float2    sign_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(sign_scalar); }
-KB_API_INLINE Float2    sqrt_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(sqrt_scalar); }
-KB_API_INLINE Float2    frac_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(frac_scalar); }
-KB_API_INLINE Float2    ceil_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(ceil_scalar); }
-KB_API_INLINE Float2    round_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(round_scalar); }
-KB_API_INLINE Float2    trunc_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(trunc_scalar); }
-KB_API_INLINE Scalar    dot_float2        (const Float2 a, const Float2 b)                    { return ELEMWISE_COMB_OP2_T2(mul_scalar, +); }
-KB_API_INLINE bool      equal_float2      (const Float2 a, const Float2 b)                    { return ELEMWISE_COMB_OP2_T2(equal_scalar, &&); }
-KB_API_INLINE Scalar    len_float2        (const Float2 a)                                    { return sqrt(dot_float2(a, a)); }
-KB_API_INLINE Float2    norm_float2       (const Float2 a)                                    { return scale_float2(a, recip_scalar(len_float2(a))); }
-KB_API_INLINE Float2    div_float2        (const Float2 a, const Float2 b)                    { return mul_float2(a, recip_float2(b)); }
-KB_API_INLINE Scalar    dist_float2       (const Float2 a, const Float2 b)                    { return len_float2(sub_float2(b, a)); }
+KB_API_INLINE Float2    abs_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(abs_scalar);          }
+KB_API_INLINE Float2    neg_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(neg_scalar);          }
+KB_API_INLINE Float2    floor_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(floor_scalar);        }
+KB_API_INLINE Float2    add_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(add_scalar);          }
+KB_API_INLINE Float2    sub_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(sub_scalar);          }
+KB_API_INLINE Float2    mul_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(mul_scalar);          }
+KB_API_INLINE Float2    min_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(min_scalar);          }
+KB_API_INLINE Float2    max_float2        (const Float2 a, const Float2 b)                    { return (Float2) ELEMWISE_OP2_T2(max_scalar);          }
+KB_API_INLINE Float2    scale_float2      (const Float2 a, const Scalar f)                    { return (Float2) ELEMWISE_OP1_F_T2(mul_scalar, f);     }
+KB_API_INLINE Float2    recip_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(recip_scalar);        }
+KB_API_INLINE Float2    lerp_float2       (const Float2 a, const Float2 b, const Scalar v)    { return (Float2) ELEMWISE_OP2_F_T2(lerp_scalar, v);    }
+KB_API_INLINE Float2    saturate_float2   (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(saturate_scalar);     }
+KB_API_INLINE Float2    smoothstep_float2 (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(smoothstep_scalar);   }
+KB_API_INLINE Float2    square_float2     (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(square_scalar);       }
+KB_API_INLINE Float2    exp_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(exp_scalar);          }
+KB_API_INLINE Float2    log_float2        (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(log_scalar);          }
+KB_API_INLINE Float2    sign_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(sign_scalar);         }
+KB_API_INLINE Float2    sqrt_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(sqrt_scalar);         }
+KB_API_INLINE Float2    frac_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(frac_scalar);         }
+KB_API_INLINE Float2    ceil_float2       (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(ceil_scalar);         }
+KB_API_INLINE Float2    round_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(round_scalar);        }
+KB_API_INLINE Float2    trunc_float2      (const Float2 a)                                    { return (Float2) ELEMWISE_OP1_T2(trunc_scalar);        }
+KB_API_INLINE Scalar    dot_float2        (const Float2 a, const Float2 b)                    { return ELEMWISE_COMB_OP2_T2(mul_scalar, +);           }
+KB_API_INLINE bool      equal_float2      (const Float2 a, const Float2 b)                    { return ELEMWISE_COMB_OP2_T2(equal_scalar, &&);        }
+KB_API_INLINE Scalar    len_float2        (const Float2 a)                                    { return sqrt(dot_float2(a, a));                        }
+KB_API_INLINE Float2    norm_float2       (const Float2 a)                                    { return scale_float2(a, recip_scalar(len_float2(a)));  }
+KB_API_INLINE Float2    div_float2        (const Float2 a, const Float2 b)                    { return mul_float2(a, recip_float2(b));                }
+KB_API_INLINE Scalar    dist_float2       (const Float2 a, const Float2 b)                    { return len_float2(sub_float2(b, a));                  }
 
-KB_API_INLINE Float3    abs_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(abs_scalar); }
-KB_API_INLINE Float3    neg_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(neg_scalar); }
-KB_API_INLINE Float3    floor_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(floor_scalar); }
-KB_API_INLINE Float3    add_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(add_scalar); }
-KB_API_INLINE Float3    sub_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(sub_scalar); }
-KB_API_INLINE Float3    mul_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(mul_scalar); }
-KB_API_INLINE Float3    min_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(min_scalar); }
-KB_API_INLINE Float3    max_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(max_scalar); }
-KB_API_INLINE Float3    scale_float3      (const Float3 a, const Scalar f)                    { return (Float3) ELEMWISE_OP1_F_T3(mul_scalar, f); }
-KB_API_INLINE Float3    recip_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(recip_scalar); }
-KB_API_INLINE Float3    lerp_float3       (const Float3 a, const Float3 b, const Scalar v)    { return (Float3) ELEMWISE_OP2_F_T3(lerp_scalar, v); }
-KB_API_INLINE Float3    saturate_float3   (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(saturate_scalar); }
-KB_API_INLINE Float3    smoothstep_float3 (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(smoothstep_scalar); }
-KB_API_INLINE Float3    square_float3     (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(square_scalar); }
-KB_API_INLINE Float3    exp_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(exp_scalar); }
-KB_API_INLINE Float3    log_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(log_scalar); }
-KB_API_INLINE Float3    sign_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(sign_scalar); }
-KB_API_INLINE Float3    sqrt_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(sqrt_scalar); }
-KB_API_INLINE Float3    frac_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(frac_scalar); }
-KB_API_INLINE Float3    ceil_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(ceil_scalar); }
-KB_API_INLINE Float3    round_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(round_scalar); }
-KB_API_INLINE Float3    trunc_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(trunc_scalar); }
-KB_API_INLINE Scalar    dot_float3        (const Float3 a, const Float3 b)                    { return ELEMWISE_COMB_OP2_T3(mul_scalar, +); }
-KB_API_INLINE bool      equal_float3      (const Float3 a, const Float3 b)                    { return ELEMWISE_COMB_OP2_T3(equal_scalar, &&); }
-KB_API_INLINE Scalar    len_float3        (const Float3 a)                                    { return sqrt(dot_float3(a, a)); }
-KB_API_INLINE Float3    norm_float3       (const Float3 a)                                    { return scale_float3(a, recip_scalar(len_float3(a))); }
-KB_API_INLINE Float3    div_float3        (const Float3 a, const Float3 b)                    { return mul_float3(a, recip_float3(b)); }
-KB_API_INLINE Scalar    dist_float3       (const Float3 a, const Float3 b)                    { return len_float3(sub_float3(b, a)); }
+KB_API_INLINE Float3    abs_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(abs_scalar);          }
+KB_API_INLINE Float3    neg_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(neg_scalar);          }
+KB_API_INLINE Float3    floor_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(floor_scalar);        }
+KB_API_INLINE Float3    add_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(add_scalar);          }
+KB_API_INLINE Float3    sub_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(sub_scalar);          }
+KB_API_INLINE Float3    mul_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(mul_scalar);          }
+KB_API_INLINE Float3    min_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(min_scalar);          }
+KB_API_INLINE Float3    max_float3        (const Float3 a, const Float3 b)                    { return (Float3) ELEMWISE_OP2_T3(max_scalar);          }
+KB_API_INLINE Float3    scale_float3      (const Float3 a, const Scalar f)                    { return (Float3) ELEMWISE_OP1_F_T3(mul_scalar, f);     }
+KB_API_INLINE Float3    recip_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(recip_scalar);        }
+KB_API_INLINE Float3    lerp_float3       (const Float3 a, const Float3 b, const Scalar v)    { return (Float3) ELEMWISE_OP2_F_T3(lerp_scalar, v);    }
+KB_API_INLINE Float3    saturate_float3   (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(saturate_scalar);     }
+KB_API_INLINE Float3    smoothstep_float3 (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(smoothstep_scalar);   }
+KB_API_INLINE Float3    square_float3     (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(square_scalar);       }
+KB_API_INLINE Float3    exp_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(exp_scalar);          }
+KB_API_INLINE Float3    log_float3        (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(log_scalar);          }
+KB_API_INLINE Float3    sign_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(sign_scalar);         }
+KB_API_INLINE Float3    sqrt_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(sqrt_scalar);         }
+KB_API_INLINE Float3    frac_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(frac_scalar);         }
+KB_API_INLINE Float3    ceil_float3       (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(ceil_scalar);         }
+KB_API_INLINE Float3    round_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(round_scalar);        }
+KB_API_INLINE Float3    trunc_float3      (const Float3 a)                                    { return (Float3) ELEMWISE_OP1_T3(trunc_scalar);        }
+KB_API_INLINE Scalar    dot_float3        (const Float3 a, const Float3 b)                    { return ELEMWISE_COMB_OP2_T3(mul_scalar, +);           }
+KB_API_INLINE bool      equal_float3      (const Float3 a, const Float3 b)                    { return ELEMWISE_COMB_OP2_T3(equal_scalar, &&);        }
+KB_API_INLINE Scalar    len_float3        (const Float3 a)                                    { return sqrt(dot_float3(a, a));                        }
+KB_API_INLINE Float3    norm_float3       (const Float3 a)                                    { return scale_float3(a, recip_scalar(len_float3(a)));  }
+KB_API_INLINE Float3    div_float3        (const Float3 a, const Float3 b)                    { return mul_float3(a, recip_float3(b));                }
+KB_API_INLINE Scalar    dist_float3       (const Float3 a, const Float3 b)                    { return len_float3(sub_float3(b, a));                  }
 
 KB_API_INLINE Float4    abs_float4        (const Float4 a)                                    { return (Float4) ELEMWISE_OP1_T4(abs_scalar); }
 KB_API_INLINE Float4    neg_float4        (const Float4 a)                                    { return (Float4) ELEMWISE_OP1_T4(neg_scalar); }

@@ -78,3 +78,4 @@ sourcetrail
 /bin
 
 .vscode
+*.sublime-*

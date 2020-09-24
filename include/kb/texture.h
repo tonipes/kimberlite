@@ -2,6 +2,7 @@
 
 #include <kb/api.h>
 #include <kb/types.h>
+#include <kb/handle.h>
 #include <kb/rwops.h>
 
 #ifdef __cplusplus

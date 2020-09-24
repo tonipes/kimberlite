@@ -134,7 +134,7 @@ typedef struct {
 } GraphicsInitInfo;
 
 typedef struct {
-
+  int param;
 } BeginInfo;
 
 typedef struct {

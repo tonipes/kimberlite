@@ -1,5 +1,6 @@
 #pragma once
 
+#include <kb/api.h>
 #include <kb/hash.h>
 #include <kb/types.h>
 

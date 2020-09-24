@@ -2,6 +2,7 @@
 
 #include <kb/config.h>
 #include <kb/math.h>
+#include <kb/api.h>
 
 #ifdef __cplusplus
 extern "C" {
