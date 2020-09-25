@@ -29,12 +29,6 @@ typedef struct {
 
 typedef struct {
   FontBaseInfo base_info;
-
-  // int       ascent;
-  // int       descent;
-  // int       line_gap;
-  // float     scale_factor;
-  // float     pixel_height;
   uint32_t  char_count;
   FontChar* chars;
 

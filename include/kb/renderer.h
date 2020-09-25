@@ -206,6 +206,11 @@ KB_API VertexBufferHandle   kb_mesh_get_vertex_buffer             (MeshHandle ha
 KB_API IndexBufferHandle    kb_mesh_get_index_buffer              (MeshHandle handle);
 
 KB_API TextureHandle        kb_font_get_atlas                     (FontHandle handle);
+KB_API Real32               kb_font_get_line_height               (FontHandle handle);
+KB_API Real32               kb_font_get_string_height             (FontHandle handle, const char* str);
+KB_API Real32               kb_font_get_string_width              (FontHandle handle, const char* str);
+KB_API Real32               kb_font_get_string_line_width         (FontHandle handle, const char* str);
+
 KB_API void                 kb_overlay_print                      (FontHandle font, const char* str, Float2 pos, float font_height, int line);
 
 KB_API void                 kb_text_overlay_print                 (uint32_t x, uint32_t y, const char* text);
