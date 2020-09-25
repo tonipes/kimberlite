@@ -18,6 +18,8 @@ KB_API void           kb_surface_resize                     (Int2 size);
 KB_API void           kb_surface_deinit                     ();
 KB_API Int2           kb_surface_get_size                   ();
 KB_API float          kb_surface_get_aspect                 ();
+KB_API float          kb_surface_get_scaling                ();
+
 KB_API void*          kb_surface_get_nwh                    ();
 KB_API bool           kb_surface_should_close               ();
 

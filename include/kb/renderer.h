@@ -107,7 +107,9 @@ typedef struct {
 } MeshCreateInfo;
 
 typedef struct {
+  FontBaseInfo  base_info;
   TextureHandle atlas;
+  
   uint32_t      atlas_height;
   uint32_t      atlas_width;
   uint32_t      char_count;
@@ -154,6 +156,7 @@ KB_RESOURCE_HASHED_FUNC_DECLS (mesh           , MeshHandle          , MeshCreate
 KB_RESOURCE_HASHED_FUNC_DECLS (program        , ProgramHandle       , ProgramCreateInfo       )
 KB_RESOURCE_HASHED_FUNC_DECLS (texture        , TextureHandle       , TextureCreateInfo       )
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
+KB_RESOURCE_HASHED_FUNC_DECLS (font           , FontHandle          , FontCreateInfo          )
 
 KB_RESOURCE_CORE_FUNC_DECLS   (geometry       , GeometryHandle      , GeometryCreateInfo      )
 KB_RESOURCE_CORE_FUNC_DECLS   (font           , FontHandle          , FontCreateInfo          )
@@ -203,7 +206,7 @@ KB_API VertexBufferHandle   kb_mesh_get_vertex_buffer             (MeshHandle ha
 KB_API IndexBufferHandle    kb_mesh_get_index_buffer              (MeshHandle handle);
 
 KB_API TextureHandle        kb_font_get_atlas                     (FontHandle handle);
-KB_API void                 kb_text_render_test                   (FontHandle font, const char* str);
+KB_API void                 kb_overlay_print                      (FontHandle font, const char* str, Float2 pos, float font_height, int line);
 
 KB_API void                 kb_text_overlay_print                 (uint32_t x, uint32_t y, const char* text);
 KB_API void                 kb_text_overlay_printf                (uint32_t x, uint32_t y, const char* fmt, ...);

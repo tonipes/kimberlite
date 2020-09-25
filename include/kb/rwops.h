@@ -32,8 +32,8 @@ typedef struct RWops {
 KB_API RWops*  kb_rwops_open_file  (const char* path, FileMode mode);
 KB_API RWops*  kb_rwops_open_mem   (const void* dst, uint64_t size);
 
-KB_API_INLINE uint64_t kb_rwops_seek(RWops* rwops, int64_t offset, FileWhence whence) {
-  if (rwops == NULL) return 0;
+KB_API_INLINE int64_t kb_rwops_seek(RWops* rwops, int64_t offset, FileWhence whence) {
+  if (rwops == NULL) return -1;
   return rwops->seek(rwops, offset, whence);
 }
 
@@ -48,7 +48,7 @@ KB_API_INLINE uint64_t kb_rwops_write(RWops* rwops, const void* src, uint64_t si
 }
 
 KB_API_INLINE int kb_rwops_close(RWops* rwops) {
-  if (rwops == NULL) return 0;
+  if (rwops == NULL) return -1;
   return rwops->close(rwops);
 }
 
