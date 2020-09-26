@@ -199,7 +199,7 @@ KB_API void                 kb_command_buffer_set_mesh            (CommandBuffer
 KB_API void                 kb_command_buffer_bind_program        (CommandBufferHandle command_buffer, ProgramHandle handle);
 KB_API void                 kb_command_buffer_set_viewport        (CommandBufferHandle command_buffer, Int2 size, Float2 depth_range);
 KB_API void                 kb_command_buffer_set_scissors        (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
-KB_API void                 kb_command_buffer_set_push_constants  (CommandBufferHandle command_buffer, void* data, size_t size);
+// KB_API void                 kb_command_buffer_set_push_constants  (CommandBufferHandle command_buffer, void* data, size_t size);
 KB_API void                 kb_command_buffer_submit_mesh         (CommandBufferHandle command_buffer, MeshHandle mesh);
 KB_API void                 kb_command_buffer_submit              (CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
 
