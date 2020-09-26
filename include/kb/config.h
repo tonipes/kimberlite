@@ -4,30 +4,29 @@
 
 // NOTE: Most of these are completely arbitrary
 #define KB_CONFIG_MAX_GAMEPADS                  8
-#define KB_CONFIG_MAX_INDEX_BUFFERS             1024
-#define KB_CONFIG_MAX_MATERIALS                 1024
-#define KB_CONFIG_MAX_MESHES                    1024
-#define KB_CONFIG_MAX_PROGRAMS                  1024
-#define KB_CONFIG_MAX_COMMAND_BUFFERS           1024
-#define KB_CONFIG_MAX_SURFACES                  1
-#define KB_CONFIG_MAX_TEXTURES                  1024
-#define KB_CONFIG_MAX_VERTEX_BUFFERS            1024
-#define KB_CONFIG_MAX_MUSICS                    1024
-#define KB_CONFIG_MAX_SOUNDS                    1024
+#define KB_CONFIG_MAX_INDEX_BUFFERS             512
+#define KB_CONFIG_MAX_MATERIALS                 512
+#define KB_CONFIG_MAX_MESHES                    512
+#define KB_CONFIG_MAX_PROGRAMS                  512
+#define KB_CONFIG_MAX_COMMAND_BUFFERS           512
+#define KB_CONFIG_MAX_TEXTURES                  512
+#define KB_CONFIG_MAX_VERTEX_BUFFERS            512
+#define KB_CONFIG_MAX_MUSICS                    512
+#define KB_CONFIG_MAX_SOUNDS                    512
 #define KB_CONFIG_FILE_ROOT_SIZE                512
 #define KB_CONFIG_MAX_NAME_SIZE                 512
 #define KB_CONFIG_MAX_GIZMOS                    1024
 #define KB_CONFIG_GIZMO_CACHE_SIZE              1024
 #define KB_CONFIG_GIZMO_STACK_SIZE              32
-#define KB_CONFIG_MAX_UNIFORM_BUFFERS           1024
-#define KB_CONFIG_MAX_FONTS                     128
-#define KB_CONFIG_MAX_TEXTURE_SAMPLERS          1024
+#define KB_CONFIG_MAX_FONTS                     512
+#define KB_CONFIG_MAX_TEXTURE_SAMPLERS          512
 #define KB_CONFIG_MAX_SHADER_STRING_LEN         512
-#define KB_CONFIG_MAX_DRAW_CALLS                1024
+#define KB_CONFIG_MAX_DRAW_CALLS                512
 #define KB_CONFIG_MAX_FRAMES_IN_FLIGHT          4
 #define KB_CONFIG_MAX_RENDER_THREADS            4
 #define KB_CONFIG_MAX_VERTEX_ATTRIBS            32
 #define KB_CONFIG_MAX_VERTEX_BINDINGS           32
+#define KB_CONFIG_MAX_DESCRIPTOR_SETS_PER_FRAME 64
 #define KB_CONFIG_MAX_DESCRIPTOR_SETS           8
 #define KB_CONFIG_MAX_DESCRIPTOR_BINDINGS       8
 #define KB_CONFIG_MAX_PUSH_CONSTANT_RANGES      8
@@ -38,6 +37,7 @@
 #define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
 #define KB_CONFIG_STATS_SAMPLE_COUNT            100
 #define KB_CONFIG_DEFAULT_DPI                   100
+#define KB_CONFIG_MAX_SURFACES                  1
 
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 #define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')

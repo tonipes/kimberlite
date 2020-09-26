@@ -107,6 +107,8 @@ subdir('libraries')
 #   include_directories : incl_kimberlite,
 # )
 
+build_assets = true
+
 subdir('source')
 subdir('assets')
 subdir('examples')

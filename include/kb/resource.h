@@ -6,6 +6,7 @@ extern "C" {
 
 #define KB_RESOURCE_HASHED_FUNC_DECLS(name, handle_t, create_info_t)                              \
   void      kb_##name##_set_name(handle_t handle, const char* name);                              \
+  void      kb_##name##_set_hash(handle_t handle, Hash hash);                                     \
   void      kb_##name##_remove_name(handle_t handle);                                             \
   bool      kb_##name##_has(const char* name);                                                    \
   handle_t  kb_##name##_get(const char* name);                                                    \
@@ -80,8 +81,11 @@ struct ResourceData {
   }   
 
 #define KB_RESOURCE_DATA_HASHED_DEF(t_name, handle_t)                                             \
+  void kb_##t_name##_set_hash(handle_t handle, Hash _hash) {                                       \
+    kb_table_insert(&(t_name##_data.table), _hash, handle.idx);                                    \
+  }                                                                                               \
   void kb_##t_name##_set_name(handle_t handle, const char* name) {                                \
-    kb_table_insert(&(t_name##_data.table), kb_hash_string(name), handle.idx);                    \
+    kb_##t_name##_set_hash(handle, kb_hash_string(name));                                         \
   }                                                                                               \
   bool kb_##t_name##_has(const char* name) {                                                      \
     return kb_table_get(&(t_name##_data.table), kb_hash_string(name)) != InvalidHandle;           \

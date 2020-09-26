@@ -78,6 +78,20 @@ typedef struct {
   int param;
 } CommandBufferCreateInfo;
 
+// typedef struct  {
+//   const char*   name;
+//   TextureHandle texture;
+// } TextureBinding;
+
+// typedef struct {
+//   const char* name;
+//   TextureHandle texture;
+// } UniformBinding;
+
+// typedef struct {
+
+// } UniformSetCreateInfo;
+
 typedef struct {
   RWops*      rwops;
   TextureInfo texture;
@@ -133,6 +147,7 @@ typedef struct {
 typedef struct {
   uint32_t  msaa;
   bool      vsync;
+  Int2      resolution;
 } GraphicsInitInfo;
 
 typedef struct {
@@ -157,15 +172,16 @@ KB_RESOURCE_HASHED_FUNC_DECLS (program        , ProgramHandle       , ProgramCre
 KB_RESOURCE_HASHED_FUNC_DECLS (texture        , TextureHandle       , TextureCreateInfo       )
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
 KB_RESOURCE_HASHED_FUNC_DECLS (font           , FontHandle          , FontCreateInfo          )
+KB_RESOURCE_HASHED_FUNC_DECLS (geometry       , GeometryHandle      , GeometryCreateInfo      )
 
 KB_RESOURCE_CORE_FUNC_DECLS   (geometry       , GeometryHandle      , GeometryCreateInfo      )
 KB_RESOURCE_CORE_FUNC_DECLS   (font           , FontHandle          , FontCreateInfo          )
-KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , CommandBufferHandle , CommandBufferCreateInfo )
 KB_RESOURCE_CORE_FUNC_DECLS   (index_buffer   , IndexBufferHandle   , IndexBufferCreateInfo   )
 KB_RESOURCE_CORE_FUNC_DECLS   (mesh           , MeshHandle          , MeshCreateInfo          )
 KB_RESOURCE_CORE_FUNC_DECLS   (program        , ProgramHandle       , ProgramCreateInfo       )
 KB_RESOURCE_CORE_FUNC_DECLS   (texture        , TextureHandle       , TextureCreateInfo       )
 KB_RESOURCE_CORE_FUNC_DECLS   (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
+KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , CommandBufferHandle , CommandBufferCreateInfo )
 
 //#####################################################################################################################
 // API functions
@@ -190,7 +206,7 @@ KB_API void                 kb_command_buffer_submit              (CommandBuffer
 KB_API void                 kb_command_buffer_push_uniform        (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
 KB_API void                 kb_command_buffer_push_texture        (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);
 
-KB_API void                 kb_command_buffer_bind_data           (CommandBufferHandle command_buffer, const BindSlot* slot, const void* data);
+KB_API void                 kb_command_buffer_bind_data           (CommandBufferHandle command_buffer, const BindSlot* slot, const void* data, uint32_t size);
 KB_API void                 kb_command_buffer_bind_texture        (CommandBufferHandle command_buffer, const BindSlot* slot, TextureHandle texture);
 
 KB_API void                 kb_graphics_init                      (const GraphicsInitInfo info);

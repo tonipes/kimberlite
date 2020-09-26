@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-typedef uint16_t Handle;
+typedef uint32_t Handle;
 
 static const Handle InvalidHandle = UINT16_MAX;
 
@@ -14,7 +14,7 @@ static inline bool is_valid_handle(const Handle handle) { return handle != Inval
 
 #define KB_HANDLE(name)                                                                           \
 	typedef struct {                                                                                \
-    uint16_t idx;                                                                                 \
+    uint32_t idx;                                                                                 \
   } name;                                                                                         \
   static inline bool is_valid##name(const name handle) { return handle.idx != InvalidHandle; }    \
   static const name Invalid##name = { InvalidHandle };                                            \

@@ -18,11 +18,17 @@ KB_HANDLE(SoundInstanceHandle);
 //#####################################################################################################################
 
 typedef struct {
+  Float2 pitch_range;
+  Float2 volume_range;
+} SoundPlaybackInfo;
+
+typedef struct {
   float param;
 } AudioInitInfo;
 
 typedef struct {
   RWops* rwops;
+  SoundPlaybackInfo playback;
 } SoundCreateInfo;
 
 //#####################################################################################################################
@@ -45,6 +51,7 @@ KB_API void                kb_sound_set_volume          (SoundInstanceHandle ins
 KB_API void                kb_sound_set_looping         (SoundInstanceHandle instance, bool looping);
 KB_API void                kb_sound_set_speed           (SoundInstanceHandle instance, float speed);
 KB_API void                kb_sound_set_pan             (SoundInstanceHandle instance, float pan);
+
 KB_API void                kb_sound_wait                (SoundInstanceHandle instance);
 
 

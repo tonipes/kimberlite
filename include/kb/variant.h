@@ -36,6 +36,10 @@ KB_API float          kb_variant_get_num        (const Variant* variant);
 KB_API bool           kb_variant_get_bool       (const Variant* variant);
 KB_API const char*    kb_variant_get_str        (const Variant* variant);
 
+KB_API float          kb_variant_get_num_default  (const Variant* variant, float default_value);
+KB_API bool           kb_variant_get_bool_default (const Variant* variant, bool default_value);
+KB_API const char*    kb_variant_get_str_default  (const Variant* variant, const char* default_value);
+
 KB_API bool           kb_variant_is_num         (const Variant* variant);
 KB_API bool           kb_variant_is_bool        (const Variant* variant);
 KB_API bool           kb_variant_is_str         (const Variant* variant);
@@ -48,6 +52,7 @@ KB_API Variant*       kb_variant_obj_at         (Variant* variant, const char* k
 KB_API Variant*       kb_variant_obj_put        (Variant* variant, const char* key);
 KB_API Variant*       kb_variant_obj_at_hash    (Variant* variant, Hash key);
 KB_API Variant*       kb_variant_obj_put_hash   (Variant* variant, Hash key);
+KB_API Hash           kb_variant_obj_key_at     (Variant* variant, uint32_t index);
 
 KB_API uint32_t       kb_variant_arr_capacity   (const Variant* variant);
 KB_API uint32_t       kb_variant_arr_count      (const Variant* variant);
