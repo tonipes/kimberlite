@@ -13,11 +13,8 @@
 #define KB_CONFIG_MAX_VERTEX_BUFFERS            512
 #define KB_CONFIG_MAX_MUSICS                    512
 #define KB_CONFIG_MAX_SOUNDS                    512
-#define KB_CONFIG_FILE_ROOT_SIZE                512
 #define KB_CONFIG_MAX_NAME_SIZE                 512
 #define KB_CONFIG_MAX_GIZMOS                    1024
-#define KB_CONFIG_GIZMO_CACHE_SIZE              1024
-#define KB_CONFIG_GIZMO_STACK_SIZE              32
 #define KB_CONFIG_MAX_FONTS                     512
 #define KB_CONFIG_MAX_TEXTURE_SAMPLERS          512
 #define KB_CONFIG_MAX_SHADER_STRING_LEN         512
@@ -33,11 +30,14 @@
 #define KB_CONFIG_MAX_PUSH_CONSTANT_SIZE        1024
 #define KB_CONFIG_MAX_DESCRIPTOR_WRITES         16
 #define KB_CONFIG_MAX_GEOMETRIES                128
+#define KB_CONFIG_MAX_BINDING_BLOCK_MEMBERS     128
 #define KB_CONFIG_TRANSIENT_BUFFER_SIZE         1024 * KB_CONFIG_MAX_DRAW_CALLS
 #define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
 #define KB_CONFIG_STATS_SAMPLE_COUNT            100
 #define KB_CONFIG_DEFAULT_DPI                   100
-#define KB_CONFIG_MAX_SURFACES                  1
+#define KB_CONFIG_GIZMO_CACHE_SIZE              1024
+#define KB_CONFIG_GIZMO_STACK_SIZE              32
+#define KB_CONFIG_FILE_ROOT_SIZE                512
 
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 #define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')
