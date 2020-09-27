@@ -4,7 +4,7 @@ project(
   version: 'alpha',
   license : 'MIT',
   default_options : [
-    'c_std=c11',
+    'c_std=c99',
     'cpp_std=c++14',
     'cpp_rtti=false',
     # 'cpp_eh=none',    # Disable exceptions
