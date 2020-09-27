@@ -228,7 +228,7 @@ KB_API Real32               kb_font_get_string_width              (FontHandle ha
 KB_API Real32               kb_font_get_string_line_width         (FontHandle handle, const char* str);
 
 KB_API void                 kb_overlay_print                      (FontHandle font, const char* str, Float2 pos, float font_height, int line);
-
+KB_API void                 kb_text_overlay_render                ();
 KB_API void                 kb_text_overlay_print                 (uint32_t x, uint32_t y, const char* text);
 KB_API void                 kb_text_overlay_printf                (uint32_t x, uint32_t y, const char* fmt, ...);
 

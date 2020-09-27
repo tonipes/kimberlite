@@ -16,4 +16,4 @@
 #include "thread.h"
 #include "rwops.h"
 
-#define KB_COUNTOF(arr) sizeof(arr) / sizeof(arr[0])
+#define KB_COUNTOF(arr) (sizeof(arr) / sizeof(arr[0]))

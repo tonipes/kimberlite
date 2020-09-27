@@ -15,6 +15,8 @@ typedef struct {
   ReallocFunc realloc;
 } Allocator;
 
+extern uint64_t alloc_count;
+
 KB_API void* kb_alloc    (Allocator* alloc, size_t size, size_t align);
 KB_API void* kb_realloc  (Allocator* alloc, void* ptr, size_t size, size_t align);
 KB_API void  kb_free     (Allocator* alloc, void* ptr, size_t align);
