@@ -1,6 +1,6 @@
 project(
   'kimberlite',
-  ['cpp', 'c', 'swift'],
+  ['cpp', 'c'],
   version: 'alpha',
   license : 'MIT',
   default_options : [
