@@ -4,19 +4,21 @@
 extern "C" {
 #endif
 
-#define KB_RESOURCE_HASHED_FUNC_DECLS(name, handle_t, create_info_t)                              \
-  void      kb_##name##_set_name(handle_t handle, const char* name);                              \
-  void      kb_##name##_set_hash(handle_t handle, Hash hash);                                     \
-  void      kb_##name##_remove_name(handle_t handle);                                             \
-  bool      kb_##name##_has(const char* name);                                                    \
-  handle_t  kb_##name##_get(const char* name);                                                    \
-  handle_t  kb_##name##_get_or_allocate(const char* name);                                        \
+#define KB_RESOURCE_HASHED_FUNC_DECLS(t_name, handle_t, create_info_t)                              \
+  void      kb_##t_name##_set_name(handle_t handle, const char* name);                              \
+  void      kb_##t_name##_set_hash(handle_t handle, Hash hash);                                     \
+  void      kb_##t_name##_remove_name(handle_t handle);                                             \
+  bool      kb_##t_name##_has(const char* name);                                                    \
+  handle_t  kb_##t_name##_get(const char* name);                                                    \
+  bool      kb_##t_name##_has_hash(Hash hash);                                                      \
+  handle_t  kb_##t_name##_get_hash(Hash hash);                                                      \
+  handle_t  kb_##t_name##_get_or_alloc(Hash hash);                                                  \
   
-#define KB_RESOURCE_CORE_FUNC_DECLS(name, handle_t, create_info_t)                                \
-  handle_t kb_##name##_allocate();                                                                \
-  handle_t kb_##name##_create(const create_info_t info);                                          \
-  void     kb_##name##_destroy(handle_t handle);                                                  \
-  uint32_t kb_##name##_count();                                                                   \
+#define KB_RESOURCE_CORE_FUNC_DECLS(t_name, handle_t, create_info_t)                                \
+  handle_t kb_##t_name##_allocate();                                                                \
+  handle_t kb_##t_name##_create(const create_info_t info);                                          \
+  void     kb_##t_name##_destroy(handle_t handle);                                                  \
+  uint32_t kb_##t_name##_count();                                                                   \
 
 #ifdef __cplusplus
 }
@@ -99,19 +101,25 @@ struct ResourceData {
   void kb_##t_name##_set_hash(handle_t handle, Hash _hash) {                                      \
     kb_table_insert(&(t_name##_data.table), _hash, handle.idx);                                   \
   }                                                                                               \
+  bool kb_##t_name##_has_hash(Hash _hash) {                                                       \
+    return kb_table_get(&(t_name##_data.table), _hash) != InvalidHandle;                          \
+  }                                                                                               \
+  handle_t kb_##t_name##_get_hash(Hash _hash) {                                                   \
+    return { (uint16_t) kb_table_get(&(t_name##_data.table), _hash) };                            \
+  }                                                                                               \
   void kb_##t_name##_set_name(handle_t handle, const char* name) {                                \
     kb_##t_name##_set_hash(handle, kb_hash_string(name));                                         \
   }                                                                                               \
   bool kb_##t_name##_has(const char* name) {                                                      \
-    return kb_table_get(&(t_name##_data.table), kb_hash_string(name)) != InvalidHandle;           \
+    return kb_##t_name##_has_hash(kb_hash_string(name));                                          \
   }                                                                                               \
   handle_t kb_##t_name##_get(const char* name) {                                                  \
-    return { (uint16_t) kb_table_get(&(t_name##_data.table), kb_hash_string(name)) };             \
+    return kb_##t_name##_get_hash(kb_hash_string(name));                                          \
   }                                                                                               \
-  handle_t kb_##t_name##_get_or_allocate(const char* name) {                                      \
-    if (kb_##t_name##_has(name)) return kb_##t_name##_get(name);                                  \
+  handle_t kb_##t_name##_get_or_alloc(Hash hash) {                                                \
+    if (kb_##t_name##_has_hash(hash)) return kb_##t_name##_get_hash(hash);                        \
     handle_t handle = kb_##t_name##_allocate();                                                   \
-    kb_##t_name##_set_name(handle, name);                                                         \
+    kb_##t_name##_set_hash(handle, hash);                                                         \
     return handle;                                                                                \
   }                                                                                               \
 

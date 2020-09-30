@@ -108,7 +108,7 @@ subdir('libraries')
 # )
 
 # build_assets = true
-build_assets = false
+build_assets = true
 
 subdir('source')
 subdir('assets')

@@ -78,19 +78,23 @@ typedef struct {
   int param;
 } CommandBufferCreateInfo;
 
-// typedef struct  {
-//   const char*   name;
-//   TextureHandle texture;
-// } TextureBinding;
+typedef struct  {
+  Hash    hash;
+  TextureHandle texture;
+} SamplerBinding;
 
-// typedef struct {
-//   const char* name;
-//   TextureHandle texture;
-// } UniformBinding;
+typedef struct {
+  Hash    hash;
+  Float4  data;
+} UniformBinding;
 
-// typedef struct {
+typedef struct {
+  uint32_t        uniform_count;
+  UniformBinding* uniforms;
 
-// } UniformSetCreateInfo;
+  uint32_t        sampler_count;
+  SamplerBinding* samplers;
+} UniformSetCreateInfo;
 
 typedef struct {
   RWops*      rwops;
@@ -173,6 +177,7 @@ KB_RESOURCE_HASHED_FUNC_DECLS (texture        , TextureHandle       , TextureCre
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
 KB_RESOURCE_HASHED_FUNC_DECLS (font           , FontHandle          , FontCreateInfo          )
 KB_RESOURCE_HASHED_FUNC_DECLS (geometry       , GeometryHandle      , GeometryCreateInfo      )
+KB_RESOURCE_HASHED_FUNC_DECLS (uniform_set    , UniformSetHandle    , UniformSetCreateInfo    )
 
 KB_RESOURCE_CORE_FUNC_DECLS   (geometry       , GeometryHandle      , GeometryCreateInfo      )
 KB_RESOURCE_CORE_FUNC_DECLS   (font           , FontHandle          , FontCreateInfo          )
@@ -182,6 +187,7 @@ KB_RESOURCE_CORE_FUNC_DECLS   (program        , ProgramHandle       , ProgramCre
 KB_RESOURCE_CORE_FUNC_DECLS   (texture        , TextureHandle       , TextureCreateInfo       )
 KB_RESOURCE_CORE_FUNC_DECLS   (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
 KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , CommandBufferHandle , CommandBufferCreateInfo )
+KB_RESOURCE_CORE_FUNC_DECLS   (uniform_set    , UniformSetHandle    , UniformSetCreateInfo    )
 
 //#####################################################################################################################
 // API functions
@@ -199,7 +205,6 @@ KB_API void                 kb_command_buffer_set_mesh            (CommandBuffer
 KB_API void                 kb_command_buffer_bind_program        (CommandBufferHandle command_buffer, ProgramHandle handle);
 KB_API void                 kb_command_buffer_set_viewport        (CommandBufferHandle command_buffer, Int2 size, Float2 depth_range);
 KB_API void                 kb_command_buffer_set_scissors        (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
-// KB_API void                 kb_command_buffer_set_push_constants  (CommandBufferHandle command_buffer, void* data, size_t size);
 KB_API void                 kb_command_buffer_submit_mesh         (CommandBufferHandle command_buffer, MeshHandle mesh);
 KB_API void                 kb_command_buffer_submit              (CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
 
@@ -232,7 +237,11 @@ KB_API void                 kb_text_overlay_render                ();
 KB_API void                 kb_text_overlay_print                 (uint32_t x, uint32_t y, const char* text);
 KB_API void                 kb_text_overlay_printf                (uint32_t x, uint32_t y, const char* fmt, ...);
 
-KB_API GizmoHandle          kb_gizmo_begin                        (const Float4x4 view, const Float4x4 proj);
+// KB_API TextRenderHandle     kb_text_render_begin                  (CommandBufferHandle command_buffer);
+// KB_API void                 kb_text_render_printf                 (TextRenderHandle text_render);
+// KB_API void                 kb_text_render_end                    (TextRenderHandle text_render);
+
+KB_API GizmoHandle          kb_gizmo_begin                        (CommandBufferHandle command_buffer, const Float4x4 view, const Float4x4 proj);
 KB_API void                 kb_gizmo_end                          (GizmoHandle gizmo);
 KB_API void                 kb_gizmo_state_push                   (GizmoHandle gizmo);
 KB_API void                 kb_gizmo_state_pop                    (GizmoHandle gizmo);
@@ -251,11 +260,11 @@ KB_API void                 kb_gizmo_draw_cylinder                (GizmoHandle g
 KB_API void                 kb_gizmo_draw_axis                    (GizmoHandle gizmo, const Float3 pos, float length);
 KB_API void                 kb_gizmo_draw_grid                    (GizmoHandle gizmo, Axis axis, const Float3 center, uint32_t size, float step);
 KB_API void                 kb_gizmo_draw_aabb                    (GizmoHandle gizmo, const Aabb aabb);
-KB_API void                 kb_gizmo_shape_draw_sphere            (GizmoHandle gizmo, const Sphere sphere);
-KB_API void                 kb_gizmo_shape_draw_cylinder          (GizmoHandle gizmo, const Cylinder cylinder);
-KB_API void                 kb_gizmo_shape_draw_disk              (GizmoHandle gizmo, const Disk disk);
-KB_API void                 kb_gizmo_shape_draw_triangle          (GizmoHandle gizmo, const Triangle triangle);
-KB_API void                 kb_gizmo_shape_draw_ray               (GizmoHandle gizmo, const Ray ray);
+// KB_API void                 kb_gizmo_shape_draw_sphere            (GizmoHandle gizmo, const Sphere sphere);
+// KB_API void                 kb_gizmo_shape_draw_cylinder          (GizmoHandle gizmo, const Cylinder cylinder);
+// KB_API void                 kb_gizmo_shape_draw_disk              (GizmoHandle gizmo, const Disk disk);
+// KB_API void                 kb_gizmo_shape_draw_triangle          (GizmoHandle gizmo, const Triangle triangle);
+// KB_API void                 kb_gizmo_shape_draw_ray               (GizmoHandle gizmo, const Ray ray);
 KB_API void                 kb_gizmo_flush                        (GizmoHandle gizmo);
 KB_API void                 kb_gizmo_flush_quad                   (GizmoHandle gizmo);
 #ifdef __cplusplus
