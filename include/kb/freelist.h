@@ -17,7 +17,7 @@ KB_API void       kb_freelist_create        (Freelist* freelist, uint32_t capaci
 KB_API void       kb_freelist_destroy       (Freelist* freelist);
 KB_API void       kb_freelist_reset         (Freelist* freelist);
 KB_API uint32_t   kb_freelist_take          (Freelist* freelist);
-KB_API void       kb_freelist_return        (Freelist* freelist, uint32_t handle);
+KB_API bool       kb_freelist_return        (Freelist* freelist, uint32_t handle);
 KB_API uint32_t   kb_freelist_count         (const Freelist* freelist);
 KB_API uint32_t*  kb_freelist_get_sparse    (Freelist* freelist);
 KB_API uint32_t*  kb_freelist_get_dense     (Freelist* freelist);

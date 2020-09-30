@@ -23,7 +23,7 @@ KB_API bool   kb_fromstr_bool       (bool*    dst, const char* str);
 KB_API bool   kb_fromstr_int        (int32_t* dst, const char* str);
 KB_API bool   kb_fromstr_float      (float*   dst, const char* str);
 
-KB_API char*  kb_copy_str           (const char* src);
+KB_API char*  kb_strdup             (const char* src);
 
 #ifdef __cplusplus
 }

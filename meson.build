@@ -107,11 +107,13 @@ subdir('libraries')
 #   include_directories : incl_kimberlite,
 # )
 
-build_assets = true
+# build_assets = true
+build_assets = false
 
 subdir('source')
 subdir('assets')
 subdir('examples')
+subdir('test')
 
 # kbtools     = alias_target('kbtools', [exe_bin2c, exe_geomc, exe_texturec, exe_fontc])
 # kb          = alias_target('kb', [lib_kimberlite])

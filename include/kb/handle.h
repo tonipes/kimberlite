@@ -8,7 +8,7 @@ extern "C" {
 
 typedef uint32_t Handle;
 
-static const Handle InvalidHandle = UINT16_MAX;
+static const Handle InvalidHandle = UINT32_MAX;
 
 static inline bool is_valid_handle(const Handle handle) { return handle != InvalidHandle; }
 
