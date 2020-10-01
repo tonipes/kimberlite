@@ -107,8 +107,8 @@ subdir('libraries')
 #   include_directories : incl_kimberlite,
 # )
 
-# build_assets = true
 build_assets = true
+# build_assets = false
 
 subdir('source')
 subdir('assets')

@@ -166,8 +166,8 @@ typedef struct {
   BindType  type;
   uint32_t  set;
   uint32_t  binding;
-  uint32_t  size;
-  // uint32_t  offset;
+  uint64_t  size;
+  uint64_t  offset;
 } BindSlot;
 
 //#####################################################################################################################

@@ -9,10 +9,9 @@ extern "C" {
 
 #define KB_DEFAULT_ALIGN 8
 
-typedef void*(*ReallocFunc)(void*, size_t, size_t);
-
-typedef struct {
-  ReallocFunc realloc;
+typedef struct Allocator {
+  void* (*realloc) (struct Allocator*, void*, size_t, size_t);
+  void* impl;
 } Allocator;
 
 extern uint64_t alloc_count;
@@ -32,6 +31,9 @@ KB_API void  kb_free     (Allocator* alloc, void* ptr, size_t align);
 #define KB_DEFAULT_REALLOC_TYPE(type, ptr, count)   (type*) kb_realloc  (NULL, ptr, sizeof(type) * count,  KB_DEFAULT_ALIGN)
 #define KB_DEFAULT_REALLOC(ptr, size)                       kb_realloc  (NULL, ptr, size,                  KB_DEFAULT_ALIGN)
 #define KB_DEFAULT_FREE(ptr)                                kb_free     (NULL, ptr,                        KB_DEFAULT_ALIGN)
+
+// KB_API void kb_alloc_create_linear  (Allocator* dst, size_t capacity, Allocator* root);
+// KB_API void kb_alloc_linear_reset   (Allocator* alloc);
 
 #ifdef __cplusplus
 }
