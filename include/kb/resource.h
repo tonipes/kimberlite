@@ -13,7 +13,9 @@ extern "C" {
   bool      kb_##t_name##_has_hash(Hash hash);                                                      \
   handle_t  kb_##t_name##_get_hash(Hash hash);                                                      \
   handle_t  kb_##t_name##_get_or_alloc(Hash hash);                                                  \
-  
+  void      kb_##t_name##_construct(handle_t h, const create_info_t* info);                         \
+  void      kb_##t_name##_destruct(handle_t h);                                                     
+
 #define KB_RESOURCE_CORE_FUNC_DECLS(t_name, handle_t, create_info_t)                                \
   handle_t kb_##t_name##_allocate();                                                                \
   handle_t kb_##t_name##_create(const create_info_t info);                                          \
@@ -60,8 +62,6 @@ struct ResourceData {
 
 #define KB_RESOURCE_DATA_CORE_DEF(t_name, handle_t, create_info_t, ref_t, capacity)               \
   ResourceData<handle_t, create_info_t, ref_t, capacity> t_name##_data;                           \
-  void      kb_##t_name##_construct  (handle_t h, const create_info_t& info);                     \
-  void      kb_##t_name##_destruct   (handle_t h);                                                \
   void      kb_##t_name##_remove_name(handle_t handle) {                                          \
     kb_table_remove(&(t_name##_data.table), handle.idx);                                          \
   }                                                                                               \
@@ -82,8 +82,7 @@ struct ResourceData {
   }                                                                                               \
   handle_t kb_##t_name##_create(const create_info_t info) {                                       \
     handle_t handle = kb_##t_name##_allocate();                                                   \
-    t_name##_ref(handle) = {};                                                                    \
-    kb_##t_name##_construct(handle, info);                                                        \
+    kb_##t_name##_construct(handle, &info);                                                       \
     return handle;                                                                                \
   }                                                                                               \
   uint32_t kb_##t_name##_count() {                                                                \

@@ -39,74 +39,6 @@ dep_vulkan  = dependency('vulkan')
 
 subdir('libraries')
 
-# src_kimberlite = [
-#   'source/audio.cpp',
-#   'source/core.cpp',
-#   'source/graphics.cpp',
-#   'source/input.cpp',
-# ]
-
-# incl_kimberlite = [
-#   'include'
-# ]
-
-# deps_kimberlite = [
-#   dep_sdl2,
-#   dep_vulkan,
-#   dep_fmt,
-#   dep_soloud,
-#   dep_vkmemalloc,
-#   dep_stb,
-#   dep_spirvreflect,
-#   dep_libyaml,
-# ]
-
-# exe_bin2c = executable(
-#   'bin2c', 
-#   ['source/bin2c.cpp'],
-#   include_directories : incl_kimberlite,
-#   dependencies        : deps_kimberlite,
-#   cpp_args            : kb_cpp_args,
-# )
-
-# exe_geomc = executable(
-#   'geomc', 
-#   ['source/geomc.cpp'],
-#   include_directories : incl_kimberlite,
-#   dependencies        : deps_kimberlite + [ dep_meshoptimizer, dep_cgltf ],
-#   cpp_args            : kb_cpp_args,
-# )
-
-# exe_texturec = executable(
-#   'texturec', 
-#   ['source/texturec.cpp'],
-#   include_directories : incl_kimberlite,
-#   dependencies        : deps_kimberlite + [ dep_stb ],
-#   cpp_args            : kb_cpp_args,
-# )
-
-# exe_fontc = executable(
-#   'fontc', 
-#   ['source/fontc.cpp'],
-#   include_directories : incl_kimberlite,
-#   dependencies        : deps_kimberlite + [ dep_stb ],
-#   cpp_args            : kb_cpp_args,
-# )
-
-# lib_kimberlite = static_library(
-#   'kimberlite',
-#   src_kimberlite,
-#   include_directories : incl_kimberlite,
-#   dependencies        : deps_kimberlite,
-#   cpp_args            : kb_cpp_args,
-# )
-
-# dep_kimberlite = declare_dependency(
-#   link_with           : lib_kimberlite,
-#   dependencies        : deps_kimberlite,
-#   include_directories : incl_kimberlite,
-# )
-
 build_assets = true
 # build_assets = false
 
@@ -114,6 +46,3 @@ subdir('source')
 subdir('assets')
 subdir('examples')
 subdir('test')
-
-# kbtools     = alias_target('kbtools', [exe_bin2c, exe_geomc, exe_texturec, exe_fontc])
-# kb          = alias_target('kb', [lib_kimberlite])

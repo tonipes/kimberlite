@@ -64,6 +64,20 @@ typedef enum {
 //#####################################################################################################################
 
 typedef struct {
+  uint32_t  primitive_count;
+  uint32_t  command_buffer_count;
+  uint32_t  transient_memory_use;
+  uint32_t  draw_calls;
+  uint32_t  vertex_buffer_count;
+  uint32_t  index_buffer_count;
+  uint32_t  program_count;
+  uint32_t  texture_count;
+  float     frametime_avg;
+  float     frametime_min;
+  float     frametime_max;
+} FrameStats;
+
+typedef struct {
   VertexBufferHandle  vertex_buffer;
   IndexBufferHandle   index_buffer;
   
@@ -124,6 +138,10 @@ typedef struct {
 
   uint32_t            primitive_count;
   Primitive*          primitives;
+
+  uint32_t            material_count;
+  MaterialHandle*     materials;
+
 } MeshCreateInfo;
 
 typedef struct {
@@ -168,6 +186,7 @@ typedef struct {
   uint32_t  binding;
   uint64_t  size;
   uint64_t  offset;
+  uint64_t  block_size;
 } BindSlot;
 
 //#####################################################################################################################
@@ -208,9 +227,6 @@ KB_API void                 kb_command_buffer_set_viewport        (CommandBuffer
 KB_API void                 kb_command_buffer_set_scissors        (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
 KB_API void                 kb_command_buffer_submit_mesh         (CommandBufferHandle command_buffer, MeshHandle mesh);
 KB_API void                 kb_command_buffer_submit              (CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
-
-// KB_API void                 kb_command_buffer_push_uniform        (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
-// KB_API void                 kb_command_buffer_push_texture        (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);
 KB_API void                 kb_command_buffer_bind_program        (CommandBufferHandle command_buffer, ProgramHandle handle);
 KB_API void                 kb_command_buffer_bind_vertex_buffer  (CommandBufferHandle command_buffer, VertexBufferHandle handle);
 KB_API void                 kb_command_buffer_bind_index_buffer   (CommandBufferHandle command_buffer, IndexBufferHandle handle);
@@ -224,8 +240,13 @@ KB_API void                 kb_graphics_frame                     ();
 KB_API void                 kb_graphics_frame_tmp_render          ();
 KB_API Int2                 kb_graphics_get_extent                ();
 KB_API void                 kb_graphics_wait_device_idle          ();
+KB_API void                 kb_graphics_get_frame_stats           (FrameStats* stats);
 
-KB_API bool                 kb_program_get_bind_slot              (ProgramHandle program, const char* name, BindSlot* bind_slot);
+KB_API bool                 kb_program_get_block_bind_slot        (ProgramHandle program, const char* name, BindSlot* bind_slot);
+KB_API bool                 kb_program_get_field_bind_slot        (ProgramHandle program, const char* name, BindSlot* bind_slot);
+
+KB_API bool                 kb_program_get_field_bind_slot_hash   (ProgramHandle program, Hash hash, BindSlot* bind_slot);
+KB_API bool                 kb_program_get_block_bind_slot_hash   (ProgramHandle program, Hash hash, BindSlot* bind_slot);
 
 KB_API VertexBufferHandle   kb_mesh_get_vertex_buffer             (MeshHandle handle);
 KB_API IndexBufferHandle    kb_mesh_get_index_buffer              (MeshHandle handle);
@@ -237,13 +258,6 @@ KB_API Real32               kb_font_get_string_width              (FontHandle ha
 KB_API Real32               kb_font_get_string_line_width         (FontHandle handle, const char* str);
 
 KB_API void                 kb_overlay_print                      (FontHandle font, const char* str, Float2 pos, float font_height, int line);
-KB_API void                 kb_text_overlay_render                ();
-KB_API void                 kb_text_overlay_print                 (uint32_t x, uint32_t y, const char* text);
-KB_API void                 kb_text_overlay_printf                (uint32_t x, uint32_t y, const char* fmt, ...);
-
-// KB_API TextRenderHandle     kb_text_render_begin                  (CommandBufferHandle command_buffer);
-// KB_API void                 kb_text_render_printf                 (TextRenderHandle text_render);
-// KB_API void                 kb_text_render_end                    (TextRenderHandle text_render);
 
 KB_API GizmoHandle          kb_gizmo_begin                        (CommandBufferHandle command_buffer, const Float4x4 view, const Float4x4 proj);
 KB_API void                 kb_gizmo_end                          (GizmoHandle gizmo);
@@ -264,13 +278,13 @@ KB_API void                 kb_gizmo_draw_cylinder                (GizmoHandle g
 KB_API void                 kb_gizmo_draw_axis                    (GizmoHandle gizmo, const Float3 pos, float length);
 KB_API void                 kb_gizmo_draw_grid                    (GizmoHandle gizmo, Axis axis, const Float3 center, uint32_t size, float step);
 KB_API void                 kb_gizmo_draw_aabb                    (GizmoHandle gizmo, const Aabb aabb);
-// KB_API void                 kb_gizmo_shape_draw_sphere            (GizmoHandle gizmo, const Sphere sphere);
-// KB_API void                 kb_gizmo_shape_draw_cylinder          (GizmoHandle gizmo, const Cylinder cylinder);
-// KB_API void                 kb_gizmo_shape_draw_disk              (GizmoHandle gizmo, const Disk disk);
-// KB_API void                 kb_gizmo_shape_draw_triangle          (GizmoHandle gizmo, const Triangle triangle);
-// KB_API void                 kb_gizmo_shape_draw_ray               (GizmoHandle gizmo, const Ray ray);
 KB_API void                 kb_gizmo_flush                        (GizmoHandle gizmo);
 KB_API void                 kb_gizmo_flush_quad                   (GizmoHandle gizmo);
+
+KB_API void                 kb_font_load                          (FontHandle target, RWops* rwops);
+KB_API void                 kb_texture_load                       (TextureHandle target, RWops* rwops);
+KB_API void                 kb_geometry_load                      (GeometryHandle target, RWops* rwops);
+
 #ifdef __cplusplus
 }
 #endif

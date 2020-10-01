@@ -42,7 +42,6 @@ typedef struct {
 KB_API void         kb_font_read      (Font* font, RWops* rwops);
 KB_API void         kb_font_write     (const Font* font, RWops* rwops);
 KB_API void         kb_font_dump_info (const Font* font);
-KB_API FontHandle   kb_font_load      (RWops* rwops);
 
 #ifdef __cplusplus
 }

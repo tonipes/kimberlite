@@ -3,6 +3,7 @@
 #include <kb/types.h>
 #include <kb/math.h>
 #include <kb/handle.h>
+#include <kb/hash.h>
 #include <kb/vertex_layout.h>
 #include <kb/rwops.h>
 #include <kb/config.h>
@@ -32,15 +33,6 @@ struct Mesh {
   Primitive*  primitives;
 };
 
-// PBR metallic
-struct Material {
-  char    name[KB_CONFIG_MAX_NAME_SIZE];
-  Float4  color_factor;
-  float   metallic_factor;
-  float   roughness_factor;
-  float   alpha_cutoff;
-};
-
 struct Node {
   char      name[KB_CONFIG_MAX_NAME_SIZE];
   XForm     xform;
@@ -61,7 +53,7 @@ struct Geometry {
 
   Mesh*     meshes;
   Node*     nodes;
-  Material* materials;
+  Hash*     materials;
 
   void*     index_data;
   void*     vertex_data;
@@ -72,8 +64,6 @@ KB_API void kb_geometry_write(const Geometry* geometry, RWops* rwops);
 KB_API void kb_geometry_dump_info(const Geometry* geometry);
 
 KB_API void kb_geometry_deinit(Geometry* geometry);
-
-KB_API GeometryHandle kb_geometry_load(RWops* rwops);
 
 #ifdef __cplusplus
 }

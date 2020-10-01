@@ -46,8 +46,6 @@ KB_API void kb_texture_read(Texture* dst, RWops* src);
 
 KB_API void kb_texture_write(const Texture* src, RWops* dst);
 
-KB_API TextureHandle kb_texture_load(RWops* rwops);
-
 #ifdef __cplusplus
 }
 #endif
