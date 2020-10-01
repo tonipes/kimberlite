@@ -23,10 +23,10 @@ KB_API uint32_t   kb_table_count        (Table* table);
 KB_API void       kb_table_reset        (Table* table);
 
 KB_API bool       kb_table_insert       (Table* table, Hash key, uint32_t handle);
-KB_API uint32_t   kb_table_get          (Table* table, Hash key);
+KB_API uint32_t   kb_table_get          (const Table* table, Hash key);
 KB_API Hash       kb_table_get_hash     (Table* table, uint32_t handle);
 KB_API bool       kb_table_has          (Table* table, Hash key);
-KB_API uint32_t   kb_table_find_index   (Table* table, Hash key);
+KB_API uint32_t   kb_table_find_index   (const Table* table, Hash key);
 
 KB_API bool       kb_table_remove       (Table* table, Hash key);
 

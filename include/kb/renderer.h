@@ -24,7 +24,7 @@ KB_HANDLE(IndexBufferHandle);
 KB_HANDLE(VertexBufferHandle);
 KB_HANDLE(MeshHandle);
 KB_HANDLE(ProgramHandle);
-KB_HANDLE(UniformSetHandle);
+KB_HANDLE(MaterialHandle);
 KB_HANDLE(GizmoHandle);
 
 //#####################################################################################################################
@@ -68,7 +68,7 @@ typedef struct {
   IndexBufferHandle   index_buffer;
   
   uint32_t            material_count;
-  UniformSetHandle*   materials;
+  MaterialHandle*     materials;
 
   uint32_t            mesh_count;
   MeshHandle*         meshes;
@@ -89,12 +89,14 @@ typedef struct {
 } UniformBinding;
 
 typedef struct {
+  ProgramHandle   program;
+
   uint32_t        uniform_count;
   UniformBinding* uniforms;
 
   uint32_t        sampler_count;
   SamplerBinding* samplers;
-} UniformSetCreateInfo;
+} MaterialCreateInfo;
 
 typedef struct {
   RWops*      rwops;
@@ -126,6 +128,8 @@ typedef struct {
 
 typedef struct {
   FontBaseInfo  base_info;
+  ProgramHandle program;
+  
   TextureHandle atlas;
   
   uint32_t      atlas_height;
@@ -163,7 +167,7 @@ typedef struct {
   uint32_t  set;
   uint32_t  binding;
   uint32_t  size;
-  uint32_t  offset;
+  // uint32_t  offset;
 } BindSlot;
 
 //#####################################################################################################################
@@ -177,7 +181,7 @@ KB_RESOURCE_HASHED_FUNC_DECLS (texture        , TextureHandle       , TextureCre
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
 KB_RESOURCE_HASHED_FUNC_DECLS (font           , FontHandle          , FontCreateInfo          )
 KB_RESOURCE_HASHED_FUNC_DECLS (geometry       , GeometryHandle      , GeometryCreateInfo      )
-KB_RESOURCE_HASHED_FUNC_DECLS (uniform_set    , UniformSetHandle    , UniformSetCreateInfo    )
+KB_RESOURCE_HASHED_FUNC_DECLS (material       , MaterialHandle      , MaterialCreateInfo      )
 
 KB_RESOURCE_CORE_FUNC_DECLS   (geometry       , GeometryHandle      , GeometryCreateInfo      )
 KB_RESOURCE_CORE_FUNC_DECLS   (font           , FontHandle          , FontCreateInfo          )
@@ -187,7 +191,7 @@ KB_RESOURCE_CORE_FUNC_DECLS   (program        , ProgramHandle       , ProgramCre
 KB_RESOURCE_CORE_FUNC_DECLS   (texture        , TextureHandle       , TextureCreateInfo       )
 KB_RESOURCE_CORE_FUNC_DECLS   (vertex_buffer  , VertexBufferHandle  , VertexBufferCreateInfo  )
 KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , CommandBufferHandle , CommandBufferCreateInfo )
-KB_RESOURCE_CORE_FUNC_DECLS   (uniform_set    , UniformSetHandle    , UniformSetCreateInfo    )
+KB_RESOURCE_CORE_FUNC_DECLS   (material       , MaterialHandle      , MaterialCreateInfo      )
 
 //#####################################################################################################################
 // API functions
@@ -199,20 +203,20 @@ KB_API void                 kb_command_buffer_end                 (CommandBuffer
 KB_API void*                kb_vertex_buffer_get_mapped           (VertexBufferHandle handle);
 KB_API void*                kb_index_buffer_get_mapped            (IndexBufferHandle handle);
 
-KB_API void                 kb_command_buffer_bind_vertex_buffer  (CommandBufferHandle command_buffer, VertexBufferHandle handle);
-KB_API void                 kb_command_buffer_bind_index_buffer   (CommandBufferHandle command_buffer, IndexBufferHandle handle);
 KB_API void                 kb_command_buffer_set_mesh            (CommandBufferHandle command_buffer, MeshHandle handle);
-KB_API void                 kb_command_buffer_bind_program        (CommandBufferHandle command_buffer, ProgramHandle handle);
 KB_API void                 kb_command_buffer_set_viewport        (CommandBufferHandle command_buffer, Int2 size, Float2 depth_range);
 KB_API void                 kb_command_buffer_set_scissors        (CommandBufferHandle command_buffer, Int2 extent, Int2 offset);
 KB_API void                 kb_command_buffer_submit_mesh         (CommandBufferHandle command_buffer, MeshHandle mesh);
 KB_API void                 kb_command_buffer_submit              (CommandBufferHandle handle, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
 
-KB_API void                 kb_command_buffer_push_uniform        (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
-KB_API void                 kb_command_buffer_push_texture        (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);
-
+// KB_API void                 kb_command_buffer_push_uniform        (CommandBufferHandle command_buffer, const char* name, const void*, uint32_t size);
+// KB_API void                 kb_command_buffer_push_texture        (CommandBufferHandle command_buffer, const char* name, TextureHandle texture);
+KB_API void                 kb_command_buffer_bind_program        (CommandBufferHandle command_buffer, ProgramHandle handle);
+KB_API void                 kb_command_buffer_bind_vertex_buffer  (CommandBufferHandle command_buffer, VertexBufferHandle handle);
+KB_API void                 kb_command_buffer_bind_index_buffer   (CommandBufferHandle command_buffer, IndexBufferHandle handle);
 KB_API void                 kb_command_buffer_bind_data           (CommandBufferHandle command_buffer, const BindSlot* slot, const void* data, uint32_t size);
 KB_API void                 kb_command_buffer_bind_texture        (CommandBufferHandle command_buffer, const BindSlot* slot, TextureHandle texture);
+KB_API void                 kb_command_buffer_bind_material       (CommandBufferHandle command_buffer, MaterialHandle material);
 
 KB_API void                 kb_graphics_init                      (const GraphicsInitInfo info);
 KB_API void                 kb_graphics_deinit                    ();

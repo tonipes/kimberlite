@@ -39,7 +39,7 @@
 #define KB_CONFIG_GIZMO_STACK_SIZE              32
 #define KB_CONFIG_FILE_ROOT_SIZE                512
 #define KB_CONFIG_MAX_DESCRIPTOR_UPDATES        1024
-#define KB_CONFIG_MAX_UNIFORM_SETS              512
+#define KB_CONFIG_MAX_MATERIALS                 512
 
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 #define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')
