@@ -3,6 +3,7 @@
 #include <kb/api.h>
 #include <kb/types.h>
 #include <kb/config.h>
+#include <kb/hash.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,6 +26,7 @@ typedef struct {
 typedef struct {
   uint32_t attrib_count;
   VertexAttribute attribs[KB_CONFIG_MAX_VERTEX_ATTRIBS];
+  Hash hash;
 } VertexLayout;
 
 KB_API uint32_t  kb_vertex_layout_attrib_size   (AttributeType type, uint32_t num);
@@ -40,6 +42,8 @@ KB_API uint32_t  kb_vertex_layout_offset        (const VertexLayout* layout, uin
 KB_API uint32_t  kb_vertex_layout_size          (const VertexLayout* layout, uint32_t attrib);
 
 KB_API void      kb_vertex_layout_dump          (const VertexLayout* layout);
+
+KB_API bool      kb_vertex_layout_match         (const VertexLayout* a, const VertexLayout* b);
 
 #ifdef __cplusplus
 }
