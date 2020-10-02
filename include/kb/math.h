@@ -36,6 +36,10 @@ extern "C" {
 #define ELEMWISE_COMB_OP2_T3(func, comb) func(a.x, b.x) comb func(a.y, b.y) comb func(a.z, b.z)
 #define ELEMWISE_COMB_OP2_T4(func, comb) func(a.x, b.x) comb func(a.y, b.y) comb func(a.z, b.z) comb func(a.w, b.w)
 
+#define MAX(_a, _b) _a > _b ? _a : _b
+#define MIN(_a, _b) _a < _b ? _a : _b
+#define CLAMP(_t, _min, _max) _t > _max ? _max : (_t < _min ? _min : _t)
+
 #define VECTOR_TYPE_2(name, type)               \
 typedef union {                                 \
   struct { type x,     y;      };               \
@@ -73,7 +77,6 @@ typedef uint8_t   UInt8;
 typedef uint16_t  UInt16;
 typedef uint32_t  UInt32;
 typedef uint64_t  UInt64;
-
 
 #define PI         3.1415926535897932384626433832795f
 #define PI2        6.2831853071795864769252867665590f

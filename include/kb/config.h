@@ -44,3 +44,8 @@
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 #define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')
 #define KB_CONFIG_FILE_MAGIC_FONT               KB_FOURCC('K', 'B', 'F', 'N')
+
+// TODO: These should be defined elswhere
+// #define KB_MODULE_INPUT
+// #define KB_MODULE_GRAPHICS
+// #define KB_MODULE_AUDIO

@@ -33,6 +33,8 @@ KB_API void      kb_vertex_layout_begin         (VertexLayout* layout);
 KB_API uint32_t  kb_vertex_layout_add           (VertexLayout* layout, AttributeType type, uint32_t num);
 KB_API void      kb_vertex_layout_end           (VertexLayout* layout);
 
+KB_API void      kb_vertex_layout_load          (VertexLayout* layout, void* spirv_code, uint32_t code_size);
+
 KB_API uint32_t  kb_vertex_layout_stride        (const VertexLayout* layout);
 KB_API uint32_t  kb_vertex_layout_offset        (const VertexLayout* layout, uint32_t attrib);
 KB_API uint32_t  kb_vertex_layout_size          (const VertexLayout* layout, uint32_t attrib);

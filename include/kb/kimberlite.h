@@ -15,9 +15,3 @@ KB_API Allocator* kb_persistent_alloc();
 #define KB_PERSISTENT_REALLOC_TYPE(type, ptr, count)    (type*) kb_realloc  (kb_persistent_alloc(), ptr, sizeof(type) * count,  KB_DEFAULT_ALIGN)
 #define KB_PERSISTENT_REALLOC(ptr, size)                        kb_realloc  (kb_persistent_alloc(), ptr, size,                  KB_DEFAULT_ALIGN)
 #define KB_PERSISTENT_FREE(ptr)                                 kb_free     (kb_persistent_alloc(), ptr,                        KB_DEFAULT_ALIGN)
-
-
-
-KB_API void kb_init();
-KB_API void kb_deinit();
-KB_API void kb_frame();
