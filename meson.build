@@ -1,5 +1,5 @@
 project(
-  'kimberlite',
+  'Kimberlite',
   ['cpp', 'c'],
   version: 'alpha',
   license : 'MIT',
@@ -46,3 +46,40 @@ subdir('source')
 subdir('assets')
 subdir('examples')
 subdir('test')
+
+# Documentation
+
+doxygen = find_program('doxygen', required : false)
+dot = find_program('dot', required : false)
+
+if not doxygen.found()
+  message('Doxygen not found. Can not generate documentation')
+else
+  doc_config = configuration_data()
+
+  doc_config.set('TITLE', meson.project_name())
+  doc_config.set('DESC',  kb_desc)
+  doc_config.set('LOGO',  '')
+  doc_config.set('SRC_PATH', join_paths(meson.source_root(), 'source'))
+
+  if dot.found()
+    doc_config.set('HAVE_DOT', 'YES')
+  else
+    doc_config.set('HAVE_DOT', 'NO')
+  endif
+
+  doxyfile = configure_file(
+    input: 'Doxyfile.in',
+    output: 'Doxyfile',
+    configuration: doc_config,
+  )
+
+  html_target = custom_target(
+    'docs',
+    input: doxyfile,
+    output: 'doc',
+    command: [doxygen, doxyfile],
+    build_by_default: false,
+  )
+
+endif

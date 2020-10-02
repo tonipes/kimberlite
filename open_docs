@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd "${0%/*}/build" || exit # Set working directory
+
+open ./doc/html/index.html
