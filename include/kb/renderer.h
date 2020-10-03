@@ -63,6 +63,12 @@ typedef enum {
 // Structs
 //#####################################################################################################################
 
+struct SimpleVertex {
+  Float3 pos;
+  Float4 color;
+  Float2 texcoord;
+};
+
 typedef struct {
   uint32_t  primitive_count;
   uint32_t  command_buffer_count;
@@ -257,7 +263,7 @@ KB_API Real32               kb_font_get_string_height             (FontHandle ha
 KB_API Real32               kb_font_get_string_width              (FontHandle handle, const char* str);
 KB_API Real32               kb_font_get_string_line_width         (FontHandle handle, const char* str);
 
-KB_API void                 kb_overlay_print                      (FontHandle font, const char* str, Float2 pos, float font_height, int line);
+KB_API void                 kb_overlay_print                      (CommandBufferHandle command_buffer, FontHandle font, const char* str, Float2 pos, float font_height);
 
 KB_API GizmoHandle          kb_gizmo_begin                        (CommandBufferHandle command_buffer, const Float4x4 view, const Float4x4 proj);
 KB_API void                 kb_gizmo_end                          (GizmoHandle gizmo);
