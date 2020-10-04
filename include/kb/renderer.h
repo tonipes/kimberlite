@@ -15,7 +15,7 @@ KB_HANDLE(kb_command_buffer);
 KB_HANDLE(kb_index_buffer);
 KB_HANDLE(kb_vertex_buffer);
 KB_HANDLE(kb_mesh);
-KB_HANDLE(kb_program);
+KB_HANDLE(kb_pipeline);
 KB_HANDLE(kb_material);
 KB_HANDLE(kb_gizmo);
 
@@ -64,7 +64,7 @@ typedef struct kb_frame_stats {
   uint32_t  draw_calls;
   uint32_t  vertex_buffer_count;
   uint32_t  index_buffer_count;
-  uint32_t  program_count;
+  uint32_t  pipeline_count;
   uint32_t  texture_count;
   float     frametime_avg;
   float     frametime_min;
@@ -95,7 +95,7 @@ typedef struct kb_uniform_binding {
 } kb_uniform_binding;
 
 typedef struct kb_material_create_info {
-  kb_program          program;
+  kb_pipeline         pipeline;
   uint32_t            uniform_count;
   kb_uniform_binding* uniforms;
   uint32_t            sampler_count;
@@ -129,12 +129,11 @@ typedef struct {
   kb_primitive_data*  primitives;
   uint32_t            material_count;
   kb_material*        materials;
-
 } kb_mesh_create_info;
 
 typedef struct {
   kb_font_info      info;
-  kb_program        program;
+  kb_pipeline       pipeline;
   kb_texture        atlas;
   uint32_t          atlas_height;
   uint32_t          atlas_width;
@@ -152,7 +151,7 @@ typedef struct {
   kb_topology_type  topology    = KB_TOPOLOGY_TRIANGLE_LIST;
   bool              depth_write = true;
   bool              depth_test  = true;
-} kb_program_create_info;
+} kb_pipeline_create_info;
 
 typedef struct {
   uint32_t  msaa;
@@ -171,7 +170,7 @@ typedef struct {
 
 KB_RESOURCE_HASHED_FUNC_DECLS (index_buffer   , kb_index_buffer   , kb_index_buffer_create_info   )
 KB_RESOURCE_HASHED_FUNC_DECLS (mesh           , kb_mesh           , kb_mesh_create_info           )
-KB_RESOURCE_HASHED_FUNC_DECLS (program        , kb_program        , kb_program_create_info        )
+KB_RESOURCE_HASHED_FUNC_DECLS (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_HASHED_FUNC_DECLS (texture        , kb_texture        , kb_texture_create_info        )
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , kb_vertex_buffer  , kb_vertex_buffer_create_info  )
 KB_RESOURCE_HASHED_FUNC_DECLS (font           , kb_font           , kb_font_create_info           )
@@ -182,7 +181,7 @@ KB_RESOURCE_CORE_FUNC_DECLS   (geometry       , kb_geometry       , kb_geometry_
 KB_RESOURCE_CORE_FUNC_DECLS   (font           , kb_font           , kb_font_create_info           )
 KB_RESOURCE_CORE_FUNC_DECLS   (index_buffer   , kb_index_buffer   , kb_index_buffer_create_info   )
 KB_RESOURCE_CORE_FUNC_DECLS   (mesh           , kb_mesh           , kb_mesh_create_info           )
-KB_RESOURCE_CORE_FUNC_DECLS   (program        , kb_program        , kb_program_create_info        )
+KB_RESOURCE_CORE_FUNC_DECLS   (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_CORE_FUNC_DECLS   (texture        , kb_texture        , kb_texture_create_info        )
 KB_RESOURCE_CORE_FUNC_DECLS   (vertex_buffer  , kb_vertex_buffer  , kb_vertex_buffer_create_info  )
 KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , kb_command_buffer , kb_command_buffer_create_info )
@@ -202,17 +201,17 @@ KB_API void                 kb_command_buffer_set_viewport        (kb_command_bu
 KB_API void                 kb_command_buffer_set_scissors        (kb_command_buffer command_buffer, Int2 extent, Int2 offset);
 KB_API void                 kb_command_buffer_submit_mesh         (kb_command_buffer command_buffer, kb_mesh mesh);
 KB_API void                 kb_command_buffer_submit              (kb_command_buffer command_buffer, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
-KB_API void                 kb_command_buffer_bind_program        (kb_command_buffer command_buffer, kb_program handle);
+KB_API void                 kb_command_buffer_bind_pipeline       (kb_command_buffer command_buffer, kb_pipeline pipeline);
 KB_API void                 kb_command_buffer_bind_vertex_buffer  (kb_command_buffer command_buffer, kb_vertex_buffer handle);
 KB_API void                 kb_command_buffer_bind_index_buffer   (kb_command_buffer command_buffer, kb_index_buffer handle);
 KB_API void                 kb_command_buffer_bind_data           (kb_command_buffer command_buffer, const kb_bind_slot* slot, const void* data, uint32_t size);
 KB_API void                 kb_command_buffer_bind_texture        (kb_command_buffer command_buffer, const kb_bind_slot* slot, kb_texture texture);
 KB_API void                 kb_command_buffer_bind_material       (kb_command_buffer command_buffer, kb_material material);
 
-KB_API bool                 kb_program_get_block_bind_slot        (kb_program program, const char* name, kb_bind_slot* bind_slot);
-KB_API bool                 kb_program_get_field_bind_slot        (kb_program program, const char* name, kb_bind_slot* bind_slot);
-KB_API bool                 kb_program_get_field_bind_slot_hash   (kb_program program, kb_hash hash, kb_bind_slot* bind_slot);
-KB_API bool                 kb_program_get_block_bind_slot_hash   (kb_program program, kb_hash hash, kb_bind_slot* bind_slot);
+KB_API bool                 kb_pipeline_get_block_bind_slot       (kb_pipeline pipeline, const char* name, kb_bind_slot* bind_slot);
+KB_API bool                 kb_pipeline_get_field_bind_slot       (kb_pipeline pipeline, const char* name, kb_bind_slot* bind_slot);
+KB_API bool                 kb_pipeline_get_field_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
+KB_API bool                 kb_pipeline_get_block_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
 
 KB_API kb_texture           kb_font_get_atlas                     (kb_font handle);
 KB_API Real32               kb_font_get_line_height               (kb_font handle);
