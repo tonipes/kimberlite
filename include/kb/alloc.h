@@ -8,16 +8,25 @@ extern "C" {
 
 #define KB_DEFAULT_ALIGN 8
 
+typedef struct kb_alloc_stats {
+  uint64_t count;
+  uint64_t mem;
+  uint64_t high_water_mark;
+} kb_alloc_stats;
+
 typedef struct Allocator {
   void* (*realloc) (struct Allocator*, void*, size_t, size_t);
+  kb_alloc_stats stats;
   void* impl;
 } Allocator;
-
-extern uint64_t alloc_count;
 
 KB_API void* kb_alloc    (Allocator* alloc, size_t size, size_t align);
 KB_API void* kb_realloc  (Allocator* alloc, void* ptr, size_t size, size_t align);
 KB_API void  kb_free     (Allocator* alloc, void* ptr, size_t align);
+
+KB_API uint32_t kb_alloc_count              (Allocator* alloc);
+KB_API uint64_t kb_alloc_mem                (Allocator* alloc);
+KB_API uint64_t kb_alloc_high_water_mark    (Allocator* alloc);
 
 #define KB_ALLOC(alloc, size)                               kb_alloc    (alloc, size,                      KB_DEFAULT_ALIGN)
 #define KB_ALLOC_TYPE(alloc, type, count)           (type*) kb_alloc    (alloc, sizeof(type) * count,      KB_DEFAULT_ALIGN)

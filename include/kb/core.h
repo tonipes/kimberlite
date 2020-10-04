@@ -41,15 +41,36 @@
 
 #define KB_FOURCC(a, b, c, d) (((uint32_t)(a) | ((uint32_t)(b) << 8) | ((uint32_t)(c) << 16) | ((uint32_t)(d) << 24)))
 
-
-//#####################################################################################################################
-// Platform
-//#####################################################################################################################
-
-
 #define STRING(_x) STRING_(_x)
 #define STRING_(_x) #_x
 
+
+//#####################################################################################################################
+// Build
+//#####################################################################################################################
+
+#define KB_BUILD_MODE_DEBUG    0
+#define KB_BUILD_MODE_RELEASE  0
+
+#if defined(DEBUG) \
+  || defined(_DEBUG)
+# undef  KB_BUILD_MODE_DEBUG
+# define KB_BUILD_MODE_DEBUG 1
+#else
+# undef  KB_BUILD_MODE_RELEASE
+# define KB_BUILD_MODE_RELEASE 1
+#endif
+
+#if defined(NDEBUG)
+# undef  KB_BUILD_MODE_RELEASE
+# define KB_BUILD_MODE_RELEASE 1
+#endif
+
+#if KB_BUILD_MODE_DEBUG
+#	define KB_BUILD_MODE_NAME "Debug"
+#elif KB_BUILD_MODE_RELEASE
+#	define KB_BUILD_MODE_NAME "Release"
+#endif
 
 //#####################################################################################################################
 // CPU

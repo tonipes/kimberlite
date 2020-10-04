@@ -17,7 +17,7 @@ KB_HANDLE(kb_vertex_buffer);
 KB_HANDLE(kb_mesh);
 KB_HANDLE(kb_pipeline);
 KB_HANDLE(kb_material);
-KB_HANDLE(kb_gizmo);
+// KB_HANDLE(kb_gizmo);
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +27,11 @@ typedef enum kb_draw_mode {
   KB_DRAW_SINGLE    = 0,
   KB_CULL_INSTANCED = 1,
 } kb_draw_mode;
+
+typedef enum kb_index_type {
+  KB_INDEX_TYPE_16 = 0,
+  KB_INDEX_TYPE_32 = 1,
+} kb_index_type;
 
 typedef enum kb_bind_type {
   KB_BIND_TYPE_UNSUPPORTED    = 0,
@@ -194,6 +199,9 @@ KB_API Int2                 kb_graphics_get_extent                ();
 KB_API void                 kb_graphics_wait_device_idle          ();
 KB_API void                 kb_graphics_get_frame_stats           (kb_frame_stats* stats);
 
+KB_API void*                kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
+KB_API uint64_t             kb_graphics_transient_offset          (void* ptr);
+
 KB_API kb_command_buffer    kb_command_buffer_begin               ();
 KB_API void                 kb_command_buffer_end                 (kb_command_buffer command_buffer);
 KB_API void                 kb_command_buffer_set_mesh            (kb_command_buffer command_buffer, kb_mesh handle);
@@ -208,6 +216,9 @@ KB_API void                 kb_command_buffer_bind_data           (kb_command_bu
 KB_API void                 kb_command_buffer_bind_texture        (kb_command_buffer command_buffer, const kb_bind_slot* slot, kb_texture texture);
 KB_API void                 kb_command_buffer_bind_material       (kb_command_buffer command_buffer, kb_material material);
 
+KB_API void                 kb_command_buffer_bind_vertex_buffer_transient  (kb_command_buffer command_buffer, uint64_t offset);
+KB_API void                 kb_command_buffer_bind_index_buffer_transient   (kb_command_buffer command_buffer, uint64_t offset, kb_index_type type);
+
 KB_API bool                 kb_pipeline_get_block_bind_slot       (kb_pipeline pipeline, const char* name, kb_bind_slot* bind_slot);
 KB_API bool                 kb_pipeline_get_field_bind_slot       (kb_pipeline pipeline, const char* name, kb_bind_slot* bind_slot);
 KB_API bool                 kb_pipeline_get_field_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
@@ -220,28 +231,6 @@ KB_API Real32               kb_font_get_string_width              (kb_font handl
 KB_API Real32               kb_font_get_string_line_width         (kb_font handle, const char* str);
 
 KB_API void                 kb_overlay_print                      (kb_command_buffer command_buffer, kb_font font, const char* str, Float2 pos, float font_height);
-
-KB_API kb_gizmo             kb_gizmo_begin                        (kb_command_buffer command_buffer, const Float4x4 view, const Float4x4 proj);
-KB_API void                 kb_gizmo_end                          (kb_gizmo gizmo);
-KB_API void                 kb_gizmo_state_push                   (kb_gizmo gizmo);
-KB_API void                 kb_gizmo_state_pop                    (kb_gizmo gizmo);
-KB_API void                 kb_gizmo_state_push_transform         (kb_gizmo gizmo, const Float4x4 mtx, bool flush);
-KB_API void                 kb_gizmo_state_pop_transform          (kb_gizmo gizmo, bool flush);
-KB_API void                 kb_gizmo_state_set_color              (kb_gizmo gizmo, Float4 color);
-KB_API void                 kb_gizmo_state_set_lod                (kb_gizmo gizmo, uint8_t lod);
-KB_API void                 kb_gizmo_state_set_wireframe          (kb_gizmo gizmo, bool wireframe);
-KB_API void                 kb_gizmo_shape_close                  (kb_gizmo gizmo);
-KB_API void                 kb_gizmo_shape_move_to                (kb_gizmo gizmo, const Float3 pos);
-KB_API void                 kb_gizmo_shape_line_to                (kb_gizmo gizmo, const Float3 pos);
-KB_API void                 kb_gizmo_draw_arc                     (kb_gizmo gizmo, Axis axis, const Float3 pos, float radius, float degrees);
-KB_API void                 kb_gizmo_draw_circle                  (kb_gizmo gizmo, const Float3 normal, const Float3 center, float radius, float weight);
-KB_API void                 kb_gizmo_draw_cone                    (kb_gizmo gizmo, const Float3 from, const Float3 to, float radius);
-KB_API void                 kb_gizmo_draw_cylinder                (kb_gizmo gizmo, const Float3 from, const Float3 to, float radius);
-KB_API void                 kb_gizmo_draw_axis                    (kb_gizmo gizmo, const Float3 pos, float length);
-KB_API void                 kb_gizmo_draw_grid                    (kb_gizmo gizmo, Axis axis, const Float3 center, uint32_t size, float step);
-KB_API void                 kb_gizmo_draw_aabb                    (kb_gizmo gizmo, const Aabb aabb);
-KB_API void                 kb_gizmo_flush                        (kb_gizmo gizmo);
-KB_API void                 kb_gizmo_flush_quad                   (kb_gizmo gizmo);
 
 KB_API void                 kb_font_load                          (kb_font target, kb_rwops* rwops);
 KB_API void                 kb_texture_load                       (kb_texture target, kb_rwops* rwops);

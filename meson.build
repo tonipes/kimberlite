@@ -11,6 +11,11 @@ project(
   ]
 )
 
+if get_option('buildtype').startswith('debug')
+  add_project_arguments('-DDEBUG', language : 'c')
+  add_project_arguments('-DDEBUG', language : 'cpp')
+endif
+
 fs = import('fs')
 
 kb_desc = 'Kimberlite Framework'
@@ -26,11 +31,23 @@ cppc = meson.get_compiler('cpp')
 
 kb_build_tools = true
 
-kb_cpp_args = [
+kb_compile_args = [
   '-Wno-nullability-completeness',
   '-Werror=return-type',
   '-Wno-missing-braces',
 ]
+
+if get_option('buildtype').startswith('debug')
+  kb_compile_args += '-DDEBUG'
+endif
+
+foreach arg : kb_compile_args
+  add_project_arguments(arg, language : 'c')
+  add_project_arguments(arg, language : 'cpp')
+endforeach
+
+
+kb_cpp_args = []
 
 dep_sdl2    = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
 dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
