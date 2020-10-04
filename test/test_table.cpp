@@ -3,7 +3,7 @@
 #include <kb/table.h>
 
 TEST_CASE("zero initialized table should be valid and empty", "[table]") {
-  Table table {};
+  kb_table table {};
   
   REQUIRE(kb_table_count      (&table)            == 0);
   REQUIRE(kb_table_insert     (&table, 123, 123)  == false);
@@ -12,11 +12,10 @@ TEST_CASE("zero initialized table should be valid and empty", "[table]") {
   REQUIRE(kb_table_find_index (&table, 123)       == UINT32_MAX);
   REQUIRE(kb_table_has        (&table, 123)       == false);
   REQUIRE(kb_table_remove     (&table, 123)       == false);
-
 }
 
 TEST_CASE("initialized table should have correct capacity and count", "[table]") {
-  Table table {};
+  kb_table table {};
   
   kb_table_create(&table, 10);
 
@@ -26,7 +25,7 @@ TEST_CASE("initialized table should have correct capacity and count", "[table]")
 }
 
 TEST_CASE("table_get and table_get_hash should work after insert", "[table]") {
-  Table table {};
+  kb_table table {};
   
   kb_table_create(&table, 10);
 
@@ -36,7 +35,7 @@ TEST_CASE("table_get and table_get_hash should work after insert", "[table]") {
 }
 
 TEST_CASE("table insert should increase count", "[table]") {
-  Table table {};
+  kb_table table {};
   
   kb_table_create(&table, 10);
 
@@ -48,7 +47,7 @@ TEST_CASE("table insert should increase count", "[table]") {
 }
 
 TEST_CASE("table remove should decreate count", "[table]") {
-  Table table {};
+  kb_table table {};
   
   kb_table_create(&table, 10);
 
@@ -68,7 +67,7 @@ TEST_CASE("table remove should decreate count", "[table]") {
 }
 
 TEST_CASE("removed should not be available", "[table]") {
-  Table table {};
+  kb_table table {};
   
   kb_table_create(&table, 10);
 
@@ -88,7 +87,7 @@ TEST_CASE("removed should not be available", "[table]") {
 
 
 TEST_CASE("inserting existing should not replace", "[table]") {
-  Table table {};
+  kb_table table {};
   
   kb_table_create(&table, 10);
 
@@ -102,8 +101,8 @@ TEST_CASE("inserting existing should not replace", "[table]") {
 }
 
 TEST_CASE("copy should work", "[table]") {
-  Table table {};
-  Table table2 {};
+  kb_table table {};
+  kb_table table2 {};
   
   kb_table_create(&table, 10);
 

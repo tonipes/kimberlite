@@ -3,7 +3,7 @@
 #include <kb/freelist.h>
 
 TEST_CASE("zero initialized freelist should be empty and not freak out", "[freelist]") {
-  Freelist freelist {};
+  kb_freelist freelist {};
   
   REQUIRE(kb_freelist_take (&freelist)      == UINT32_MAX);
   REQUIRE(kb_freelist_count(&freelist)      == 0);
@@ -12,7 +12,7 @@ TEST_CASE("zero initialized freelist should be empty and not freak out", "[freel
 }
 
 TEST_CASE("initialized freelist should have correct capacity and count", "[freelist]") {
-  Freelist freelist {};
+  kb_freelist freelist {};
   
   kb_freelist_create(&freelist, 10);
 
@@ -22,7 +22,7 @@ TEST_CASE("initialized freelist should have correct capacity and count", "[freel
 }
 
 TEST_CASE("freelist take should increase count", "[freelist]") {
-  Freelist freelist {};
+  kb_freelist freelist {};
   
   kb_freelist_create(&freelist, 10);
 
@@ -38,7 +38,7 @@ TEST_CASE("freelist take should increase count", "[freelist]") {
 }
 
 TEST_CASE("freelist should not allow same handle to be retuned more than once", "[freelist]") {
-  Freelist freelist {};
+  kb_freelist freelist {};
 
   kb_freelist_create(&freelist, 10);
 
@@ -60,7 +60,7 @@ TEST_CASE("freelist should not allow same handle to be retuned more than once", 
 };
 
 TEST_CASE("freelist return should decrease count", "[freelist]") {
-  Freelist freelist {};
+  kb_freelist freelist {};
   
   kb_freelist_create(&freelist, 10);
 
@@ -85,7 +85,7 @@ TEST_CASE("freelist return should decrease count", "[freelist]") {
 }
 
 TEST_CASE("freelist take should give indices in order", "[freelist]") {
-  Freelist freelist {};
+  kb_freelist freelist {};
   
   kb_freelist_create(&freelist, 10);
 

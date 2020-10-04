@@ -1,46 +1,46 @@
 #pragma once
 
-#include <kb/api.h>
+#include <kb/core.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
-  struct MutexImpl* impl;
-} Mutex;
+  struct kb_mutex_impl* impl;
+} kb_mutex;
 
 typedef struct {
-  struct SemaphoreImpl* impl;
-} Semaphore;
+  struct kb_semaphore_impl* impl;
+} kb_semaphore;
 
 typedef struct {
-  struct ThreadPoolInternal* internal;
-} ThreadPool;
+  struct kb_thread_pool_impl* internal;
+} kb_thread_pool;
 
-typedef void(*JobFunc)(void*);
+typedef void(*kb_job_func)(void*);
 
-KB_API ThreadPool  kb_threadpool_create            (int num_threads);
-KB_API void        kb_threadpool_destroy           (ThreadPool pool);
-KB_API void        kb_threadpool_wait              (ThreadPool pool);
-KB_API void        kb_threadpool_pause             (ThreadPool pool);
-KB_API void        kb_threadpool_resume            (ThreadPool pool);
-KB_API int         kb_threadpool_active_threads    (ThreadPool pool);
-KB_API int         kb_threadpool_queue_length      (ThreadPool pool);
-KB_API int         kb_threadpool_add_job           (ThreadPool pool, void* param, JobFunc job);
+KB_API kb_thread_pool   kb_threadpool_create              (int num_threads);
+KB_API void             kb_threadpool_destroy             (kb_thread_pool pool);
+KB_API void             kb_threadpool_wait                (kb_thread_pool pool);
+KB_API void             kb_threadpool_pause               (kb_thread_pool pool);
+KB_API void             kb_threadpool_resume              (kb_thread_pool pool);
+KB_API int              kb_threadpool_active_threads      (kb_thread_pool pool);
+KB_API int              kb_threadpool_queue_length        (kb_thread_pool pool);
+KB_API int              kb_threadpool_add_job             (kb_thread_pool pool, void* param, kb_job_func job);
 
-KB_API Semaphore   kb_semaphore_create             (bool value);
-KB_API void        kb_semaphore_destroy            (Semaphore semaphore);
-KB_API void        kb_semaphore_init               (Semaphore semaphore, bool value);
-KB_API void        kb_semaphore_reset              (Semaphore semaphore);
-KB_API void        kb_semaphore_post               (Semaphore semaphore);
-KB_API void        kb_semaphore_post_all           (Semaphore semaphore);
-KB_API void        kb_semaphore_wait               (Semaphore semaphore);
+KB_API kb_semaphore     kb_semaphore_create               (bool value);
+KB_API void             kb_semaphore_destroy              (kb_semaphore semaphore);
+KB_API void             kb_semaphore_init                 (kb_semaphore semaphore, bool value);
+KB_API void             kb_semaphore_reset                (kb_semaphore semaphore);
+KB_API void             kb_semaphore_post                 (kb_semaphore semaphore);
+KB_API void             kb_semaphore_post_all             (kb_semaphore semaphore);
+KB_API void             kb_semaphore_wait                 (kb_semaphore semaphore);
 
-KB_API Mutex       kb_mutex_create                 ();
-KB_API void        kb_mutex_destroy                (Mutex mutex);
-KB_API void        kb_mutex_lock                   (Mutex mutex);
-KB_API void        kb_mutex_unlock                 (Mutex mutex);
+KB_API kb_mutex         kb_mutex_create                   ();
+KB_API void             kb_mutex_destroy                  (kb_mutex mutex);
+KB_API void             kb_mutex_lock                     (kb_mutex mutex);
+KB_API void             kb_mutex_unlock                   (kb_mutex mutex);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,6 @@
- #pragma once
+#pragma once
 
-#include <kb/types.h>
-#include <kb/api.h>
+#include <kb/core.h>
 
 #include <math.h>
 #include <float.h>

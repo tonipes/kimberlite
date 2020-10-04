@@ -1,50 +1,50 @@
 #pragma once
 
-#include <kb/api.h>
-#include <kb/types.h>
+#include <kb/core.h>
+
 #include <kb/handle.h>
 #include <kb/rwops.h>
+
+KB_HANDLE(kb_texture);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-KB_HANDLE(TextureHandle);
-
-typedef enum {
+typedef enum kb_format {
   KB_FORMAT_UNSUPPORTED  = 0,
   KB_FORMAT_R8           = 1,
   KB_FORMAT_R8G8         = 2,
   KB_FORMAT_R8G8B8       = 3,
   KB_FORMAT_R8G8B8A8     = 4,
-} Format;
+} kb_format;
 
-typedef enum {
+typedef enum kb_filter {
   KB_FILTER_NEAREST = 0,
   KB_FILTER_LINEAR  = 1,
-} Filter;
+} kb_filter;
 
-typedef struct {
-  Filter filter;
-} SamplerInfo;
+typedef struct kb_sampler_info {
+  kb_filter filter;
+} kb_sampler_info;
 
-typedef struct {
+typedef struct kb_texture_info {
   uint32_t  width;
   uint32_t  height;
-  Format    format;
+  kb_format format;
   bool      create_mipmaps;
-} TextureInfo;
+} kb_texture_info;
 
-typedef struct {
-  TextureInfo texture;
-  SamplerInfo sampler;
-  uint64_t    pixel_data_size;
-  void*       pixel_data;
-} Texture;
+typedef struct kb_texture_data {
+  kb_texture_info texture;
+  kb_sampler_info sampler;
+  uint64_t        pixel_data_size;
+  void*           pixel_data;
+} kb_texture_data;
 
-KB_API void kb_texture_read(Texture* dst, RWops* src);
+KB_API void kb_texture_read(kb_texture_data* dst, kb_rwops* src);
 
-KB_API void kb_texture_write(const Texture* src, RWops* dst);
+KB_API void kb_texture_write(const kb_texture_data* src, kb_rwops* dst);
 
 #ifdef __cplusplus
 }

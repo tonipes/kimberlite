@@ -57,7 +57,7 @@ typedef enum {
   KeyLeftBrace          = 0x2fu, // Keyboard [ and {
   KeyRightBrace         = 0x30u, // Keyboard ] and }
   KeyBackslash          = 0x31u, // Keyboard \ and |
-  KeyHashTilde          = 0x32u, // Keyboard Non-US # and ~
+  Keykb_hashTilde          = 0x32u, // Keyboard Non-US # and ~
   KeySemicolon          = 0x33u, // Keyboard ; and :
   KeyApostrophe         = 0x34u, // Keyboard ' and "
   KeyGrave              = 0x35u, // Keyboard ` and ~

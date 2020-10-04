@@ -1,13 +1,12 @@
 #pragma once
 
-#include <kb/api.h>
-#include <kb/types.h>
+#include <kb/core.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-KB_API_INLINE uint32_t kb_algorithm_select_unique(uint32_t* src, uint32_t* dst, size_t count) {
+KB_API_INLINE uint32_t kb_alg_select_unique(uint32_t* src, uint32_t* dst, size_t count) {
   uint32_t p = 0;
   for (uint32_t c = 0; c < count; c++) {
     bool found = false;

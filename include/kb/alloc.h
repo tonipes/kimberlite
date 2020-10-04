@@ -1,7 +1,6 @@
 #pragma once
 
-#include <kb/api.h>
-#include <kb/types.h>
+#include <kb/core.h>
 
 #ifdef __cplusplus
 extern "C" {

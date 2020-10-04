@@ -1,6 +1,6 @@
 #pragma once
 
-#include <kb/api.h>
+#include <kb/core.h>
 #include <kb/math.h>
 
 #ifdef __cplusplus

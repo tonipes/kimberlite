@@ -1,28 +1,25 @@
 #pragma once
 
-#include <kb/api.h>
-#include <kb/types.h>
-#include <kb/memory.h>
+#include <kb/core.h>
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef uint32_t Hash;
+typedef uint32_t kb_hash;
 
 typedef struct {
-  Hash hash;
+  kb_hash hash;
   uint32_t tail;
   uint32_t count;
   uint32_t size;
-} HashGen;
+} kb_hash_gen;
 
-KB_API void kb_hash_begin  (HashGen* gen);
-KB_API void kb_hash_add    (HashGen* gen, const void* data, int len);
-KB_API Hash kb_hash_end    (HashGen* gen);
-
-KB_API Hash kb_hash_memory (const Memory mem);
-KB_API Hash kb_hash_string (const char* str);
+KB_API void kb_hash_begin  (kb_hash_gen* gen);
+KB_API void kb_hash_add    (kb_hash_gen* gen, const void* data, int len);
+KB_API kb_hash kb_hash_end    (kb_hash_gen* gen);
+KB_API kb_hash kb_hash_string (const char* str);
 
 #ifdef __cplusplus
 }
@@ -32,7 +29,7 @@ KB_API Hash kb_hash_string (const char* str);
 #ifdef __cplusplus
 
 template <typename T> 
-KB_API_INLINE void kb_hash_add(HashGen* gen, const T& t) {
+KB_API_INLINE void kb_hash_add(kb_hash_gen* gen, const T& t) {
   kb_hash_add(gen, &t, sizeof(T));
 }
 

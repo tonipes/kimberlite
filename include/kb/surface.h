@@ -1,18 +1,18 @@
 #pragma once
 
-#include <kb/config.h>
+//#include <kb/config.h>
 #include <kb/math.h>
-#include <kb/api.h>
+#include <kb/core.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct kb_surface_init_info {
   Int2 size;
-} SurfaceInitInfo;
+} kb_surface_init_info;
 
-KB_API void           kb_surface_init                       (const SurfaceInitInfo info);
+KB_API void           kb_surface_init                       (const kb_surface_init_info info);
 KB_API void           kb_surface_set_title                  (const char* title);
 KB_API void           kb_surface_resize                     (Int2 size);
 KB_API void           kb_surface_deinit                     ();

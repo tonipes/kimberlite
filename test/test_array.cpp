@@ -3,7 +3,7 @@
 #include <kb/array.h>
 
 TEST_CASE("zero initialized array should be empty and not freak out", "[array]") {
-  Array arr {};
+  kb_array arr {};
   
   REQUIRE(kb_array_count    (&arr)    == 0);
   REQUIRE(kb_array_capacity (&arr)    == 0);
@@ -11,7 +11,7 @@ TEST_CASE("zero initialized array should be empty and not freak out", "[array]")
 }
 
 TEST_CASE("initialized array should have correct capacity and count", "[array]") {
-  Array arr {};
+  kb_array arr {};
   
   kb_array_create(&arr, sizeof(uint32_t), 10);
 
@@ -23,7 +23,7 @@ TEST_CASE("initialized array should have correct capacity and count", "[array]")
 }
 
 TEST_CASE("array reserve should be able to increase capacity", "[array]") {
-  Array arr {};
+  kb_array arr {};
   
   kb_array_create(&arr, sizeof(uint32_t), 10);
   
@@ -36,7 +36,7 @@ TEST_CASE("array reserve should be able to increase capacity", "[array]") {
 }
 
 TEST_CASE("array reserve should not be able to decrease capacity", "[array]") {
-  Array arr {};
+  kb_array arr {};
   
   kb_array_create(&arr, sizeof(uint32_t), 100);
   
@@ -48,7 +48,7 @@ TEST_CASE("array reserve should not be able to decrease capacity", "[array]") {
 }
 
 TEST_CASE("array reset should not change the capacity", "[array]") {
-  Array arr {};
+  kb_array arr {};
   
   kb_array_create(&arr, sizeof(uint32_t), 100);
   
@@ -60,7 +60,7 @@ TEST_CASE("array reset should not change the capacity", "[array]") {
 }
 
 TEST_CASE("push_back should increase capacity and count", "[array]") {
-  Array arr {};
+  kb_array arr {};
   
   uint32_t d = 14;
 
@@ -84,7 +84,7 @@ TEST_CASE("push_back should increase capacity and count", "[array]") {
 }
 
 TEST_CASE("pop_back should decrease count, but not capacity", "[array]") {
-  Array arr {};
+  kb_array arr {};
   
   uint32_t d = 14;
 
