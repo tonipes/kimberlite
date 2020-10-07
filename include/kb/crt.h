@@ -19,6 +19,7 @@ KB_API bool   kb_fromstr_bool       (bool*    dst, const char* str);
 KB_API bool   kb_fromstr_int        (int32_t* dst, const char* str);
 KB_API bool   kb_fromstr_float      (float*   dst, const char* str);
 KB_API char*  kb_strdup             (const char* src);
+KB_API void*  kb_memdup             (void* src, uint64_t size);
 
 #ifdef __cplusplus
 }

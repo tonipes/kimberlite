@@ -62,6 +62,12 @@ KB_API_INLINE int64_t kb_rwops_size(kb_rwops* rwops) {
   return rwops->size(rwops);
 }
 
+KB_API_INLINE bool kb_rwops_check_magic(kb_rwops* rwops, uint32_t magic) {
+  uint32_t chunk;
+  int32_t c = kb_rwops_read(rwops, &chunk, sizeof(uint32_t));
+  return chunk == magic && c == sizeof(chunk);
+}
+
 #ifdef __cplusplus
 }
 #endif

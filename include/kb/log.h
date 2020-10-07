@@ -5,16 +5,17 @@ extern "C" {
 #endif
 
 typedef enum {
-  KB_LOG_LEVEL_TRACE  = 1,
-  KB_LOG_LEVEL_DEBUG  = 2,
-  KB_LOG_LEVEL_INFO   = 3,
-  KB_LOG_LEVEL_WARN   = 4,
-  KB_LOG_LEVEL_ERROR  = 5,
-  KB_LOG_LEVEL_FATAL  = 6,
+  KB_LOG_LEVEL_TRACE  = 0,
+  KB_LOG_LEVEL_DEBUG  = 1,
+  KB_LOG_LEVEL_INFO   = 2,
+  KB_LOG_LEVEL_WARN   = 3,
+  KB_LOG_LEVEL_ERROR  = 4,
+  KB_LOG_LEVEL_FATAL  = 5,
 } LogLevel;
 
 void kb_log_line      (LogLevel level, const char* msg);
 void kb_log_set_level (LogLevel level);
+void kb_log_set_color (bool enabled);
 
 #ifdef __cplusplus
 }
@@ -23,7 +24,7 @@ void kb_log_set_level (LogLevel level);
 // c++ implementation
 #ifdef __cplusplus
 
-#include "fmt/format.h"
+#include <fmt/format.h>
 
 template <typename... T>
 inline auto kb_log_trace(const T&... args) -> void {

@@ -1,6 +1,6 @@
 #pragma once
 
-//#include <kb/config.h>
+#include <kb/alloc.h>
 #include <kb/hash.h>
 #include <kb/resource.h>
 #include <kb/handle.h>
@@ -17,7 +17,6 @@ KB_HANDLE(kb_vertex_buffer);
 KB_HANDLE(kb_mesh);
 KB_HANDLE(kb_pipeline);
 KB_HANDLE(kb_material);
-// KB_HANDLE(kb_gizmo);
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,46 +56,46 @@ typedef enum kb_topology_type {
 } kb_topology_type;
 
 typedef struct kb_simple_vertex {
-  Float3 pos;
-  Float4 color;
-  Float2 texcoord;
+  Float3              pos;
+  Float4              color;
+  Float2              texcoord;
 } kb_simple_vertex;
 
 typedef struct kb_frame_stats {
-  uint32_t  primitive_count;
-  uint32_t  command_buffer_count;
-  uint32_t  transient_memory_use;
-  uint32_t  draw_calls;
-  uint32_t  vertex_buffer_count;
-  uint32_t  index_buffer_count;
-  uint32_t  pipeline_count;
-  uint32_t  texture_count;
-  float     frametime_avg;
-  float     frametime_min;
-  float     frametime_max;
+  uint32_t            primitive_count;
+  uint32_t            command_buffer_count;
+  uint32_t            transient_memory_use;
+  uint32_t            draw_calls;
+  uint32_t            vertex_buffer_count;
+  uint32_t            index_buffer_count;
+  uint32_t            pipeline_count;
+  uint32_t            texture_count;
+  float               frametime_avg;
+  float               frametime_min;
+  float               frametime_max;
 } kb_frame_stats;
 
 typedef struct kb_geometry_create_info {
-  kb_vertex_buffer  vertex_buffer;
-  kb_index_buffer   index_buffer;
-  uint32_t          material_count;
-  kb_material*      materials;
-  uint32_t          mesh_count;
-  kb_mesh*          meshes;
+  kb_vertex_buffer    vertex_buffer;
+  kb_index_buffer     index_buffer;
+  uint32_t            material_count;
+  kb_material*        materials;
+  uint32_t            mesh_count;
+  kb_mesh*            meshes;
 } kb_geometry_create_info;
 
 typedef struct kb_command_buffer_create_info {
-  int param;
+  int                 param;
 } kb_command_buffer_create_info;
 
 typedef struct kb_sampler_binding {
-  kb_hash     hash;
-  kb_texture  texture;
+  kb_hash             hash;
+  kb_texture          texture;
 } kb_sampler_binding;
 
 typedef struct kb_uniform_binding {
-  kb_hash hash;
-  Float4  data;
+  kb_hash             hash;
+  Float4              data;
 } kb_uniform_binding;
 
 typedef struct kb_material_create_info {
@@ -108,23 +107,23 @@ typedef struct kb_material_create_info {
 } kb_material_create_info;
 
 typedef struct kb_texture_create_info {
-  kb_rwops*       rwops;
-  kb_texture_info texture;
-  kb_sampler_info sampler;
+  kb_rwops*           rwops;
+  kb_texture_info     texture;
+  kb_sampler_info     sampler;
 } kb_texture_create_info;
 
 typedef struct kb_index_buffer_create_info {
-  kb_rwops*   rwops;
-  uint32_t    index_size;
-  uint32_t    size;
-  bool        host_mapped;
+  kb_rwops*           rwops;
+  uint32_t            index_size;
+  uint32_t            size;
+  bool                host_mapped;
 } kb_index_buffer_create_info;
 
 typedef struct {
-  kb_rwops*         rwops;
-  kb_vertex_layout  layout;
-  uint32_t          size;
-  bool              host_mapped;
+  kb_rwops*           rwops;
+  kb_vertex_layout    layout;
+  uint32_t            size;
+  bool                host_mapped;
 } kb_vertex_buffer_create_info;
 
 typedef struct {
@@ -137,40 +136,38 @@ typedef struct {
 } kb_mesh_create_info;
 
 typedef struct {
-  kb_font_info      info;
-  kb_pipeline       pipeline;
-  kb_texture        atlas;
-  uint32_t          atlas_height;
-  uint32_t          atlas_width;
-  uint32_t          char_count;
-  kb_font_char*     chars;
+  kb_font_info        info;
+  kb_pipeline         pipeline;
+  kb_texture          atlas;
+  uint32_t            atlas_height;
+  uint32_t            atlas_width;
 } kb_font_create_info;
 
 typedef struct {
-  kb_rwops*         vert_code_rwops;
-  kb_rwops*         frag_code_rwops;
-  const char*       vert_entry  = "main";
-  const char*       frag_entry  = "main";
-  kb_cull_mode      cull        = KB_CULL_BACK;
-  kb_draw_mode      mode        = KB_DRAW_SINGLE;
-  kb_topology_type  topology    = KB_TOPOLOGY_TRIANGLE_LIST;
-  bool              depth_write = true;
-  bool              depth_test  = true;
+  kb_rwops*           vert_code_rwops;
+  kb_rwops*           frag_code_rwops;
+  const char*         vert_entry;
+  const char*         frag_entry;
+  kb_cull_mode        cull;
+  kb_draw_mode        mode;
+  kb_topology_type    topology;
+  bool                depth_write;
+  bool                depth_test;
 } kb_pipeline_create_info;
 
 typedef struct {
-  uint32_t  msaa;
-  bool      vsync;
-  Int2      resolution;
+  uint32_t            msaa;
+  bool                vsync;
+  Int2                resolution;
 } kb_graphics_init_info;
 
 typedef struct {
-  kb_bind_type  type;
-  uint32_t      set;
-  uint32_t      binding;
-  uint64_t      size;
-  uint64_t      offset;
-  uint64_t      block_size;
+  kb_bind_type        type;
+  uint32_t            set;
+  uint32_t            binding;
+  uint64_t            size;
+  uint64_t            offset;
+  uint64_t            block_size;
 } kb_bind_slot;
 
 KB_RESOURCE_HASHED_FUNC_DECLS (index_buffer   , kb_index_buffer   , kb_index_buffer_create_info   )
@@ -199,8 +196,10 @@ KB_API Int2                 kb_graphics_get_extent                ();
 KB_API void                 kb_graphics_wait_device_idle          ();
 KB_API void                 kb_graphics_get_frame_stats           (kb_frame_stats* stats);
 
-KB_API void*                kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
+KB_API kb_allocator*        kb_graphics_transient_allocator       ();
+KB_API void*                kb_graphics_transient_at              (uint64_t offset);
 KB_API uint64_t             kb_graphics_transient_offset          (void* ptr);
+KB_API void*                kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
 
 KB_API kb_command_buffer    kb_command_buffer_begin               ();
 KB_API void                 kb_command_buffer_end                 (kb_command_buffer command_buffer);
@@ -225,10 +224,10 @@ KB_API bool                 kb_pipeline_get_field_bind_slot_hash  (kb_pipeline p
 KB_API bool                 kb_pipeline_get_block_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
 
 KB_API kb_texture           kb_font_get_atlas                     (kb_font handle);
-KB_API Real32               kb_font_get_line_height               (kb_font handle);
-KB_API Real32               kb_font_get_string_height             (kb_font handle, const char* str);
-KB_API Real32               kb_font_get_string_width              (kb_font handle, const char* str);
-KB_API Real32               kb_font_get_string_line_width         (kb_font handle, const char* str);
+// KB_API Real32               kb_font_get_line_height               (kb_font handle);
+// KB_API Real32               kb_font_get_string_height             (kb_font handle, const char* str);
+// KB_API Real32               kb_font_get_string_width              (kb_font handle, const char* str);
+// KB_API Real32               kb_font_get_string_line_width         (kb_font handle, const char* str);
 
 KB_API void                 kb_overlay_print                      (kb_command_buffer command_buffer, kb_font font, const char* str, Float2 pos, float font_height);
 

@@ -25,9 +25,9 @@ typedef enum kb_shader_stage {
 } kb_shader_stage;
 
 typedef struct {
-  const char*     name;
-  uint32_t        offset;
-  uint32_t        size;
+  const char*               name;
+  uint32_t                  offset;
+  uint32_t                  size;
 } kb_descriptor_member_desc;
 
 typedef struct {
@@ -45,9 +45,9 @@ typedef struct {
 } kb_descriptor_block_desc;
 
 typedef struct {
-  uint32_t        index;
-  uint32_t        bindings_count;
-  uint32_t        bindings_idxs[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  uint32_t                  index;
+  uint32_t                  bindings_count;
+  uint32_t                  bindings_idxs[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
 } kb_descriptor_set_desc;
 
 typedef struct {

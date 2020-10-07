@@ -62,7 +62,7 @@ struct ResourceData {
 
 #define KB_RESOURCE_DATA_CORE_DEF(t_name, handle_t, create_info_t, ref_t, capacity)               \
   ResourceData<handle_t, create_info_t, ref_t, capacity> t_name##_data;                           \
-  void      kb_##t_name##_remove_name(handle_t handle) {                                          \
+  void kb_##t_name##_remove_name(handle_t handle) {                                               \
     kb_table_remove(&(t_name##_data.table), kb_to_arr(handle));                                   \
   }                                                                                               \
   inline auto& t_name##_ref(handle_t handle) {                                                    \
@@ -71,7 +71,7 @@ struct ResourceData {
   handle_t  kb_##t_name##_allocate() {                                                            \
     return handle_t##_from_arr(kb_freelist_take(&(t_name##_data.freelist)));                      \
   }                                                                                               \
-  void      kb_##t_name##_free(handle_t handle) {                                                 \
+  void kb_##t_name##_free(handle_t handle) {                                                      \
     kb_freelist_return(&(t_name##_data.freelist), kb_to_arr(handle));                             \
   }                                                                                               \
   void kb_##t_name##_destroy(handle_t handle) {                                                   \

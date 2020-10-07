@@ -22,9 +22,9 @@ typedef struct kb_vertex_attribute {
 } kb_vertex_attribute;
 
 typedef struct kb_vertex_layout {
-  uint32_t            attrib_count;
-  kb_vertex_attribute attribs[KB_CONFIG_MAX_VERTEX_ATTRIBS];
-  kb_hash             hash;
+  uint32_t                  attrib_count;
+  kb_vertex_attribute       attribs[KB_CONFIG_MAX_VERTEX_ATTRIBS];
+  kb_hash                   hash;
 } kb_vertex_layout;
 
 KB_API void      kb_vertex_layout_begin         (kb_vertex_layout* layout);

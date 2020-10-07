@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <kb/config.h>
 #include <kb/math.h>
 #include <kb/core.h>
 

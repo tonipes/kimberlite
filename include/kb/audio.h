@@ -14,12 +14,12 @@ extern "C" {
 #endif
 
 typedef struct {
-  Float2 pitch_range;
-  Float2 volume_range;
+  Float2                  pitch_range;
+  Float2                  volume_range;
 } kb_sound_playback_info;
 
 typedef struct {
-  float param;
+  float                   param;
 } kb_audio_init_info;
 
 typedef struct {

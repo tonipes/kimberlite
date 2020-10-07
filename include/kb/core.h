@@ -26,6 +26,9 @@
   #define KB_ASSERT(e, m) assert(e && m)
 #endif
 
+#ifndef KB_ASSERT_NOT_NULL
+  #define KB_ASSERT_NOT_NULL(e) assert(e && "Invalid NULL: '" #e "'")
+#endif
 
 //#####################################################################################################################
 // Utils
@@ -49,6 +52,7 @@
 // Build
 //#####################################################################################################################
 
+
 #define KB_BUILD_MODE_DEBUG    0
 #define KB_BUILD_MODE_RELEASE  0
 
@@ -71,6 +75,7 @@
 #elif KB_BUILD_MODE_RELEASE
 #	define KB_BUILD_MODE_NAME "Release"
 #endif
+
 
 //#####################################################################################################################
 // CPU
@@ -334,3 +339,9 @@
 #define KB_CONFIG_FILE_MAGIC_GEOM               KB_FOURCC('K', 'B', 'G', 'E')
 #define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')
 #define KB_CONFIG_FILE_MAGIC_FONT               KB_FOURCC('K', 'B', 'F', 'N')
+
+#define KB_CONFIG_ALLOC_DEBUG 0
+#if defined(KB_BUILD_MODE_DEBUG)
+# undef  KB_CONFIG_ALLOC_DEBUG
+# define KB_CONFIG_ALLOC_DEBUG 1
+#endif

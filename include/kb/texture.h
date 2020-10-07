@@ -25,14 +25,14 @@ typedef enum kb_filter {
 } kb_filter;
 
 typedef struct kb_sampler_info {
-  kb_filter filter;
+  kb_filter       filter;
 } kb_sampler_info;
 
 typedef struct kb_texture_info {
-  uint32_t  width;
-  uint32_t  height;
-  kb_format format;
-  bool      create_mipmaps;
+  uint32_t        width;
+  uint32_t        height;
+  kb_format       format;
+  bool            create_mipmaps;
 } kb_texture_info;
 
 typedef struct kb_texture_data {

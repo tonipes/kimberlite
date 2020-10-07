@@ -194,8 +194,8 @@ typedef struct {
 } Ray;
 
 typedef struct {
-  Float3 pos;
-  Plane plane;
+  Float3  pos;
+  Plane   plane;
 } Hit;
 
 typedef struct {
@@ -203,6 +203,7 @@ typedef struct {
   Float3      scale;
   Quaternion  rotation;
 } XForm;
+
 
 const extern Float3 DirRight;
 const extern Float3 DirUp;
@@ -405,6 +406,10 @@ KB_API_INLINE Real32      len_quat        (const Quaternion a)                  
 KB_API_INLINE Quaternion  conj_quat       (const Quaternion a)                                      { return (Quaternion) { -a.x, -a.y, -a.z, +a.w }; }
 KB_API_INLINE Quaternion  recip_quat      (const Quaternion a)                                      { return scale_quat(conj_quat(a), 1.0f / dot_quat(a, a)); }
 
+KB_API_INLINE Real32      uint16_to_float (int16_t value)                                           { return remap_scalar(Real32(value), Real32(INT16_MIN), Real32(INT16_MAX), -1.0f, 1.0f); }
+KB_API_INLINE bool        kb_activated    (uint8_t* curr, uint8_t* prev, size_t i)                  { return !prev[i] && curr[i]; }
+KB_API_INLINE bool        kb_deactivated  (uint8_t* curr, uint8_t* prev, size_t i)                  { return prev[i] && !curr[i]; }
+
 KB_API Float3             act_quat        (const Quaternion a, const Float3 b);
 KB_API Quaternion         slerp_quat      (const Quaternion a, const Quaternion b, Real32 t);
 
@@ -460,27 +465,27 @@ KB_API_INLINE Float3  cross_float3    (const Float3 a, const Float3 b) {
   return (Float3) { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x };
 }
 
-KB_API Float4       act_float4x4    (const Float4x4 a, const Float4 b);
+KB_API Float4       act_float4x4      (const Float4x4 a, const Float4 b);
 
-KB_API Float4x4     xform           (const Float3 pos, const Float3 scale, const Quaternion rot);
+KB_API Float4x4     xform             (const Float3 pos, const Float3 scale, const Quaternion rot);
 
-KB_API Float4x4     mul_float4x4    (const Float4x4 a, const Float4x4 b);
-KB_API Float4x4     inv_float4x4    (const Float4x4 a);
+KB_API Float4x4     mul_float4x4      (const Float4x4 a, const Float4x4 b);
+KB_API Float4x4     inv_float4x4      (const Float4x4 a);
 KB_API Float4x4     transpose_float4x4(const Float4x4 a);
 
-KB_API void         translate       (Float4x4* mtx, const Float3 pos);
-KB_API void         scale           (Float4x4* mtx, const Float3 scale);
-KB_API void         rotate          (Float4x4* mtx, const Quaternion rotation);
+KB_API void         translate         (Float4x4* mtx, const Float3 pos);
+KB_API void         scale             (Float4x4* mtx, const Float3 scale);
+KB_API void         rotate            (Float4x4* mtx, const Quaternion rotation);
 
-KB_API Float4x4     transform_mtx   (const Float3 v);
-KB_API Float4x4     scaling_mtx     (const Float3 v);
-KB_API Float4x4     rotation_mtx    (const Quaternion v);
+KB_API Float4x4     transform_mtx     (const Float3 v);
+KB_API Float4x4     scaling_mtx       (const Float3 v);
+KB_API Float4x4     rotation_mtx      (const Quaternion v);
 
-KB_API Float4x4     look_at         (const Float3 from, const Float3 to, const Float3 up);
-KB_API Float4x4     perspective     (Real32 fov, Real32 aspect, Real32 near, Real32 far);
-KB_API Float4x4     orthographic    (Real32 left, Real32 right, Real32 top, Real32 bottom, Real32 near, Real32 far);
+KB_API Float4x4     look_at           (const Float3 from, const Float3 to, const Float3 up);
+KB_API Float4x4     perspective       (Real32 fov, Real32 aspect, Real32 near, Real32 far);
+KB_API Float4x4     orthographic      (Real32 left, Real32 right, Real32 top, Real32 bottom, Real32 near, Real32 far);
 
-KB_API Float3       get_point       (Axis axis, float x, float y);
+KB_API Float3       get_point         (Axis axis, float x, float y);
 
 KB_API void         tangent_frame(const Float3 normal, Float3* tangent, Float3* bitangent);
 KB_API void         tangent_frame_with_spin(const Float3 normal, float angle, Float3* tangent, Float3* bitangent);

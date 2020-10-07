@@ -2,7 +2,6 @@
 
 #include <kb/core.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
