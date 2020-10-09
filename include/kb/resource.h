@@ -1,5 +1,10 @@
 #pragma once
 
+#include <kb/freelist.h>
+#include <kb/table.h>
+#include <kb/crt.h>
+#include <kb/log.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,11 +33,6 @@ extern "C" {
 
 // c++ implementation
 #ifdef __cplusplus
-
-#include <kb/freelist.h>
-#include <kb/table.h>
-#include <kb/crt.h>
-#include <kb/log.h>
 
 template <typename kb_handle, typename CreateInfo, typename Ref, uint16_t Capacity>
 struct ResourceData {

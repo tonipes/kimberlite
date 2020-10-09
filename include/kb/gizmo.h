@@ -31,14 +31,14 @@ typedef struct kb_gizmo {
   Float4x4            proj;
   Float3              current_pos;
   kb_gizmo_action     action;
-  kb_command_buffer   command_buffer;
+  kb_encoder          encoder;
   kb_simple_vertex*   line_vertex_cache;
   uint16_t*           line_index_cache;
   Float4x4            mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
   kb_gizmo_attribs    attribs[KB_CONFIG_GIZMO_STACK_SIZE];
 } kb_gizmo;
 
-KB_API void     kb_gizmo_begin                (kb_gizmo* gizmo, kb_command_buffer command_buffer, const Float4x4 view, const Float4x4 proj);
+KB_API void     kb_gizmo_begin                (kb_gizmo* gizmo, kb_encoder encoder, const Float4x4 view, const Float4x4 proj);
 KB_API void     kb_gizmo_end                  (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_state_push           (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_state_pop            (kb_gizmo* gizmo);

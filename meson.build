@@ -37,6 +37,8 @@ kb_compile_args = [
   '-Wno-missing-braces',
 ]
 
+kb_link_args = ['-Wl,-no_pie']
+
 if get_option('buildtype').startswith('debug')
   kb_compile_args += '-DDEBUG'
 endif

@@ -17,6 +17,7 @@ KB_HANDLE(kb_vertex_buffer);
 KB_HANDLE(kb_mesh);
 KB_HANDLE(kb_pipeline);
 KB_HANDLE(kb_material);
+KB_HANDLE(kb_encoder);
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,7 +86,7 @@ typedef struct kb_geometry_create_info {
 } kb_geometry_create_info;
 
 typedef struct kb_command_buffer_create_info {
-  int                 param;
+  int                 unused;
 } kb_command_buffer_create_info;
 
 typedef struct kb_sampler_binding {
@@ -170,6 +171,12 @@ typedef struct {
   uint64_t            block_size;
 } kb_bind_slot;
 
+typedef struct {
+  uint32_t            first_index;
+  uint32_t            first_vertex;
+  uint32_t            index_count;
+} kb_primitive_info;
+
 KB_RESOURCE_HASHED_FUNC_DECLS (index_buffer   , kb_index_buffer   , kb_index_buffer_create_info   )
 KB_RESOURCE_HASHED_FUNC_DECLS (mesh           , kb_mesh           , kb_mesh_create_info           )
 KB_RESOURCE_HASHED_FUNC_DECLS (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
@@ -186,7 +193,6 @@ KB_RESOURCE_CORE_FUNC_DECLS   (mesh           , kb_mesh           , kb_mesh_crea
 KB_RESOURCE_CORE_FUNC_DECLS   (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_CORE_FUNC_DECLS   (texture        , kb_texture        , kb_texture_create_info        )
 KB_RESOURCE_CORE_FUNC_DECLS   (vertex_buffer  , kb_vertex_buffer  , kb_vertex_buffer_create_info  )
-KB_RESOURCE_CORE_FUNC_DECLS   (command_buffer , kb_command_buffer , kb_command_buffer_create_info )
 KB_RESOURCE_CORE_FUNC_DECLS   (material       , kb_material       , kb_material_create_info       )
 
 KB_API void                 kb_graphics_init                      (const kb_graphics_init_info info);
@@ -201,39 +207,34 @@ KB_API void*                kb_graphics_transient_at              (uint64_t offs
 KB_API uint64_t             kb_graphics_transient_offset          (void* ptr);
 KB_API void*                kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
 
-KB_API kb_command_buffer    kb_command_buffer_begin               ();
-KB_API void                 kb_command_buffer_end                 (kb_command_buffer command_buffer);
-KB_API void                 kb_command_buffer_set_mesh            (kb_command_buffer command_buffer, kb_mesh handle);
-KB_API void                 kb_command_buffer_set_viewport        (kb_command_buffer command_buffer, Int2 size, Float2 depth_range);
-KB_API void                 kb_command_buffer_set_scissors        (kb_command_buffer command_buffer, Int2 extent, Int2 offset);
-KB_API void                 kb_command_buffer_submit_mesh         (kb_command_buffer command_buffer, kb_mesh mesh);
-KB_API void                 kb_command_buffer_submit              (kb_command_buffer command_buffer, uint32_t index_offset, uint32_t vertex_offset, uint32_t index_count);
-KB_API void                 kb_command_buffer_bind_pipeline       (kb_command_buffer command_buffer, kb_pipeline pipeline);
-KB_API void                 kb_command_buffer_bind_vertex_buffer  (kb_command_buffer command_buffer, kb_vertex_buffer handle);
-KB_API void                 kb_command_buffer_bind_index_buffer   (kb_command_buffer command_buffer, kb_index_buffer handle);
-KB_API void                 kb_command_buffer_bind_data           (kb_command_buffer command_buffer, const kb_bind_slot* slot, const void* data, uint32_t size);
-KB_API void                 kb_command_buffer_bind_texture        (kb_command_buffer command_buffer, const kb_bind_slot* slot, kb_texture texture);
-KB_API void                 kb_command_buffer_bind_material       (kb_command_buffer command_buffer, kb_material material);
-
-KB_API void                 kb_command_buffer_bind_vertex_buffer_transient  (kb_command_buffer command_buffer, uint64_t offset);
-KB_API void                 kb_command_buffer_bind_index_buffer_transient   (kb_command_buffer command_buffer, uint64_t offset, kb_index_type type);
-
 KB_API bool                 kb_pipeline_get_block_bind_slot       (kb_pipeline pipeline, const char* name, kb_bind_slot* bind_slot);
-KB_API bool                 kb_pipeline_get_field_bind_slot       (kb_pipeline pipeline, const char* name, kb_bind_slot* bind_slot);
-KB_API bool                 kb_pipeline_get_field_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
 KB_API bool                 kb_pipeline_get_block_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
 
 KB_API kb_texture           kb_font_get_atlas                     (kb_font handle);
-// KB_API Real32               kb_font_get_line_height               (kb_font handle);
-// KB_API Real32               kb_font_get_string_height             (kb_font handle, const char* str);
-// KB_API Real32               kb_font_get_string_width              (kb_font handle, const char* str);
-// KB_API Real32               kb_font_get_string_line_width         (kb_font handle, const char* str);
 
-KB_API void                 kb_overlay_print                      (kb_command_buffer command_buffer, kb_font font, const char* str, Float2 pos, float font_height);
+KB_API void                 kb_overlay_print                      (kb_encoder encoder, kb_font font, const char* str, Float2 pos, float font_height);
 
 KB_API void                 kb_font_load                          (kb_font target, kb_rwops* rwops);
 KB_API void                 kb_texture_load                       (kb_texture target, kb_rwops* rwops);
 KB_API void                 kb_geometry_load                      (kb_geometry target, kb_rwops* rwops);
+
+KB_API kb_encoder           kb_encoder_begin                      ();
+KB_API void                 kb_encoder_end                        (kb_encoder encoder);
+KB_API void                 kb_encoder_push                       (kb_encoder encoder);
+KB_API void                 kb_encoder_pop                        (kb_encoder encoder);
+KB_API void                 kb_encoder_bind_pipeline              (kb_encoder encoder, kb_pipeline pipeline);
+KB_API void                 kb_encoder_bind_vertex_buffer         (kb_encoder encoder, kb_vertex_buffer vertex_buffer);
+KB_API void                 kb_encoder_bind_index_buffer          (kb_encoder encoder, kb_index_buffer index_buffer);
+KB_API void                 kb_encoder_bind_vertex_buffer_transient   (kb_encoder encoder, uint64_t offset);
+KB_API void                 kb_encoder_bind_index_buffer_transient    (kb_encoder encoder, uint64_t offset);
+KB_API void                 kb_encoder_bind_texture               (kb_encoder encoder, const kb_bind_slot* slot, kb_texture texture);
+KB_API void                 kb_encoder_bind_uniform               (kb_encoder encoder, const kb_bind_slot* slot, const void* data, uint64_t size);
+KB_API void                 kb_encoder_set_viewport               (kb_encoder encoder, Int2 size, Float2 depth_range);
+KB_API void                 kb_encoder_set_scissors               (kb_encoder encoder, Int2 extent, Int2 offset);
+KB_API void                 kb_encoder_submit_single              (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count);
+KB_API void                 kb_encoder_reset_frame                (kb_encoder encoder);
+KB_API void                 kb_encoder_submit_mesh                (kb_encoder encoder, kb_mesh mesh);
+KB_API void                 kb_encoder_bind_material              (kb_encoder encoder, kb_material material);
 
 #ifdef __cplusplus
 }
