@@ -5,6 +5,8 @@
 #include <kb/math.h>
 #include <kb/rwops.h>
 #include <kb/table.h>
+#include <kb/resource.h>
+#include <kb/renderer.h>
 
 KB_HANDLE(kb_font);
 
@@ -42,6 +44,23 @@ typedef struct {
   void*         atlas_bitmap;
 } kb_font_data;
 
+typedef struct {
+  Float4        color;
+  float         outline;
+  float         smoothing;    
+} kb_font_render_info;
+
+typedef struct {
+  kb_font_info        info;
+  kb_pipeline         pipeline;
+  kb_texture          atlas;
+  uint32_t            atlas_height;
+  uint32_t            atlas_width;
+} kb_font_create_info;
+
+KB_RESOURCE_HASHED_FUNC_DECLS (font, kb_font, kb_font_create_info)
+KB_RESOURCE_CORE_FUNC_DECLS   (font, kb_font, kb_font_create_info)
+
 KB_API void   kb_font_read                          (kb_font_data* font, kb_rwops* rwops);
 KB_API void   kb_font_write                         (const kb_font_data* font, kb_rwops* rwops);
 KB_API void   kb_font_dump_info                     (const kb_font_data* font);
@@ -52,6 +71,9 @@ KB_API Real32 kb_font_get_line_height               (kb_font_info* info);
 KB_API Real32 kb_font_get_string_height             (kb_font_info* info, const char* str);
 KB_API Real32 kb_font_get_string_width              (kb_font_info* info, const char* str);
 KB_API Real32 kb_font_get_string_line_width         (kb_font_info* info, const char* str);
+
+KB_API void   kb_font_submit_text                   (kb_encoder encoder, kb_font font, const char* str, Float2 pos, float font_height);
+KB_API void   kb_font_load                          (kb_font target, kb_rwops* rwops);
 
 #ifdef __cplusplus
 }

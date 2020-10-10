@@ -6,7 +6,7 @@ extern "C" {
 
 typedef uint32_t kb_handle_idx;
 
-static inline bool kb_is_valid_idx  (kb_handle_idx idx) { return idx != UINT32_MAX && idx != 0; }  \
+static inline bool kb_is_valid_idx(kb_handle_idx idx) { return idx != UINT32_MAX && idx != 0; }  \
 
 #ifdef __cplusplus
 }
@@ -23,4 +23,4 @@ static inline bool kb_is_valid_idx  (kb_handle_idx idx) { return idx != UINT32_M
   static inline bool          operator==          (const name_t& a, const name_t& b)  { return a.idx == b.idx; }    \
   static inline bool          operator!=          (const name_t& a, const name_t& b)  { return !(a == b); }         \
 
-#define INVALID_HANDLE_CHECK(name, handle) if (!kb_is_valid(handle)) kb_log_error("Using invalid {} handle", #name);
+#define KB_ASSERT_VALID(handle) assert(kb_is_valid(handle) && "Invalid handle: '" #handle "'")

@@ -6,8 +6,12 @@
 #include <kb/hash.h>
 #include <kb/vertex.h>
 #include <kb/rwops.h>
+#include <kb/resource.h>
+#include <kb/material.h>
+#include <kb/renderer.h>
 
 KB_HANDLE(kb_geometry);
+KB_HANDLE(kb_mesh);
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,10 +59,37 @@ typedef struct kb_geometry_data {
   void*               vertex_data;
 } kb_geometry_data;
 
+typedef struct {
+  kb_vertex_buffer    vertex_buffer;
+  kb_index_buffer     index_buffer;
+  uint32_t            material_count;
+  kb_material*        materials;
+  uint32_t            mesh_count;
+  kb_mesh*            meshes;
+} kb_geometry_create_info;
+
+typedef struct {
+  kb_vertex_buffer    vertex_buffer;
+  kb_index_buffer     index_buffer;
+  uint32_t            primitive_count;
+  kb_primitive_data*  primitives;
+  uint32_t            material_count;
+  kb_material*        materials;
+} kb_mesh_create_info;
+
+KB_RESOURCE_HASHED_FUNC_DECLS (mesh, kb_mesh, kb_mesh_create_info)
+KB_RESOURCE_HASHED_FUNC_DECLS (geometry, kb_geometry, kb_geometry_create_info)
+
+KB_RESOURCE_CORE_FUNC_DECLS   (mesh, kb_mesh, kb_mesh_create_info)
+KB_RESOURCE_CORE_FUNC_DECLS   (geometry, kb_geometry, kb_geometry_create_info)
+
 KB_API void kb_geometry_read      (kb_geometry_data* geometry, kb_rwops* rwops);
 KB_API void kb_geometry_write     (const kb_geometry_data* geometry, kb_rwops* rwops);
 KB_API void kb_geometry_dump_info (const kb_geometry_data* geometry);
 KB_API void kb_geometry_deinit    (kb_geometry_data* geometry);
+KB_API void kb_geometry_load      (kb_geometry target, kb_rwops* rwops);
+
+KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh);
 
 #ifdef __cplusplus
 }

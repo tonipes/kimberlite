@@ -20,8 +20,8 @@ typedef enum kb_format {
 } kb_format;
 
 typedef enum kb_filter {
-  KB_FILTER_NEAREST = 0,
-  KB_FILTER_LINEAR  = 1,
+  KB_FILTER_NEAREST      = 0,
+  KB_FILTER_LINEAR       = 1,
 } kb_filter;
 
 typedef struct kb_sampler_info {
