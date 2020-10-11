@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct kb_cli_args {
   int32_t       argc;
   const char**  argv;
 } kb_cli_args;

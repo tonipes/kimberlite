@@ -14,7 +14,7 @@ KB_HANDLE(kb_font);
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct kb_font_char {
   uint32_t      codepoint;
   int           advance;
   int           left_bearing;
@@ -25,7 +25,7 @@ typedef struct {
   Float2        uv_rect_to;
 } kb_font_char;
 
-typedef struct {
+typedef struct kb_font_info {
   int32_t       ascent;
   int32_t       descent;
   int32_t       line_gap;
@@ -36,7 +36,7 @@ typedef struct {
   kb_table      char_table;
 } kb_font_info;
 
-typedef struct {
+typedef struct kb_font_data {
   kb_font_info  info;
   uint32_t      atlas_bitmap_width;
   uint32_t      atlas_bitmap_height;
@@ -44,22 +44,22 @@ typedef struct {
   void*         atlas_bitmap;
 } kb_font_data;
 
-typedef struct {
+typedef struct kb_font_render_info {
   Float4        color;
   float         outline;
   float         smoothing;    
 } kb_font_render_info;
 
-typedef struct {
-  kb_font_info        info;
-  kb_pipeline         pipeline;
-  kb_texture          atlas;
-  uint32_t            atlas_height;
-  uint32_t            atlas_width;
+typedef struct kb_font_create_info {
+  kb_font_info  info;
+  kb_pipeline   pipeline;
+  kb_texture    atlas;
+  uint32_t      atlas_height;
+  uint32_t      atlas_width;
 } kb_font_create_info;
 
-KB_RESOURCE_HASHED_FUNC_DECLS (font, kb_font, kb_font_create_info)
-KB_RESOURCE_CORE_FUNC_DECLS   (font, kb_font, kb_font_create_info)
+KB_RESOURCE_HASHED_FUNC_DECLS (font, kb_font, kb_font_create_info);
+KB_RESOURCE_ALLOC_FUNC_DECLS  (font, kb_font, kb_font_create_info);
 
 KB_API void   kb_font_read                          (kb_font_data* font, kb_rwops* rwops);
 KB_API void   kb_font_write                         (const kb_font_data* font, kb_rwops* rwops);

@@ -6,7 +6,7 @@
 extern "C" {
 #endif  
 
-typedef struct {
+typedef struct kb_array {
   uint32_t  elem_size;
   uint32_t  capacity;
   uint32_t  count;

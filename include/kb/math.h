@@ -91,7 +91,7 @@ typedef uint64_t  UInt64;
 #define FLOATMAX   3.402823e+38f
 #define EPSILON    FLT_EPSILON
 
-typedef enum {
+typedef enum Axis {
   AxisX, AxisY, AxisZ
 } Axis;
 
@@ -103,11 +103,11 @@ VECTOR_TYPE_2(Float2, Real32)
 VECTOR_TYPE_3(Float3, Real32)
 VECTOR_TYPE_4(Float4, Real32)
 
-typedef struct {
+typedef struct Quaternion {
   Real32 x, y, z, w;
 } Quaternion;
 
-typedef struct {
+typedef struct Float3x3 {
   union {
     Real32 m[9];
     Real32 mm[3][3];
@@ -119,7 +119,7 @@ typedef struct {
   };
 } Float3x3;
 
-typedef struct {
+typedef struct Float4x4 {
   union {
     Real32 m[16];
     Real32 mm[4][4];
@@ -133,77 +133,76 @@ typedef struct {
   };
 } Float4x4;
 
-typedef struct {
+typedef struct Aabb {
   Float3 min;
   Float3 max;
 } Aabb;
 
-typedef struct {
+typedef struct Plane {
   Float3 normal;
   Real32 dist;
 } Plane;
 
-typedef struct {
+typedef struct FloatRect {
   Float2 from;
   Float2 to;
 } FloatRect;
 
-typedef struct {
+typedef struct IntRect {
   Int2 from;
   Int2 size;
 } IntRect;
 
-typedef struct {
+typedef struct Sphere {
   Float3 center;
   Real32 radius;
 } Sphere;
 
-typedef struct {
+typedef struct Capsule {
   Float3 pos;
   Float3 end;
   Real32 radius;
 } Capsule;
 
-typedef struct {
+typedef struct Cone {
   Float3 pos;
   Float3 end;
   Real32 radius;
 } Cone;
 
-typedef struct {
+typedef struct Cylinder {
   Float3 pos;
   Float3 end;
   Real32 radius;
 } Cylinder;
 
-typedef struct {
+typedef struct Disk {
   Float3 center;
   Float3 normal;
   Real32 radius;
 } Disk;
 
-typedef struct {
+typedef struct Triangle {
   Float3 v0;
   Float3 v1;
   Float3 v2;
 } Triangle;
 
-typedef struct {
+typedef struct Ray {
   Float3 pos;
   Float3 dir;
 } Ray;
 
-typedef struct {
+typedef struct Hit {
   Float3  pos;
   Plane   plane;
 } Hit;
 
-typedef struct {
+typedef struct XForm {
   Float3      position;
   Float3      scale;
   Quaternion  rotation;
 } XForm;
-
 
 const extern Float3 DirRight;
 const extern Float3 DirUp;

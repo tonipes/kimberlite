@@ -2,20 +2,20 @@
 
 #include <kb/core.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef enum kb_whence {
-  KB_RWOPS_SEEK_BEG = 0,
-  KB_RWOPS_SEEK_CUR = 1,
-  KB_RWOPS_SEEK_END = 2
+  KB_RWOPS_SEEK_BEG       = 0,
+  KB_RWOPS_SEEK_CUR       = 1,
+  KB_RWOPS_SEEK_END       = 2
 } kb_whence;
 
 typedef enum kb_file_mode {
-  KB_READ   = 0,
-  KB_WRITE  = 1
+  KB_FILE_MODE_UNKNOWN    = 0,
+  KB_FILE_MODE_READ       = 1,
+  KB_FILE_MODE_WRITE      = 2
 } kb_file_mode;
 
 typedef struct kb_rwops {
@@ -25,7 +25,6 @@ typedef struct kb_rwops {
   int       (*close)  (struct kb_rwops* rwops);
   int64_t   (*tell)   (struct kb_rwops* rwops);
   uint64_t  (*write)  (struct kb_rwops* rwops, const void *ptr, uint64_t size);
-
   void* impl;
 } kb_rwops;
 

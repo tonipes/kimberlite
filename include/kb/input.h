@@ -1,13 +1,13 @@
 #pragma once
 
 #include <kb/math.h>
-#include <kb/handle.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef enum {
+typedef enum kb_scancode {
+  KB_KEY_INVALID            = 0,
   KB_KEY_MOD_CTRL_LEFT      = 0x01u,
   KB_KEY_MOD_SHIFT_LEFT     = 0x02u,
   KB_KEY_MOD_ALT_LEFT       = 0x04u,
@@ -189,7 +189,7 @@ typedef enum {
   KB_KEY_COUNT              = 0xffu,
 } kb_scancode;
 
-typedef enum {
+typedef enum kb_gamepad_axis {
   KB_GAMEPAD_AXIS_INVALID   = 0,
   KB_GAMEPAD_AXIS_LEFTX     = 1,
   KB_GAMEPAD_AXIS_LEFTY     = 2,
@@ -200,7 +200,7 @@ typedef enum {
   KB_GAMEPAD_AXIS_COUNT     = 7,
 } kb_gamepad_axis;
 
-typedef enum {
+typedef enum kb_gamepad_button {
   KB_GAMEPAD_BUTTON_INVALID       = 0,
   KB_GAMEPAD_BUTTON_A             = 1,
   KB_GAMEPAD_BUTTON_B             = 2,
@@ -220,14 +220,14 @@ typedef enum {
   KB_GAMEPAD_BUTTON_COUNT         = 16,
 } kb_gamepad_button;
 
-typedef enum {
+typedef enum kb_gamepad_joystick {
   KB_GAMEPAD_JOYSTICK_INVALID = 0,
   KB_GAMEPAD_JOYSTICK_LEFT    = 1,
   KB_GAMEPAD_JOYSTICK_RIGHT   = 2,
   KB_GAMEPAD_JOYSTICK_COUNT   = 3,
 } kb_gamepad_joystick;
 
-typedef enum {
+typedef enum kb_mouse_button {
   KB_MOUSE_BUTTON_INVALID = 0,
   KB_MOUSE_BUTTON_LEFT    = 1,
   KB_MOUSE_BUTTON_RIGHT   = 2,
@@ -252,9 +252,9 @@ typedef struct kb_input_state {
   Float2            wheel;
 } kb_input_state;
 
-struct kb_gamepad_joystick_axis {
+typedef struct kb_gamepad_joystick_axis {
   kb_gamepad_axis x, y;
-};
+} kb_gamepad_joystick_axis;
 
 static kb_gamepad_joystick_axis joystick_axis[] {
   { KB_GAMEPAD_AXIS_INVALID,  KB_GAMEPAD_AXIS_INVALID },
@@ -265,6 +265,7 @@ static kb_gamepad_joystick_axis joystick_axis[] {
 
 extern kb_input_state state_prev;
 extern kb_input_state state_curr;
+extern kb_input_state state_next;
 
 KB_API          void          kb_input_init                         (const kb_input_init_info info);
 KB_API          void          kb_input_deinit                       ();

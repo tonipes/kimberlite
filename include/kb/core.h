@@ -47,6 +47,11 @@
 #define STRING(_x) STRING_(_x)
 #define STRING_(_x) #_x
 
+#define KB_KILO(value) ((value)/1024LL)
+#define KB_MEGA(value) (KB_KILO(value)/1024LL)
+#define KB_GIGA(value) (KB_MEGA(value)/1024LL)
+#define KB_TERA(value) (KB_GIGA(value)/1024LL)
+
 
 //#####################################################################################################################
 // Build

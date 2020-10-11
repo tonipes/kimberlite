@@ -18,16 +18,13 @@ extern "C" {
 #endif
 
 typedef struct kb_primitive_data {
-  uint32_t  first_vertex;
-  uint32_t  vertex_count;
-
-  uint32_t  first_index;
-  uint32_t  index_count;
-
-  int32_t   material;
-
-  Sphere    sphere;
-  Aabb      aabb;
+  uint32_t            first_vertex;
+  uint32_t            vertex_count;
+  uint32_t            first_index;
+  uint32_t            index_count;
+  int32_t             material;
+  Sphere              sphere;
+  Aabb                aabb;
 } kb_primitive_data;
 
 typedef struct kb_mesh_data {
@@ -59,7 +56,7 @@ typedef struct kb_geometry_data {
   void*               vertex_data;
 } kb_geometry_data;
 
-typedef struct {
+typedef struct kb_geometry_create_info {
   kb_vertex_buffer    vertex_buffer;
   kb_index_buffer     index_buffer;
   uint32_t            material_count;
@@ -68,7 +65,7 @@ typedef struct {
   kb_mesh*            meshes;
 } kb_geometry_create_info;
 
-typedef struct {
+typedef struct kb_mesh_create_info {
   kb_vertex_buffer    vertex_buffer;
   kb_index_buffer     index_buffer;
   uint32_t            primitive_count;
@@ -77,11 +74,11 @@ typedef struct {
   kb_material*        materials;
 } kb_mesh_create_info;
 
-KB_RESOURCE_HASHED_FUNC_DECLS (mesh, kb_mesh, kb_mesh_create_info)
-KB_RESOURCE_HASHED_FUNC_DECLS (geometry, kb_geometry, kb_geometry_create_info)
+KB_RESOURCE_HASHED_FUNC_DECLS (mesh, kb_mesh, kb_mesh_create_info);
+KB_RESOURCE_ALLOC_FUNC_DECLS  (mesh, kb_mesh, kb_mesh_create_info);
 
-KB_RESOURCE_CORE_FUNC_DECLS   (mesh, kb_mesh, kb_mesh_create_info)
-KB_RESOURCE_CORE_FUNC_DECLS   (geometry, kb_geometry, kb_geometry_create_info)
+KB_RESOURCE_HASHED_FUNC_DECLS (geometry, kb_geometry, kb_geometry_create_info);
+KB_RESOURCE_ALLOC_FUNC_DECLS  (geometry, kb_geometry, kb_geometry_create_info);
 
 KB_API void kb_geometry_read      (kb_geometry_data* geometry, kb_rwops* rwops);
 KB_API void kb_geometry_write     (const kb_geometry_data* geometry, kb_rwops* rwops);

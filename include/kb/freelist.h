@@ -7,7 +7,7 @@
 extern "C" {
 #endif  
 
-typedef struct {
+typedef struct kb_freelist {
   uint32_t*   handles;
   uint32_t    count;
   uint32_t    capacity;

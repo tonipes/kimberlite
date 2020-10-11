@@ -1,15 +1,14 @@
 #pragma once
 
 #include <kb/core.h>
-
 #include <kb/table.h>
-//#include <kb/config.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef enum {
+typedef enum kb_descriptor_type {
+  KB_DESCRIPTOR_TYPE_UNKNOWN        = 0,
   KB_DESCRIPTOR_TYPE_SAMPLER        = 1,
   KB_DESCRIPTOR_TYPE_UNIFORM_BUFFER = 6,
   KB_DESCRIPTOR_TYPE_STORAGE_BUFFER = 7,
@@ -17,20 +16,20 @@ typedef enum {
 } kb_descriptor_type;
 
 typedef enum kb_shader_stage {
-  KB_SHADER_STAGE_UNSUPPORTED = 0x00000000,
+  KB_SHADER_STAGE_UNKNOWN     = 0x00000000,
   KB_SHADER_STAGE_VERTEX      = 0x00000001,
   KB_SHADER_STAGE_GEOMETRY    = 0x00000008,
   KB_SHADER_STAGE_FRAGMENT    = 0x00000010,
   KB_SHADER_STAGE_COMPUTE     = 0x00000020,
 } kb_shader_stage;
 
-typedef struct {
+typedef struct kb_descriptor_member_desc {
   const char*               name;
   uint32_t                  offset;
   uint32_t                  size;
 } kb_descriptor_member_desc;
 
-typedef struct {
+typedef struct kb_descriptor_block_desc {
   const char*               name;
   uint32_t                  set_index;
   uint32_t                  binding_index;
@@ -41,16 +40,15 @@ typedef struct {
   uint32_t                  member_count;
   kb_table                  member_name_table;
   kb_descriptor_member_desc members[KB_CONFIG_MAX_BINDING_BLOCK_MEMBERS];
-
 } kb_descriptor_block_desc;
 
-typedef struct {
+typedef struct kb_descriptor_set_desc {
   uint32_t                  index;
   uint32_t                  bindings_count;
   uint32_t                  bindings_idxs[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
 } kb_descriptor_set_desc;
 
-typedef struct {
+typedef struct kb_shader_desc {
   uint32_t                  descriptor_block_count;
   kb_descriptor_block_desc  descriptor_blocks[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
   

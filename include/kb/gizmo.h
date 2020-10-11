@@ -2,7 +2,7 @@
 
 #include <kb/core.h>
 #include <kb/math.h>
-#include <kb/graphics.h>
+#include <kb/renderer.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -2,14 +2,13 @@
 
 #include <kb/core.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef uint32_t kb_hash;
 
-typedef struct {
+typedef struct kb_hash_gen {
   kb_hash   hash;
   uint32_t  tail;
   uint32_t  count;

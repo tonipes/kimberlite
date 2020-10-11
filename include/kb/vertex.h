@@ -2,6 +2,7 @@
 
 #include <kb/core.h>
 #include <kb/hash.h>
+#include <kb/math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,6 +13,12 @@ typedef enum kb_vertex_attribute_type {
   KB_ATTRIB_SINT  = 1,
   KB_ATTRIB_UINT  = 2,
 } kb_vertex_attribute_type;
+
+typedef struct kb_simple_vertex {
+  Float3                    pos;
+  Float4                    color;
+  Float2                    texcoord;
+} kb_simple_vertex;
 
 typedef struct kb_vertex_attribute {
   uint32_t                  location;

@@ -7,12 +7,16 @@
 extern "C" {
 #endif
 
-KB_API uint32_t  kb_rand_gen          ();
-KB_API float     kb_rand              ();
-KB_API float     kb_rand_unit         ();
-KB_API float     kb_rand_range        (float from, float to);
-KB_API Float2    kb_rand_unit_circle  ();
-KB_API Float3    kb_rand_unit_sphere  ();
+typedef struct kb_rng {
+  uint32_t seed;
+} kb_rng;
+
+KB_API uint32_t  kb_rand_gen          (kb_rng* rng);
+KB_API float     kb_rand              (kb_rng* rng);
+KB_API float     kb_rand_unit         (kb_rng* rng);
+KB_API float     kb_rand_range        (kb_rng* rng, float from, float to);
+KB_API Float2    kb_rand_unit_circle  (kb_rng* rng);
+KB_API Float3    kb_rand_unit_sphere  (kb_rng* rng);
 
 #ifdef __cplusplus
 }
