@@ -32,8 +32,27 @@ cppc = meson.get_compiler('cpp')
 kb_build_tools = true
 
 kb_compile_args = [
+  # '-Werror=return-type',
+  # '-fmessage-length=0',
+  # '-Werror',
+  # '-Wcast-qual',
+  # '-Wall',
+  # '-Wextra',
+  # '-Wwrite-strings',
+  # '-Winit-self',
+  # '-Wcast-align',
+  # '-Wpointer-arith',
+  # '-Wstrict-aliasing',
+  # '-Wformat=2',
+  # '-Wmissing-declarations',
+  # '-Wmissing-include-dirs',
+  # '-Wno-unused-parameter',
+  # '-Wuninitialized',
+  # '-Wold-style-definition',
+  # '-Wstrict-prototypes',
+  # '-Wmissing-prototypes',
   '-Wno-nullability-completeness',
-  '-Werror=return-type',
+  '-Wno-non-virtual-dtor',
   '-Wno-missing-braces',
 ]
 
@@ -48,12 +67,9 @@ foreach arg : kb_compile_args
   add_project_arguments(arg, language : 'cpp')
 endforeach
 
-
 kb_cpp_args = []
 
-dep_sdl2    = dependency('sdl2',    fallback: ['sdl2',    'sdl2_dep'])
-dep_fmt     = dependency('fmt',     fallback: ['fmt',     'fmt_dep'])
-dep_soloud  = dependency('soloud',  fallback: ['soloud',  'soloud_dep'])
+dep_sdl2    = dependency('sdl2')
 dep_vulkan  = dependency('vulkan')
 
 subdir('libraries')

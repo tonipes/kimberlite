@@ -61,9 +61,10 @@ typedef struct kb_font_create_info {
 KB_RESOURCE_HASHED_FUNC_DECLS (font, kb_font, kb_font_create_info);
 KB_RESOURCE_ALLOC_FUNC_DECLS  (font, kb_font, kb_font_create_info);
 
-KB_API void   kb_font_read                          (kb_font_data* font, kb_rwops* rwops);
-KB_API void   kb_font_write                         (const kb_font_data* font, kb_rwops* rwops);
-KB_API void   kb_font_dump_info                     (const kb_font_data* font);
+KB_API void   kb_font_data_read                     (kb_font_data* font, kb_rwops* rwops);
+KB_API void   kb_font_data_write                    (const kb_font_data* font, kb_rwops* rwops);
+KB_API void   kb_font_data_dump_info                (const kb_font_data* font);
+KB_API void   kb_font_data_destroy                  (kb_font_data* font);
 
 KB_API void   kb_font_break_line                    (kb_font_info* info, float* current_y);
 KB_API void   kb_font_quad_advance                  (kb_font_info* info, int codepoint, float* current_x, float* current_y, FloatRect* pos, FloatRect* uv); 
