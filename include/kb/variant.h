@@ -51,7 +51,7 @@ KB_API kb_variant*    kb_variant_obj_at           (kb_variant* variant, const ch
 KB_API kb_variant*    kb_variant_obj_put          (kb_variant* variant, const char* key);
 KB_API kb_variant*    kb_variant_obj_at_hash      (kb_variant* variant, kb_hash key);
 KB_API kb_variant*    kb_variant_obj_put_hash     (kb_variant* variant, kb_hash key);
-KB_API kb_hash        kb_variant_obj_key_at       (kb_variant* variant, uint32_t index);
+KB_API kb_hash        kb_variant_obj_key_at       (const kb_variant* variant, uint32_t index);
 
 KB_API uint32_t       kb_variant_arr_capacity     (const kb_variant* variant);
 KB_API uint32_t       kb_variant_arr_count        (const kb_variant* variant);
