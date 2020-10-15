@@ -16,6 +16,7 @@ link_args = []
 kbtest_exe = executable('kbtest',  
   kbtest_sources,
   dependencies        : kbtest_deps,
+  cpp_args            : kb_cpp_args,
 )
 
 test('kbtest', kbtest_exe)

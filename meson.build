@@ -1,6 +1,6 @@
 project(
   'Kimberlite',
-  ['cpp', 'c'],
+  ['cpp', 'c', 'objcpp'],
   version: 'alpha',
   license : 'MIT',
   default_options : [
@@ -14,7 +14,13 @@ project(
 if get_option('buildtype').startswith('debug')
   add_project_arguments('-DDEBUG', language : 'c')
   add_project_arguments('-DDEBUG', language : 'cpp')
+  add_project_arguments('-DDEBUG', language : 'objcpp')
 endif
+
+# option('kb_graphics_lib', type : 'combo', choices : ['vulkan', 'metal'], value : 'vulkan')
+
+kb_graphics_lib = 'metal'
+# kb_graphics_lib = 'vulkan'
 
 fs = import('fs')
 
@@ -65,9 +71,11 @@ endif
 foreach arg : kb_compile_args
   add_project_arguments(arg, language : 'c')
   add_project_arguments(arg, language : 'cpp')
+  add_project_arguments(arg, language : 'objcpp')
 endforeach
 
 kb_cpp_args = []
+kb_objcpp_args = ['-std=c++14']
 
 dep_sdl2    = dependency('sdl2')
 dep_vulkan  = dependency('vulkan')
@@ -87,34 +95,34 @@ subdir('test')
 doxygen = find_program('doxygen', required : false)
 dot = find_program('dot', required : false)
 
-if not doxygen.found()
-  message('Doxygen not found. Can not generate documentation')
-else
-  doc_config = configuration_data()
+# if not doxygen.found()
+#   message('Doxygen not found. Can not generate documentation')
+# else
+#   doc_config = configuration_data()
 
-  doc_config.set('TITLE', meson.project_name())
-  doc_config.set('DESC',  kb_desc)
-  doc_config.set('LOGO',  '')
-  doc_config.set('SRC_PATH', join_paths(meson.source_root(), 'source'))
+#   doc_config.set('TITLE', meson.project_name())
+#   doc_config.set('DESC',  kb_desc)
+#   doc_config.set('LOGO',  '')
+#   doc_config.set('SRC_PATH', join_paths(meson.source_root(), 'source'))
 
-  if dot.found()
-    doc_config.set('HAVE_DOT', 'YES')
-  else
-    doc_config.set('HAVE_DOT', 'NO')
-  endif
+#   if dot.found()
+#     doc_config.set('HAVE_DOT', 'YES')
+#   else
+#     doc_config.set('HAVE_DOT', 'NO')
+#   endif
 
-  doxyfile = configure_file(
-    input: 'Doxyfile.in',
-    output: 'Doxyfile',
-    configuration: doc_config,
-  )
+#   doxyfile = configure_file(
+#     input: 'Doxyfile.in',
+#     output: 'Doxyfile',
+#     configuration: doc_config,
+#   )
 
-  html_target = custom_target(
-    'docs',
-    input: doxyfile,
-    output: 'doc',
-    command: [doxygen, doxyfile],
-    build_by_default: false,
-  )
+#   html_target = custom_target(
+#     'docs',
+#     input: doxyfile,
+#     output: 'doc',
+#     command: [doxygen, doxyfile],
+#     build_by_default: false,
+#   )
 
-endif
+# endif

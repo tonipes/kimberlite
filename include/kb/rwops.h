@@ -29,7 +29,7 @@ typedef struct kb_rwops {
 } kb_rwops;
 
 KB_API kb_rwops*  kb_rwops_open_file  (const char* path, kb_file_mode mode);
-KB_API kb_rwops*  kb_rwops_open_mem   (const void* dst, uint64_t size);
+KB_API kb_rwops*  kb_rwops_open_mem   (const void* ptr, uint64_t size);
 
 KB_API_INLINE int64_t kb_rwops_seek(kb_rwops* rwops, int64_t offset, kb_whence whence) {
   if (rwops == NULL) return -1;

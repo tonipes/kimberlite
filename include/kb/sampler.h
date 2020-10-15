@@ -8,6 +8,7 @@ extern "C" {
 
 typedef struct kb_sampler {
   uint32_t  capacity;
+  uint32_t  count;
   int32_t   offset;
   float*    values;
   float     min;

@@ -6,6 +6,7 @@
 #include <kb/handle.h>
 #include <kb/math.h>
 #include <kb/rwops.h>
+#include <kb/shader.h>
 #include <kb/vertex.h>
 #include <kb/texture.h>
 
@@ -28,13 +29,19 @@ typedef enum kb_index_type {
   KB_INDEX_TYPE_32            = 1,
 } kb_index_type;
 
-typedef enum kb_bind_type {
-  KB_BIND_TYPE_UNSUPPORTED    = 0,
-  KB_BIND_TYPE_UNIFORM_BUFFER = 1,
-  KB_BIND_TYPE_PUSH_CONSTANT  = 2,
-  KB_BIND_TYPE_SAMPLER        = 3,
-  KB_BIND_TYPE_STORAGE_BUFFER = 4,
-} kb_bind_type;
+// typedef enum kb_bind_type {
+//   KB_BIND_TYPE_UNSUPPORTED    = 0,
+//   KB_BIND_TYPE_UNIFORM_BUFFER = 1,
+//   KB_BIND_TYPE_PUSH_CONSTANT  = 2,
+//   KB_BIND_TYPE_SAMPLER        = 3,
+//   KB_BIND_TYPE_STORAGE_BUFFER = 4,
+// } kb_bind_type;
+
+// typedef enum kb_binding_type {
+//   KB_BINDING_NONE             = 0, 
+//   KB_BINDING_UNIFORM          = 1,
+//   KB_BINDING_TEXTURE          = 2,
+// } kb_binding_type;
 
 typedef enum kb_cull_mode {
   KB_CULL_NONE                = 0,
@@ -51,11 +58,6 @@ typedef enum kb_topology_type {
   KB_TOPOLOGY_POINT_LIST      = 4,
 } kb_topology_type;
 
-typedef enum kb_binding_type {
-  KB_BINDING_NONE             = 0, 
-  KB_BINDING_UNIFORM          = 1,
-  KB_BINDING_TEXTURE          = 2,
-} kb_binding_type;
 
 typedef struct kb_frame_stats {
   uint32_t                  encoder_count;
@@ -75,10 +77,10 @@ typedef struct kb_sampler_binding {
   kb_texture                texture;
 } kb_sampler_binding;
 
-typedef struct kb_uniform_binding {
-  kb_hash                   hash;
-  Float4                    data;
-} kb_uniform_binding;
+// typedef struct kb_uniform_binding {
+//   kb_hash                   hash;
+//   Float4                    data;
+// } kb_uniform_binding;
 
 typedef struct kb_texture_create_info {
   kb_rwops*                 rwops;
@@ -119,15 +121,6 @@ typedef struct kb_graphics_init_info {
   Int2                      resolution;
 } kb_graphics_init_info;
 
-typedef struct kb_bind_slot {
-  kb_bind_type              type;
-  uint32_t                  set;
-  uint32_t                  binding;
-  uint64_t                  size;
-  uint64_t                  offset;
-  uint64_t                  block_size;
-} kb_bind_slot;
-
 typedef struct kb_primitive_info {
   uint32_t                  first_index;
   uint32_t                  first_vertex;
@@ -144,12 +137,16 @@ typedef struct kb_index_buffer_binding {
   uint64_t                  offset; 
 } kb_index_buffer_binding;
 
-typedef struct kb_binding {
-  kb_bind_slot              slot;
-  uint64_t                  size;
-  uint64_t                  offset;
-  kb_texture                texture;
-} kb_binding;
+typedef struct kb_texture_binding {
+  uint32_t    index;
+  kb_texture  texture;
+} kb_texture_binding;
+
+typedef struct kb_uniform_binding {
+  uint32_t    index;
+  uint64_t    size;
+  uint64_t    offset;
+} kb_uniform_binding;
 
 typedef struct kb_draw_call_info {
   uint32_t                  first_vertex;
@@ -161,7 +158,8 @@ typedef struct kb_draw_call {
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer;
   kb_index_buffer_binding   index_buffer;
-  kb_binding                bindings[KB_CONFIG_MAX_DESCRIPTOR_SETS][KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_uniform_binding        uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
   kb_draw_call_info         single;
 } kb_draw_call;
 
@@ -169,7 +167,8 @@ typedef struct kb_encoder_frame {
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer;
   kb_index_buffer_binding   index_buffer;
-  kb_binding                bindings[KB_CONFIG_MAX_DESCRIPTOR_SETS][KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_uniform_binding        uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
 } kb_encoder_frame;
 
 typedef struct kb_encoder_state {
@@ -206,10 +205,13 @@ KB_API void*                kb_graphics_transient_at              (uint64_t offs
 KB_API uint64_t             kb_graphics_transient_offset          (void* ptr);
 KB_API void*                kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
 
-KB_API bool                 kb_pipeline_get_block_bind_slot       (kb_pipeline pipeline, const char* name, kb_bind_slot* bind_slot);
-KB_API bool                 kb_pipeline_get_block_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
-KB_API bool                 kb_pipeline_get_block_bind_slot_info  (kb_pipeline pipeline, uint32_t set, uint32_t bind, kb_bind_slot* bind_slot);
-KB_API bool                 kb_pipeline_get_field_bind_slot_hash  (kb_pipeline pipeline, kb_hash hash, kb_bind_slot* bind_slot);
+KB_API kb_vertex_layout*    kb_graphics_pipeline_vertex_layout    (kb_pipeline pipeline);
+KB_API kb_shader_desc*      kb_graphics_pipeline_bindings         (kb_pipeline pipeline);
+KB_API bool                 kb_pipeline_get_binding_slot          (kb_pipeline pipeline, const char* name, kb_shader_binding_type type, kb_shader_binding_slot* bind_slot);
+
+KB_API kb_shader_buffer_binding*  kb_pipeline_get_buffer_binding   (kb_pipeline pipeline, const char* name, uint32_t index);
+KB_API kb_shader_texture_binding* kb_pipeline_get_texture_binding  (kb_pipeline pipeline, const char* name, uint32_t index);
+
 
 KB_API kb_encoder           kb_encoder_begin                      ();
 KB_API void                 kb_encoder_end                        (kb_encoder encoder);
@@ -218,8 +220,8 @@ KB_API void                 kb_encoder_pop                        (kb_encoder en
 KB_API void                 kb_encoder_bind_pipeline              (kb_encoder encoder, kb_pipeline pipeline);
 KB_API void                 kb_encoder_bind_vertex_buffer         (kb_encoder encoder, kb_vertex_buffer vertex_buffer, uint64_t offset);
 KB_API void                 kb_encoder_bind_index_buffer          (kb_encoder encoder, kb_index_buffer index_buffer, uint64_t offset);
-KB_API void                 kb_encoder_bind_texture               (kb_encoder encoder, const kb_bind_slot* slot, kb_texture texture);
-KB_API void                 kb_encoder_bind_uniform               (kb_encoder encoder, const kb_bind_slot* slot, const void* data, uint64_t size);
+KB_API void                 kb_encoder_bind_texture               (kb_encoder encoder, const kb_shader_binding_slot* slot, kb_texture texture);
+KB_API void                 kb_encoder_bind_uniform               (kb_encoder encoder, const kb_shader_binding_slot* slot, const void* data, uint64_t size);
 KB_API void                 kb_encoder_submit_single              (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count);
 KB_API void                 kb_encoder_reset_frame                (kb_encoder encoder);
 

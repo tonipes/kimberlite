@@ -7,6 +7,7 @@
 #include <assert.h>
 
 
+
 //#####################################################################################################################
 // API
 //#####################################################################################################################
@@ -157,6 +158,9 @@
 #define KB_PLATFORM_WINRT      0
 #define KB_PLATFORM_IOS        0
 #define KB_PLATFORM_NX         0
+#define KB_PLATFORM_PS         0
+#define KB_PLATFORM_XBO        0
+#define KB_PLATFORM_CONSOLE    0
 #define KB_PLATFORM_NAME       "Unknown"
 
 // http://sourceforge.net/apps/mediawiki/predef/index.php?title=Operating_Systems
@@ -200,7 +204,18 @@
 #elif defined(__NX__)
 #	undef  KB_PLATFORM_NX
 #	define KB_PLATFORM_NX 1
+#elif defined(__ORBIS__)
+#	undef  KB_PLATFORM_PS
+#	define KB_PLATFORM_PS 1
+#elif defined(_DURANGO)
+#	undef  KB_PLATFORM_XBO
+#	define KB_PLATFORM_XBO 1
 #endif //
+
+#if defined(KB_PLATFORM_NX) || defined(KB_PLATFORM_PS) || defined(KB_PLATFORM_XBO)
+#	undef  KB_PLATFORM_CONSOLE
+#	define KB_PLATFORM_CONSOLE 1
+#endif
 
 #if KB_PLATFORM_IOS
 #	undef  KB_PLATFORM_NAME
@@ -214,6 +229,12 @@
 #elif KB_PLATFORM_NX
 #	undef  KB_PLATFORM_NAME
 #	define KB_PLATFORM_NAME "NX"
+#elif KB_PLATFORM_PS
+#	undef  KB_PLATFORM_NAME
+#	define KB_PLATFORM_NAME "PS"
+#elif KB_PLATFORM_XBO
+#	undef  KB_PLATFORM_NAME
+#	define KB_PLATFORM_NAME "XBO"
 #elif KB_PLATFORM_MACOS
 #	undef  KB_PLATFORM_NAME
 #	define KB_PLATFORM_NAME "macOS"
@@ -224,8 +245,8 @@
 #	undef  KB_PLATFORM_NAME
 #	define KB_PLATFORM_NAME "WinRT"
 #else
-#	error "Unknown KB_PLATFORM!"
-#endif // KB_PLATFORM_
+#	error "Unknown KB_PLATFORM"
+#endif
 
 
 //#####################################################################################################################
@@ -305,6 +326,40 @@
 #else
 #	define KB_CPP_NAME "C++Unknown"
 #endif // defined(__cplusplus)
+
+
+//#####################################################################################################################
+// Graphics Library
+//#####################################################################################################################
+
+#define KB_GRAPHICS_LIB_VULKAN                  0
+#define KB_GRAPHICS_LIB_METAL                   0
+#define KB_GRAPHICS_LIB_NOOP                    0
+#define KB_GRAPHICS_LIB_NAME                    "Unknown"
+
+#if defined(KB_SETUP_GRAPHICS_LIB_VULKAN)
+#	undef  KB_GRAPHICS_LIB_VULKAN
+#	define KB_GRAPHICS_LIB_VULKAN 1
+#elif defined(KB_SETUP_GRAPHICS_LIB_METAL)
+#	undef  KB_GRAPHICS_LIB_METAL
+#	define KB_GRAPHICS_LIB_METAL 1
+#elif defined(KB_SETUP_GRAPHICS_LIB_NOOP)
+#	undef  KB_GRAPHICS_LIB_NOOP
+#	define KB_GRAPHICS_LIB_NOOP 1
+#endif
+
+#if KB_GRAPHICS_LIB_VULKAN
+#	undef  KB_GRAPHICS_LIB_NAME
+#	define KB_GRAPHICS_LIB_NAME "Vulkan"
+#elif KB_GRAPHICS_LIB_METAL
+#	undef  KB_GRAPHICS_LIB_NAME
+#	define KB_GRAPHICS_LIB_NAME "Metal"
+#elif KB_GRAPHICS_LIB_NOOP
+#	undef  KB_GRAPHICS_LIB_NAME
+#	define KB_GRAPHICS_LIB_NAME "Noop"
+#else
+#	error "Unknown KB_GRAPHICS_LIB!"
+#endif
 
 
 //#####################################################################################################################
