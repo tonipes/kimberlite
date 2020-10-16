@@ -401,7 +401,7 @@
 #define KB_CONFIG_FILE_MAGIC_TEX                KB_FOURCC('K', 'B', 'T', 'X')
 #define KB_CONFIG_FILE_MAGIC_FONT               KB_FOURCC('K', 'B', 'F', 'N')
 
-#define KB_CONFIG_GRAPHICS_VALIDATE             0
+#define KB_CONFIG_GRAPHICS_VALIDATE             1
 
 #define KB_CONFIG_ALLOC_DEBUG 0
 #if defined(KB_BUILD_MODE_DEBUG)

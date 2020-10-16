@@ -66,6 +66,7 @@ KB_API kb_shader_buffer_binding*  kb_shader_desc_get_buffer_binding   (kb_shader
 KB_API kb_shader_texture_binding* kb_shader_desc_get_texture_binding  (kb_shader_desc* bindings, const char* name, uint32_t index);
 
 KB_API bool                       kb_shader_desc_get_binding_slot     (kb_shader_desc* bindings, const char* name, kb_shader_binding_type type, kb_shader_binding_slot* slot);
+KB_API bool                       kb_shader_desc_get_binding_slot_hash(kb_shader_desc* bindings, kb_hash hash, kb_shader_binding_type type, kb_shader_binding_slot* slot);
 KB_API void                       kb_shader_desc_dump                 (kb_shader_desc* bindings);
 
 #ifdef __cplusplus

@@ -19,8 +19,9 @@ endif
 
 # option('kb_graphics_lib', type : 'combo', choices : ['vulkan', 'metal'], value : 'vulkan')
 
-kb_graphics_lib = 'metal'
-# kb_graphics_lib = 'vulkan'
+# kb_graphics_lib = 'metal'
+kb_graphics_lib = 'vulkan'
+# kb_graphics_lib = 'noop'
 
 fs = import('fs')
 

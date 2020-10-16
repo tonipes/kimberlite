@@ -196,6 +196,7 @@ KB_RESOURCE_ALLOC_FUNC_DECLS  (vertex_buffer  , kb_vertex_buffer  , kb_vertex_bu
 KB_API void                 kb_graphics_init                      (const kb_graphics_init_info info);
 KB_API void                 kb_graphics_deinit                    ();
 KB_API void                 kb_graphics_frame                     ();
+KB_API void                 kb_graphics_run_encoders              ();
 KB_API Int2                 kb_graphics_get_extent                ();
 KB_API void                 kb_graphics_wait_device_idle          ();
 KB_API uint32_t             kb_graphics_get_current_resource_slot ();
@@ -208,10 +209,10 @@ KB_API void*                kb_graphics_transient_alloc           (uint64_t size
 KB_API kb_vertex_layout*    kb_graphics_pipeline_vertex_layout    (kb_pipeline pipeline);
 KB_API kb_shader_desc*      kb_graphics_pipeline_bindings         (kb_pipeline pipeline);
 KB_API bool                 kb_pipeline_get_binding_slot          (kb_pipeline pipeline, const char* name, kb_shader_binding_type type, kb_shader_binding_slot* bind_slot);
+KB_API bool                 kb_pipeline_get_binding_slot_hash     (kb_pipeline pipeline, kb_hash hash, kb_shader_binding_type type, kb_shader_binding_slot* bind_slot);
 
 KB_API kb_shader_buffer_binding*  kb_pipeline_get_buffer_binding   (kb_pipeline pipeline, const char* name, uint32_t index);
 KB_API kb_shader_texture_binding* kb_pipeline_get_texture_binding  (kb_pipeline pipeline, const char* name, uint32_t index);
-
 
 KB_API kb_encoder           kb_encoder_begin                      ();
 KB_API void                 kb_encoder_end                        (kb_encoder encoder);
