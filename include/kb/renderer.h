@@ -72,16 +72,6 @@ typedef struct kb_frame_stats {
   float                     frametime_max;
 } kb_frame_stats;
 
-typedef struct kb_sampler_binding {
-  kb_hash                   hash;
-  kb_texture                texture;
-} kb_sampler_binding;
-
-// typedef struct kb_uniform_binding {
-//   kb_hash                   hash;
-//   Float4                    data;
-// } kb_uniform_binding;
-
 typedef struct kb_texture_create_info {
   kb_rwops*                 rwops;
   kb_texture_info           texture;
@@ -134,18 +124,19 @@ typedef struct kb_vertex_buffer_binding {
 
 typedef struct kb_index_buffer_binding {
   kb_index_buffer           buffer;
-  uint64_t                  offset; 
+  uint64_t                  offset;
+  kb_index_type             index_type;
 } kb_index_buffer_binding;
 
 typedef struct kb_texture_binding {
-  uint32_t    index;
-  kb_texture  texture;
+  uint32_t                  index;
+  kb_texture                texture;
 } kb_texture_binding;
 
 typedef struct kb_uniform_binding {
-  uint32_t    index;
-  uint64_t    size;
-  uint64_t    offset;
+  uint32_t                  index;
+  uint64_t                  size;
+  uint64_t                  offset;
 } kb_uniform_binding;
 
 typedef struct kb_draw_call_info {
@@ -158,8 +149,10 @@ typedef struct kb_draw_call {
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer;
   kb_index_buffer_binding   index_buffer;
-  kb_texture_binding        texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_uniform_binding        uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        vert_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
   kb_draw_call_info         single;
 } kb_draw_call;
 
@@ -167,8 +160,10 @@ typedef struct kb_encoder_frame {
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer;
   kb_index_buffer_binding   index_buffer;
-  kb_texture_binding        texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_uniform_binding        uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        vert_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
 } kb_encoder_frame;
 
 typedef struct kb_encoder_state {
@@ -220,7 +215,7 @@ KB_API void                 kb_encoder_push                       (kb_encoder en
 KB_API void                 kb_encoder_pop                        (kb_encoder encoder);
 KB_API void                 kb_encoder_bind_pipeline              (kb_encoder encoder, kb_pipeline pipeline);
 KB_API void                 kb_encoder_bind_vertex_buffer         (kb_encoder encoder, kb_vertex_buffer vertex_buffer, uint64_t offset);
-KB_API void                 kb_encoder_bind_index_buffer          (kb_encoder encoder, kb_index_buffer index_buffer, uint64_t offset);
+KB_API void                 kb_encoder_bind_index_buffer          (kb_encoder encoder, kb_index_buffer index_buffer, uint64_t offset, kb_index_type type);
 KB_API void                 kb_encoder_bind_texture               (kb_encoder encoder, const kb_shader_binding_slot* slot, kb_texture texture);
 KB_API void                 kb_encoder_bind_uniform               (kb_encoder encoder, const kb_shader_binding_slot* slot, const void* data, uint64_t size);
 KB_API void                 kb_encoder_submit_single              (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count);

@@ -14,12 +14,23 @@ KB_HANDLE(kb_material);
 extern "C" {
 #endif
 
+typedef struct kb_material_sampler {
+  kb_hash                   hash;
+  kb_texture                texture;
+} kb_material_sampler;
+
+typedef struct kb_material_uniform {
+  kb_hash                   hash;
+  uint64_t                  size;
+  float                     data[128];
+} kb_material_uniform;
+
 typedef struct kb_material_create_info {
-  uint32_t            uniform_count;
-  uint32_t            sampler_count;
-  kb_pipeline         pipeline;
-  kb_uniform_binding* uniforms;
-  kb_sampler_binding* samplers;
+  uint32_t              uniform_count;
+  uint32_t              sampler_count;
+  kb_pipeline           pipeline;
+  kb_material_uniform*  uniforms;
+  kb_material_sampler*  samplers;
 } kb_material_create_info;
 
 KB_RESOURCE_HASHED_FUNC_DECLS (material, kb_material, kb_material_create_info)

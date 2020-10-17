@@ -57,6 +57,7 @@ typedef struct kb_shader_binding_slot {
   kb_shader_binding_type        type;
   uint32_t                      index;
   uint64_t                      size;
+  kb_shader_stage               stages;
 } kb_shader_binding_slot;
 
 KB_API void                       kb_shader_desc_begin                (kb_shader_desc* bindings);
