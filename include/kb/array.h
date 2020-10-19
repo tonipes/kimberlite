@@ -32,22 +32,6 @@ KB_API void     kb_array_pop_back   (kb_array* array);
 }
 #endif
 
-// c++ implementation
 #ifdef __cplusplus
-// KB_API_INLINE void kb_create(kb_array& array, uint32_t elem_size, uint32_t capacity) {
-//   kb_array_create(&array, elem_size, capacity);
-// }
-
-// KB_API_INLINE void kb_destroy(kb_array& array) {
-//   kb_array_destroy(&array);
-// }
-
-// KB_API_INLINE void kb_reset(kb_array& array) {
-//   kb_array_reset(&array);
-// }
-
-// KB_API_INLINE void kb_copy(kb_array& dst, const kb_array& src) {
-//   kb_array_copy(&dst, &src);
-// }
 
 #endif

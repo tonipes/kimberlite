@@ -25,7 +25,6 @@ KB_API void kb_sampler_push     (kb_sampler* sampler, float value);
 }
 #endif
 
-// c++ implementation
 #ifdef __cplusplus
 
 template <uint32_t SampleCount>

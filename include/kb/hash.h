@@ -9,8 +9,8 @@ extern "C" {
 typedef uint32_t kb_hash;
 
 typedef struct kb_hash_gen {
-  kb_hash   hash;
-  uint32_t  tail;
+  uint32_t  h;
+  uint32_t  k;
   uint32_t  count;
   uint32_t  size;
 } kb_hash_gen;
@@ -24,7 +24,6 @@ KB_API kb_hash  kb_hash_string (const char* str);
 }
 #endif
 
-// c++ implementation
 #ifdef __cplusplus
 
 template <typename T> 

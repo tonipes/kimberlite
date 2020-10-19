@@ -71,7 +71,6 @@ KB_API_INLINE bool kb_rwops_check_magic(kb_rwops* rwops, uint32_t magic) {
 }
 #endif
 
-// c++ implementation
 #ifdef __cplusplus
 template <typename T> 
 KB_API_INLINE uint64_t kb_write(kb_rwops* rwops, const T& t) {

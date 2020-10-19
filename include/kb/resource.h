@@ -32,7 +32,6 @@ extern "C" {
 }
 #endif
 
-// c++ implementation
 #ifdef __cplusplus
 
 template <typename kb_handle, typename create_info_t, uint16_t cap>

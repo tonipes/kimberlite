@@ -522,7 +522,6 @@ KB_API_INLINE Float2 squircle_point(float angle) {
 }
 #endif
 
-// c++ implementation
 #ifdef __cplusplus
 
 #define FUNC1_DEF(F, RT, T1, func)          inline RT F(const T1& a) { return func(a); }
@@ -678,10 +677,10 @@ FUNC2_DEF(max,            auto, Int4, Int4,       max_int4      );
 FUNC1_DEF(abs,            auto, Int4,             abs_int4      );
 FUNC1_DEF(length,         auto, Int4,             len_int4      );
 
-FUNC3_DEF(lerp,           auto, Real32, Real32, Real32, lerp_scalar      );
-FUNC3_DEF(lerp,           auto, Float2, Float2, Real32, lerp_float2      );
-FUNC3_DEF(lerp,           auto, Float3, Float3, Real32, lerp_float3      );
-FUNC3_DEF(lerp,           auto, Float4, Float4, Real32, lerp_float4      );
+FUNC3_DEF(lerp,           auto, Real32, Real32, Real32, lerp_scalar   );
+FUNC3_DEF(lerp,           auto, Float2, Float2, Real32, lerp_float2   );
+FUNC3_DEF(lerp,           auto, Float3, Float3, Real32, lerp_float3   );
+FUNC3_DEF(lerp,           auto, Float4, Float4, Real32, lerp_float4   );
 
 FUNC2_DEF(operator*,      auto, Float4x4, Float4x4,   mul_float4x4     );
 FUNC2_DEF(operator*,      auto, Quaternion, Float3,   act_quat         );

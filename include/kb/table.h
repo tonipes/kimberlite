@@ -3,7 +3,6 @@
 #include <kb/core.h>
 #include <kb/hash.h>
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif  

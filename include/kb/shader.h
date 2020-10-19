@@ -24,31 +24,28 @@ typedef enum kb_shader_stage {
 } kb_shader_stage;
 
 typedef struct kb_shader_texture_binding {
-  const char*     name;
-  uint32_t        index;
-  uint32_t        sampler_index; // Used with separate sampler
-  kb_shader_stage stages;
+  const char*                   name;
+  uint32_t                      index;
+  kb_shader_stage               stages;
 } kb_shader_texture_binding;
 
 typedef struct kb_shader_buffer_binding {
-  const char*     name;
-  uint32_t        index;
-  uint32_t        size;
-  kb_shader_stage stages;
+  const char*                   name;
+  uint32_t                      index;
+  uint32_t                      size;
+  kb_shader_stage               stages;
 } kb_shader_buffer_binding;
 
 typedef struct kb_shader_desc_mapping {
-  kb_table  index_table;
-  kb_table  name_table;
+  kb_table                      index_table;
+  kb_table                      name_table;
 } kb_shader_desc_mapping;
 
 typedef struct kb_shader_desc {
   uint32_t                      texture_binding_count;
-  kb_shader_texture_binding     texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  
   uint32_t                      buffer_binding_count;
+  kb_shader_texture_binding     texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
   kb_shader_buffer_binding      buffer_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-
   kb_shader_desc_mapping        texture_mapping;
   kb_shader_desc_mapping        buffer_mapping;
 } kb_shader_desc;

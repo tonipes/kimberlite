@@ -236,7 +236,7 @@ typedef enum kb_mouse_button {
 } kb_mouse_button;
 
 typedef struct kb_input_init_info {
-  int               param;
+  int               unused;
 } kb_input_init_info;
 
 typedef struct kb_gamepad_state {

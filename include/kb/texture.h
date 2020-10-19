@@ -1,7 +1,6 @@
 #pragma once
 
 #include <kb/core.h>
-
 #include <kb/handle.h>
 #include <kb/rwops.h>
 

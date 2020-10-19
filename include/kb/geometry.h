@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <kb/math.h>
 #include <kb/handle.h>
 #include <kb/hash.h>

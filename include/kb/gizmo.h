@@ -57,8 +57,8 @@ KB_API void     kb_gizmo_draw_cylinder        (kb_gizmo* gizmo, const Float3 fro
 KB_API void     kb_gizmo_draw_axis            (kb_gizmo* gizmo, const Float3 pos, float length);
 KB_API void     kb_gizmo_draw_grid            (kb_gizmo* gizmo, Axis axis, const Float3 center, uint32_t size, float step);
 KB_API void     kb_gizmo_draw_aabb            (kb_gizmo* gizmo, const Aabb aabb);
-KB_API void     kb_gizmo_flush                (kb_gizmo* gizmo);
-KB_API void     kb_gizmo_flush_quad           (kb_gizmo* gizmo);
+KB_API void     kb_gizmo_flush                (kb_gizmo* gizmo, bool force);
+// KB_API void     kb_gizmo_flush_quad           (kb_gizmo* gizmo);
 
 #ifdef __cplusplus
 }

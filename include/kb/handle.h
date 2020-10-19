@@ -12,7 +12,6 @@ static inline bool kb_is_valid_idx(kb_handle_idx idx) { return idx != UINT32_MAX
 }
 #endif
 
-// TODO: Not sure how to make functions in #ifdef __cplusplus...
 #define KB_HANDLE(name_t)                                                                                           \
 	extern "C" {                                                                                                      \
     typedef struct { kb_handle_idx idx; } name_t;                                                                   \

@@ -19,7 +19,7 @@ typedef struct kb_sound_playback_info {
 } kb_sound_playback_info;
 
 typedef struct kb_audio_init_info {
-  float                   param;
+  int                     unused;
 } kb_audio_init_info;
 
 typedef struct kb_sound_create_info {

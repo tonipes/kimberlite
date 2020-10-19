@@ -22,7 +22,6 @@ void kb_log_set_color   (bool enabled);
 }
 #endif
 
-// c++ implementation
 #ifdef __cplusplus
 
 #include <fmt/format.h>
@@ -56,6 +55,5 @@ template <typename... T>
 inline auto kb_log_fatal(const T&... args) -> void { 
   kb_log_line(KB_LOG_LEVEL_FATAL, fmt::format(args...).c_str());
 };
-
 
 #endif

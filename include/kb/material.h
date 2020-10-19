@@ -26,11 +26,11 @@ typedef struct kb_material_uniform {
 } kb_material_uniform;
 
 typedef struct kb_material_create_info {
-  uint32_t              uniform_count;
-  uint32_t              sampler_count;
-  kb_pipeline           pipeline;
-  kb_material_uniform*  uniforms;
-  kb_material_sampler*  samplers;
+  uint32_t                  uniform_count;
+  uint32_t                  sampler_count;
+  kb_pipeline               pipeline;
+  kb_material_uniform*      uniforms;
+  kb_material_sampler*      samplers;
 } kb_material_create_info;
 
 KB_RESOURCE_HASHED_FUNC_DECLS (material, kb_material, kb_material_create_info)
