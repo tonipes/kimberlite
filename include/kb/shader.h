@@ -1,3 +1,9 @@
+// ============================================================================
+//  Kimberlite
+//
+//  Copyright 2020 Toni Pesola. All Rights Reserved.
+// ============================================================================
+
 #pragma once
 
 #include <kb/core.h>
@@ -44,8 +50,8 @@ typedef struct kb_shader_desc_mapping {
 typedef struct kb_shader_desc {
   uint32_t                      texture_binding_count;
   uint32_t                      buffer_binding_count;
-  kb_shader_texture_binding     texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_shader_buffer_binding      buffer_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_shader_texture_binding     texture_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_shader_buffer_binding      buffer_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
   kb_shader_desc_mapping        texture_mapping;
   kb_shader_desc_mapping        buffer_mapping;
 } kb_shader_desc;

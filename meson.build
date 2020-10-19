@@ -6,8 +6,8 @@ project(
   default_options : [
     'c_std=c99',
     'cpp_std=c++14',
-    'cpp_rtti=false',
-    'cpp_eh=none',    # Disable exceptions
+    'cpp_rtti=false',   # Disable RTTI
+    'cpp_eh=none',      # Disable exceptions
   ]
 )
 
@@ -17,9 +17,9 @@ if get_option('buildtype').startswith('debug')
   add_project_arguments('-DDEBUG', language : 'objcpp')
 endif
 
-kb_graphics_lib = 'metal'
+# kb_graphics_lib = 'metal'
 # kb_graphics_lib = 'vulkan'
-# kb_graphics_lib = 'noop'
+kb_graphics_lib = get_option('graphics_backend')
 
 fs = import('fs')
 

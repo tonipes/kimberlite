@@ -1,3 +1,9 @@
+// ============================================================================
+//  Kimberlite
+//
+//  Copyright 2020 Toni Pesola. All Rights Reserved.
+// ============================================================================
+
 #pragma once
 
 #include <kb/alloc.h>
@@ -134,10 +140,10 @@ typedef struct kb_draw_call {
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer;
   kb_index_buffer_binding   index_buffer;
-  kb_texture_binding        vert_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        vert_texture_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
   kb_draw_call_info         single;
 } kb_draw_call;
 
@@ -145,10 +151,10 @@ typedef struct kb_encoder_frame {
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer;
   kb_index_buffer_binding   index_buffer;
-  kb_texture_binding        vert_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
-  kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_DESCRIPTOR_BINDINGS];
+  kb_texture_binding        vert_texture_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
 } kb_encoder_frame;
 
 typedef struct kb_encoder_state {
