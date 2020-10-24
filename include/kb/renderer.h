@@ -192,6 +192,8 @@ KB_API void*                      kb_graphics_transient_at              (uint64_
 KB_API uint64_t                   kb_graphics_transient_offset          (void* ptr);
 KB_API void*                      kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
 
+KB_API kb_vertex_layout*          kb_graphics_vertex_buffer_layout      (kb_vertex_buffer buffer);
+
 KB_API kb_vertex_layout*          kb_graphics_pipeline_vertex_layout    (kb_pipeline pipeline);
 KB_API kb_shader_desc*            kb_graphics_pipeline_bindings         (kb_pipeline pipeline);
 KB_API bool                       kb_pipeline_get_binding_slot          (kb_pipeline pipeline, const char* name, kb_shader_binding_type type, kb_shader_binding_slot* bind_slot);

@@ -28,7 +28,7 @@ typedef struct kb_material_sampler {
 typedef struct kb_material_uniform {
   kb_hash                   hash;
   uint64_t                  size;
-  float                     data[128];
+  float                     data[128]; // TODO: KB_CONFIG_...
 } kb_material_uniform;
 
 typedef struct kb_material_create_info {

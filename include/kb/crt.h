@@ -12,6 +12,17 @@
 extern "C" {
 #endif
 
+typedef enum kb_signal {
+  KB_SIGABRT  = 1,
+  KB_SIGFPE   = 2,
+  KB_SIGILL   = 3,
+  KB_SIGINT   = 4,
+  KB_SIGSEGV  = 5,
+  KB_SIGTERM  = 6,
+} kb_signal;
+
+typedef void (*kb_signal_handler)(int);
+
 KB_API void   kb_memset             (void* dst, uint8_t ch, size_t count);
 KB_API void   kb_memcpy             (void* dst, const void* src, size_t count);
 KB_API void   kb_memcpy_with_stride (void* dst, const void* src, size_t count, size_t index, size_t stride, size_t offset);
@@ -26,6 +37,9 @@ KB_API bool   kb_fromstr_int        (int32_t* dst, const char* str);
 KB_API bool   kb_fromstr_float      (float*   dst, const char* str);
 KB_API char*  kb_strdup             (const char* src);
 KB_API void*  kb_memdup             (void* src, uint64_t size);
+KB_API void   kb_raise              (kb_signal signal);
+KB_API void   kb_set_signal_handler (kb_signal_handler handler, kb_signal signal);
+KB_API void   kb_exit               (int value);
 
 #ifdef __cplusplus
 }

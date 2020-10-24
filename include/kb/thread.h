@@ -14,9 +14,16 @@ extern "C" {
 
 typedef struct kb_mutex       kb_mutex;
 typedef struct kb_semaphore   kb_semaphore;
+typedef struct kb_thread      kb_thread;
 typedef struct kb_thread_pool kb_thread_pool;
 
 typedef void(*kb_job_func)(void*);
+
+typedef void*(*kb_thread_func)(void*);
+
+KB_API kb_thread*       kb_thread_create                  (kb_thread_func func, void* userdata);
+KB_API void             kb_thread_join                    (kb_thread* thread);
+KB_API void             kb_thread_destroy                 (kb_thread* thread);
 
 KB_API kb_thread_pool*  kb_threadpool_create              (int num_threads);
 KB_API void             kb_threadpool_destroy             (kb_thread_pool* pool);
@@ -29,8 +36,7 @@ KB_API int              kb_threadpool_add_job             (kb_thread_pool* pool,
 
 KB_API kb_semaphore*    kb_semaphore_create               (bool value);
 KB_API void             kb_semaphore_destroy              (kb_semaphore* semaphore);
-KB_API void             kb_semaphore_init                 (kb_semaphore* semaphore, bool value);
-KB_API void             kb_semaphore_reset                (kb_semaphore* semaphore);
+KB_API void             kb_semaphore_reset                (kb_semaphore* semaphore, bool value);
 KB_API void             kb_semaphore_post                 (kb_semaphore* semaphore);
 KB_API void             kb_semaphore_post_all             (kb_semaphore* semaphore);
 KB_API void             kb_semaphore_wait                 (kb_semaphore* semaphore);

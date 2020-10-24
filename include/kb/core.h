@@ -28,6 +28,10 @@
 //#####################################################################################################################
 
 
+#ifndef KB_NOT_IMPLEMENTED
+  #define KB_NOT_IMPLEMENTED(m) assert(false && "Not implemented. " m)
+#endif
+
 #ifndef KB_ASSERT
   #define KB_ASSERT(e, m) assert(e && m)
 #endif
@@ -161,7 +165,6 @@
 #define KB_PLATFORM_LINUX      0
 #define KB_PLATFORM_MACOS      0
 #define KB_PLATFORM_WINDOWS    0
-#define KB_PLATFORM_WINRT      0
 #define KB_PLATFORM_IOS        0
 #define KB_PLATFORM_NX         0
 #define KB_PLATFORM_PS         0
@@ -229,9 +232,6 @@
 #elif KB_PLATFORM_LINUX
 #	undef  KB_PLATFORM_NAME
 #	define KB_PLATFORM_NAME "Linux"
-#elif KB_PLATFORM_NONE
-#	undef  KB_PLATFORM_NAME
-#	define KB_PLATFORM_NAME "None"
 #elif KB_PLATFORM_NX
 #	undef  KB_PLATFORM_NAME
 #	define KB_PLATFORM_NAME "NX"
@@ -247,9 +247,6 @@
 #elif KB_PLATFORM_WINDOWS
 #	undef  KB_PLATFORM_NAME
 #	define KB_PLATFORM_NAME "Windows"
-#elif KB_PLATFORM_WINRT
-#	undef  KB_PLATFORM_NAME
-#	define KB_PLATFORM_NAME "WinRT"
 #else
 #	error "Unknown KB_PLATFORM"
 #endif
@@ -265,7 +262,6 @@
 #define KB_COMPILER_GCC            0
 #define KB_COMPILER_MSVC           0
 
-// http://sourceforge.net/apps/mediawiki/predef/index.php?title=Compilers
 #if defined(__clang__)
 // clang defines __GNUC__ or _MSC_VER
 #	undef  KB_COMPILER_CLANG
@@ -387,11 +383,11 @@
 #define KB_CONFIG_MAX_FONTS                     64
 #define KB_CONFIG_MAX_GEOMETRIES                64
 
-#define KB_CONFIG_MAX_DRAW_CALLS                128
+#define KB_CONFIG_MAX_DRAW_CALLS                1024
 #define KB_CONFIG_MAX_ENCODERS                  16
 #define KB_CONFIG_MAX_VERTEX_ATTRIBS            16
 #define KB_CONFIG_MAX_SHADER_BINDINGS           16
-#define KB_CONFIG_TRANSIENT_BUFFER_SIZE         1024 * KB_CONFIG_MAX_DRAW_CALLS
+#define KB_CONFIG_TRANSIENT_BUFFER_SIZE         4 * 1024 * KB_CONFIG_MAX_DRAW_CALLS
 #define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
 #define KB_CONFIG_STATS_SAMPLE_COUNT            120
 #define KB_CONFIG_GIZMO_CACHE_SIZE              1024

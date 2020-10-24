@@ -7,8 +7,9 @@
 #pragma once
 
 #include <kb/core.h>
-#include <kb/variant.h>
 #include <kb/rwops.h>
+
+#include <kbextra/variant.h>
 
 #ifdef __cplusplus
 extern "C" {
