@@ -524,6 +524,18 @@ KB_API_INLINE Float2 squircle_point(float angle) {
   };
 }
 
+KB_API_INLINE Float3 unproject(Float4x4 unproj, Float3 point) {
+  Float4 v = act_float4x4(unproj, { point.x, point.y, point.z, 1.0 });
+  return scale_float3({ v.x, v.y, v.z }, (1.0 / v.w));
+}
+
+KB_API_INLINE Ray unproject_view(Float4x4 unproj, Float2 p) {
+  const Float3 orig = unproject(unproj, {0, 0, -1});
+  Float3 pp = unproject(unproj, {p.x, p.y, 0.9999f});
+  Float3 dir = sub_float3(orig, pp);
+
+  return {orig, dir};
+}
 #ifdef __cplusplus
 }
 #endif
@@ -689,6 +701,8 @@ FUNC3_DEF(lerp,           auto, Float3, Float3, Real32, lerp_float3   );
 FUNC3_DEF(lerp,           auto, Float4, Float4, Real32, lerp_float4   );
 
 FUNC2_DEF(operator*,      auto, Float4x4, Float4x4,   mul_float4x4     );
+FUNC2_DEF(operator*,      auto, Float4x4, Float4,     act_float4x4     );
+
 FUNC2_DEF(operator*,      auto, Quaternion, Float3,   act_quat         );
 FUNC2_DEF(operator*,      auto, Quaternion, Quaternion,   mul_quat     );
 

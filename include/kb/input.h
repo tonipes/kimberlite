@@ -246,8 +246,8 @@ typedef struct kb_input_init_info {
 } kb_input_init_info;
 
 typedef struct kb_gamepad_state {
-  int16_t           axis    [KB_GAMEPAD_AXIS_COUNT];
-  uint8_t           button  [KB_GAMEPAD_BUTTON_COUNT];
+  int16_t           axis      [KB_GAMEPAD_AXIS_COUNT];
+  uint8_t           button    [KB_GAMEPAD_BUTTON_COUNT];
 } kb_gamepad_state;
 
 typedef struct kb_input_state {

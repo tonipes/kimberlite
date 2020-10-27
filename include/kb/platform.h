@@ -28,7 +28,7 @@ KB_API void           kb_platform_graphics_deinit                     ();
 KB_API void           kb_platform_graphics_frame                      ();
 KB_API Int2           kb_platform_graphics_get_extent                 ();
 KB_API void           kb_platform_graphics_wait_device_idle           ();
-KB_API void           kb_platform_graphics_submit_calls               (kb_draw_call* calls, uint32_t call_count);
+KB_API void           kb_platform_graphics_submit_calls               (kb_graphics_call* calls, uint32_t call_count);
 KB_API void*          kb_platform_graphics_transient_alloc            (uint64_t size, uint64_t align);
 KB_API void*          kb_platform_graphics_transient_at               (uint64_t offset);
 KB_API uint64_t       kb_platform_graphics_transient_offset           (void* ptr);
@@ -39,6 +39,7 @@ KB_API Int2           kb_platform_surface_get_size                    ();
 KB_API float          kb_platform_surface_get_aspect                  ();
 KB_API void*          kb_platform_surface_get_native_window_handle    ();
 KB_API void           kb_platform_surface_create                      (uint32_t w, uint32_t h);
+KB_API void           kb_platform_surface_set_system_cursor_visible   (bool visible);
 KB_API float          kb_platform_surface_get_scaling                 ();
 KB_API void           kb_platform_surface_destroy                     ();
 

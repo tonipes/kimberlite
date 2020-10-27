@@ -7,7 +7,7 @@ project(
     'c_std=c99',
     'cpp_std=c++14',
     'cpp_rtti=false',   # Disable RTTI
-    'cpp_eh=none',      # Disable exceptions
+    # 'cpp_eh=none',      # Disable exceptions
   ]
 )
 

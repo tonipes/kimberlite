@@ -100,6 +100,7 @@ typedef struct kb_graphics_init_info {
   uint32_t                  msaa;
   bool                      vsync;
   Int2                      resolution;
+  bool                      hide_cursor;
 } kb_graphics_init_info;
 
 typedef struct kb_primitive_info {
@@ -130,13 +131,13 @@ typedef struct kb_uniform_binding {
   uint64_t                  offset;
 } kb_uniform_binding;
 
-typedef struct kb_draw_call_info {
+typedef struct kb_graphics_call_info {
   uint32_t                  first_vertex;
   uint32_t                  first_index;
   uint32_t                  index_count;
-} kb_draw_call_info;
+} kb_graphics_call_info;
 
-typedef struct kb_draw_call {
+typedef struct kb_graphics_call {
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer;
   kb_index_buffer_binding   index_buffer;
@@ -144,8 +145,8 @@ typedef struct kb_draw_call {
   kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
   kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
   kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_SHADER_BINDINGS];
-  kb_draw_call_info         single;
-} kb_draw_call;
+  kb_graphics_call_info     single;
+} kb_graphics_call;
 
 typedef struct kb_encoder_frame {
   kb_pipeline               pipeline;
@@ -161,7 +162,7 @@ typedef struct kb_encoder_state {
   uint32_t                  stack_pos;
   uint32_t                  draw_call_count;
   kb_encoder_frame          stack[KB_CONFIG_GIZMO_STACK_SIZE];  
-  kb_draw_call              draw_calls[KB_CONFIG_MAX_DRAW_CALLS];
+  kb_graphics_call          draw_calls[KB_CONFIG_MAX_DRAW_CALLS];
 } kb_encoder_state;
 
 typedef struct kb_encoder_pool {
