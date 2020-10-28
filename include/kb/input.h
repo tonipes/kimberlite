@@ -236,8 +236,8 @@ typedef enum kb_gamepad_joystick {
 typedef enum kb_mouse_button {
   KB_MOUSE_BUTTON_INVALID = 0,
   KB_MOUSE_BUTTON_LEFT    = 1,
-  KB_MOUSE_BUTTON_RIGHT   = 2,
-  KB_MOUSE_BUTTON_MIDDLE  = 3,
+  KB_MOUSE_BUTTON_MIDDLE  = 2,
+  KB_MOUSE_BUTTON_RIGHT   = 3,
   KB_MOUSE_BUTTON_COUNT   = 4,
 } kb_mouse_button;
 
@@ -276,10 +276,10 @@ extern kb_input_state state_next;
 KB_API          void          kb_input_init                         (const kb_input_init_info info);
 KB_API          void          kb_input_deinit                       ();
 KB_API          void          kb_input_frame                        ();
-KB_API          Float2        kb_input_mouse_wheel                  ();
-KB_API          Float2        kb_input_mouse_wheel_delta            ();
 KB_API          bool          kb_input_gamepad_connected            (uint32_t gamepad);
 KB_API          const char*   kb_input_gamepad_name                 (uint32_t gamepad);
+// KB_API_INLINE   Float2        kb_input_mouse_wheel_delta            ();
+KB_API_INLINE   Float2        kb_input_mouse_wheel                  ()                                                { return state_curr.wheel; }
 KB_API_INLINE   bool          kb_input_key_down                     (kb_scancode scancode)                            { return state_curr.keyboard[scancode]; }
 KB_API_INLINE   bool          kb_input_key_up                       (kb_scancode scancode)                            { return !state_curr.keyboard[scancode]; }
 KB_API_INLINE   bool          kb_input_key_released                 (kb_scancode scancode)                            { return kb_deactivated(state_curr.keyboard, state_prev.keyboard, scancode); }

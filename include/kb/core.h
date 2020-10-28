@@ -312,21 +312,21 @@
 
 
 #define KB_CONFIG_MAX_GAMEPADS                  8
-#define KB_CONFIG_MAX_INDEX_BUFFERS             64
-#define KB_CONFIG_MAX_MATERIALS                 64
-#define KB_CONFIG_MAX_MESHES                    64
-#define KB_CONFIG_MAX_PROGRAMS                  64
-#define KB_CONFIG_MAX_COMMAND_BUFFERS           64
-#define KB_CONFIG_MAX_TEXTURES                  64
-#define KB_CONFIG_MAX_VERTEX_BUFFERS            64
-#define KB_CONFIG_MAX_SOUNDS                    64
-#define KB_CONFIG_MAX_NAME_SIZE                 64
-#define KB_CONFIG_MAX_GIZMOS                    64
-#define KB_CONFIG_MAX_FONTS                     64
-#define KB_CONFIG_MAX_GEOMETRIES                64
-#define KB_CONFIG_MAX_AUDIO_TRACKS              64
+#define KB_CONFIG_MAX_INDEX_BUFFERS             512
+#define KB_CONFIG_MAX_MATERIALS                 512
+#define KB_CONFIG_MAX_MESHES                    512
+#define KB_CONFIG_MAX_PROGRAMS                  512
+#define KB_CONFIG_MAX_COMMAND_BUFFERS           512
+#define KB_CONFIG_MAX_TEXTURES                  512
+#define KB_CONFIG_MAX_VERTEX_BUFFERS            512
+#define KB_CONFIG_MAX_SOUNDS                    512
+#define KB_CONFIG_MAX_NAME_SIZE                 512
+#define KB_CONFIG_MAX_GIZMOS                    512
+#define KB_CONFIG_MAX_FONTS                     512
+#define KB_CONFIG_MAX_GEOMETRIES                512
+#define KB_CONFIG_MAX_AUDIO_TRACKS              512
 
-#define KB_CONFIG_MAX_DRAW_CALLS                1024
+#define KB_CONFIG_MAX_DRAW_CALLS                2048
 #define KB_CONFIG_MAX_ENCODERS                  16
 #define KB_CONFIG_MAX_VERTEX_ATTRIBS            16
 #define KB_CONFIG_MAX_SHADER_BINDINGS           16

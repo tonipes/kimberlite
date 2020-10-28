@@ -85,14 +85,13 @@ KB_RESOURCE_ALLOC_FUNC_DECLS  (mesh, kb_mesh, kb_mesh_create_info);
 KB_RESOURCE_HASHED_FUNC_DECLS (geometry, kb_geometry, kb_geometry_create_info);
 KB_RESOURCE_ALLOC_FUNC_DECLS  (geometry, kb_geometry, kb_geometry_create_info);
 
-KB_API void kb_geometry_data_read       (kb_geometry_data* geometry, kb_rwops* rwops);
-KB_API void kb_geometry_data_write      (const kb_geometry_data* geometry, kb_rwops* rwops);
-KB_API void kb_geometry_data_dump_info  (const kb_geometry_data* geometry);
-KB_API void kb_geometry_data_destroy    (kb_geometry_data* geometry);
-KB_API void kb_geometry_load            (kb_geometry target, kb_rwops* rwops);
-
-KB_API void kb_encoder_submit_mesh      (kb_encoder encoder, kb_mesh mesh);
-KB_API void kb_encoder_submit_primitive_draw (kb_encoder encoder, kb_mesh mesh, uint32_t prim_index);
+KB_API void kb_geometry_data_read             (kb_geometry_data* geometry, kb_rwops* rwops);
+KB_API void kb_geometry_data_write            (const kb_geometry_data* geometry, kb_rwops* rwops);
+KB_API void kb_geometry_data_dump_info        (const kb_geometry_data* geometry);
+KB_API void kb_geometry_data_destroy          (kb_geometry_data* geometry);
+KB_API void kb_geometry_load                  (kb_geometry target, kb_rwops* rwops);
+KB_API void kb_encoder_submit_mesh            (kb_encoder encoder, kb_mesh mesh);
+KB_API void kb_encoder_submit_primitive_draw  (kb_encoder encoder, kb_mesh mesh, uint32_t prim_index);
 
 #ifdef __cplusplus
 }
