@@ -24,9 +24,36 @@ KB_HANDLE(kb_encoder);
 extern "C" {
 #endif
 
+typedef enum kb_vertex_attrib_format {
+  KB_VERTEX_FORMAT_INVALID  = 0,
+  KB_VERTEX_FORMAT_FLOAT    = 1,
+  KB_VERTEX_FORMAT_FLOAT2   = 2,
+  KB_VERTEX_FORMAT_FLOAT3   = 3,
+  KB_VERTEX_FORMAT_FLOAT4   = 4,
+} kb_vertex_attrib_format;
+
+typedef enum kb_polygon_mode {
+  KB_POLYGON_MODE_INVALID = 0,
+  KB_POLYGON_MODE_FILL    = 1,
+  KB_POLYGON_MODE_LINE    = 2,
+  KB_POLYGON_MODE_POINT   = 3,
+} kb_polygon_mode;
+
+typedef enum kb_winding {
+  KB_WINDING_UNKNOWN            = 0,
+  KB_WINDING_CW                 = 1,
+  KB_WINDING_CCW                = 2,
+} kb_winding;
+
+typedef enum kb_step_function {
+  KB_STEP_FUNC_INVALID            = 0,
+  KB_STEP_FUNC_VERTEX             = 1,
+  KB_STEP_FUNC_INSTANCE           = 2,
+} kb_step_function;
+
 typedef enum kb_draw_mode {
   KB_DRAW_SINGLE              = 0,
-  KB_CULL_INSTANCED           = 1,
+  KB_DRAW_INSTANCED           = 1,
 } kb_draw_mode;
 
 typedef enum kb_index_type {
@@ -62,6 +89,25 @@ typedef struct kb_frame_stats {
   float                     frametime_max;
 } kb_frame_stats;
 
+// New uniform test
+typedef struct kb_uniform_buffer_info {
+  uint32_t    slot;
+  const char* name;
+  uint32_t    size;
+} kb_uniform_buffer_info;
+
+typedef struct kb_uniform_texture_info {
+  uint32_t    slot;
+  const char* name;
+} kb_uniform_texture_info;
+
+typedef struct kb_uniform_layout {
+  kb_uniform_buffer_info    vert_ubos       [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_buffer_info    frag_ubos       [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_texture_info   vert_textures   [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_texture_info   frag_textures   [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+} kb_uniform_layout;
+
 typedef struct kb_texture_create_info {
   kb_rwops*                 rwops;
   kb_texture_info           texture;
@@ -75,16 +121,53 @@ typedef struct kb_buffer_create_info {
   bool                      host_mapped;
 } kb_buffer_create_info;
 
+typedef struct kb_vertex_attrib_info {
+  kb_vertex_attrib_format   format;
+  uint32_t                  buffer;
+  uint32_t                  offset;
+} kb_vertex_attrib_info;
+
+typedef struct kb_vertex_buffer_info {
+  kb_step_function          step_func;
+  uint32_t                  step_rate;
+  uint32_t                  stride;
+} kb_vertex_buffer_info;
+
+typedef struct kb_vertex_layout_info {
+  kb_vertex_attrib_info   attribs[KB_CONFIG_MAX_VERTEX_ATTRIBS];
+  kb_vertex_buffer_info   buffers[KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS];
+} kb_vertex_layout_info;
+
+typedef struct kb_shader_info {
+  kb_rwops*   rwops;
+  const char* entry;
+} kb_shader_info;
+
+typedef struct kb_rasterizer_info {
+  kb_cull_mode              cull_mode;
+  kb_winding                winding;
+  kb_polygon_mode           polygon_mode;
+} kb_rasterizer_info;
+
+typedef struct kb_sampling_info {
+  uint32_t samples;
+} kb_sampling_info;
+
+typedef struct kb_depth_stencil_info {
+  bool depth_test;
+  bool depth_write;
+  bool stencil_test;
+} kb_depth_stencil_info;
+
 typedef struct kb_pipeline_create_info {
-  kb_rwops*                 vert_code_rwops;
-  kb_rwops*                 frag_code_rwops;
-  const char*               vert_entry;
-  const char*               frag_entry;
-  kb_cull_mode              cull;
-  kb_draw_mode              mode;
   kb_topology_type          topology;
-  bool                      depth_write;
-  bool                      depth_test;
+  kb_uniform_layout         uniform_layout;
+  kb_shader_info            vert_shader;
+  kb_shader_info            frag_shader;
+  kb_vertex_layout_info     layout;
+  kb_rasterizer_info        rasterizer;
+  kb_depth_stencil_info     depth_stencil;
+  kb_sampling_info          sampling;
 } kb_pipeline_create_info;
 
 typedef struct kb_graphics_init_info {
