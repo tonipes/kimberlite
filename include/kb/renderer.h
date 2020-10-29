@@ -16,6 +16,7 @@
 #include <kb/vertex.h>
 #include <kb/texture.h>
 
+KB_HANDLE(kb_buffer);
 KB_HANDLE(kb_index_buffer);
 KB_HANDLE(kb_vertex_buffer);
 KB_HANDLE(kb_pipeline);
@@ -69,6 +70,12 @@ typedef struct kb_texture_create_info {
   bool                      mipmaps;
   kb_filter                 filter;
 } kb_texture_create_info;
+
+typedef struct kb_buffer_create_info {
+  kb_rwops*                 rwops;
+  uint32_t                  size;
+  bool                      host_mapped;
+} kb_buffer_create_info;
 
 typedef struct kb_index_buffer_create_info {
   kb_rwops*                 rwops;
@@ -170,11 +177,18 @@ typedef struct kb_encoder_pool {
   kb_encoder_state          states[KB_CONFIG_MAX_ENCODERS];
 } kb_encoder_pool;
 
+// TODO:
+typedef struct kb_graphics_pass_info {
+  int unused;
+} kb_graphics_pass_info;
+
+KB_RESOURCE_HASHED_FUNC_DECLS (buffer         , kb_buffer         , kb_buffer_create_info         )
 KB_RESOURCE_HASHED_FUNC_DECLS (index_buffer   , kb_index_buffer   , kb_index_buffer_create_info   )
 KB_RESOURCE_HASHED_FUNC_DECLS (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_HASHED_FUNC_DECLS (texture        , kb_texture        , kb_texture_create_info        )
 KB_RESOURCE_HASHED_FUNC_DECLS (vertex_buffer  , kb_vertex_buffer  , kb_vertex_buffer_create_info  )
 
+KB_RESOURCE_ALLOC_FUNC_DECLS  (buffer         , kb_buffer         , kb_buffer_create_info         )
 KB_RESOURCE_ALLOC_FUNC_DECLS  (index_buffer   , kb_index_buffer   , kb_index_buffer_create_info   )
 KB_RESOURCE_ALLOC_FUNC_DECLS  (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_ALLOC_FUNC_DECLS  (texture        , kb_texture        , kb_texture_create_info        )
