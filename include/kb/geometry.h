@@ -62,8 +62,8 @@ typedef struct kb_geometry_data {
 } kb_geometry_data;
 
 typedef struct kb_geometry_create_info {
-  kb_vertex_buffer    vertex_buffer;
-  kb_index_buffer     index_buffer;
+  kb_buffer           vertex_buffer;
+  kb_buffer           index_buffer;
   uint32_t            material_count;
   kb_material*        materials;
   uint32_t            mesh_count;
@@ -71,8 +71,8 @@ typedef struct kb_geometry_create_info {
 } kb_geometry_create_info;
 
 typedef struct kb_mesh_create_info {
-  kb_vertex_buffer    vertex_buffer;
-  kb_index_buffer     index_buffer;
+  kb_buffer           vertex_buffer;
+  kb_buffer           index_buffer;
   uint32_t            primitive_count;
   kb_primitive_data*  primitives;
   uint32_t            material_count;

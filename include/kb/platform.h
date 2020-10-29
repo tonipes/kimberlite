@@ -46,15 +46,11 @@ KB_API void           kb_platform_surface_destroy                     ();
 KB_API void           kb_platform_buffer_construct                    (kb_buffer handle, const kb_buffer_create_info* info);
 KB_API void           kb_platform_pipeline_construct                  (kb_pipeline handle, const kb_pipeline_create_info* info);
 KB_API void           kb_platform_texture_construct                   (kb_texture handle, const kb_texture_create_info* info);
-KB_API void           kb_platform_index_buffer_construct              (kb_index_buffer handle, const kb_index_buffer_create_info* info);
-KB_API void           kb_platform_vertex_buffer_construct             (kb_vertex_buffer handle, const kb_vertex_buffer_create_info* info);
 KB_API void           kb_platform_sound_construct                     (kb_sound handle, const kb_sound_create_info* info);
 
 KB_API void           kb_platform_buffer_destruct                     (kb_buffer handle);
 KB_API void           kb_platform_pipeline_destruct                   (kb_pipeline handle);
 KB_API void           kb_platform_texture_destruct                    (kb_texture handle);
-KB_API void           kb_platform_index_buffer_destruct               (kb_index_buffer handle);
-KB_API void           kb_platform_vertex_buffer_destruct              (kb_vertex_buffer handle);
 KB_API void           kb_platform_sound_destruct                      (kb_sound handle);
 
 KB_API void           kb_platform_input_init                          (const kb_input_init_info info);
