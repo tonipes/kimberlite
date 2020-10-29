@@ -286,8 +286,8 @@ KB_API void                       kb_encoder_pop                        (kb_enco
 KB_API void                       kb_encoder_bind_pipeline              (kb_encoder encoder, kb_pipeline pipeline);
 KB_API void                       kb_encoder_bind_vertex_buffer         (kb_encoder encoder, kb_buffer vertex_buffer, uint64_t offset);
 KB_API void                       kb_encoder_bind_index_buffer          (kb_encoder encoder, kb_buffer index_buffer, uint64_t offset, kb_index_type type);
-KB_API void                       kb_encoder_bind_texture               (kb_encoder encoder, const kb_shader_binding_slot* slot, kb_texture texture);
-KB_API void                       kb_encoder_bind_uniform               (kb_encoder encoder, const kb_shader_binding_slot* slot, const void* data, uint64_t size);
+KB_API void                       kb_encoder_bind_texture               (kb_encoder encoder, const kb_shader_binding_slot slot, kb_texture texture);
+KB_API void                       kb_encoder_bind_uniform               (kb_encoder encoder, const kb_shader_binding_slot slot, const void* data, uint64_t size);
 KB_API void                       kb_encoder_submit                     (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count, uint32_t instance_count);
 // KB_API void                       kb_encoder_submit                     (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count);
 
