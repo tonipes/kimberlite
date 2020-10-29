@@ -24,7 +24,7 @@ extern "C" {
   bool      kb_##t_name##_has_hash(kb_hash hash);                                                   \
   handle_t  kb_##t_name##_get_hash(kb_hash hash);                                                   \
   handle_t  kb_##t_name##_get_or_alloc(kb_hash hash);                                               \
-  void      kb_##t_name##_construct(handle_t h, const create_info_t* info);                         \
+  void      kb_##t_name##_construct(handle_t h, const create_info_t info);                          \
   void      kb_##t_name##_destruct(handle_t h);                                                     
 
 #define KB_RESOURCE_ALLOC_FUNC_DECLS(t_name, handle_t, create_info_t)                               \
@@ -89,7 +89,7 @@ struct kb_resource_slot_allocator {
   }                                                                                               \
   handle_t kb_##t_name##_create(const create_info_t info) {                                       \
     handle_t handle = kb_##t_name##_allocate();                                                   \
-    kb_##t_name##_construct(handle, &info);                                                       \
+    kb_##t_name##_construct(handle, info);                                                        \
     return handle;                                                                                \
   }                                                                                               \
   uint32_t kb_##t_name##_count() {                                                                \

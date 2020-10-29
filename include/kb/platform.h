@@ -43,10 +43,10 @@ KB_API void           kb_platform_surface_set_system_cursor_visible   (bool visi
 KB_API float          kb_platform_surface_get_scaling                 ();
 KB_API void           kb_platform_surface_destroy                     ();
 
-KB_API void           kb_platform_buffer_construct                    (kb_buffer handle, const kb_buffer_create_info* info);
-KB_API void           kb_platform_pipeline_construct                  (kb_pipeline handle, const kb_pipeline_create_info* info);
-KB_API void           kb_platform_texture_construct                   (kb_texture handle, const kb_texture_create_info* info);
-KB_API void           kb_platform_sound_construct                     (kb_sound handle, const kb_sound_create_info* info);
+KB_API void           kb_platform_buffer_construct                    (kb_buffer handle, const kb_buffer_create_info info);
+KB_API void           kb_platform_pipeline_construct                  (kb_pipeline handle, const kb_pipeline_create_info info);
+KB_API void           kb_platform_texture_construct                   (kb_texture handle, const kb_texture_create_info info);
+KB_API void           kb_platform_sound_construct                     (kb_sound handle, const kb_sound_create_info info);
 
 KB_API void           kb_platform_buffer_destruct                     (kb_buffer handle);
 KB_API void           kb_platform_pipeline_destruct                   (kb_pipeline handle);
