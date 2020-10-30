@@ -34,6 +34,7 @@ KB_API void*          kb_platform_graphics_transient_at               (uint64_t 
 KB_API uint64_t       kb_platform_graphics_transient_offset           (void* ptr);
 KB_API uint64_t       kb_platform_graphics_transient_used             ();
 KB_API uint64_t       kb_platform_graphics_transient_capacity         ();
+KB_API void*          kb_platform_graphics_buffer_mapped              (kb_buffer buffer);
 
 KB_API Int2           kb_platform_surface_get_size                    ();
 KB_API float          kb_platform_surface_get_aspect                  ();

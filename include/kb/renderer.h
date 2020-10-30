@@ -77,28 +77,28 @@ typedef enum kb_topology_type {
 } kb_topology_type;
 
 typedef struct kb_frame_stats {
-  uint32_t                  encoder_count;
-  uint32_t                  transient_memory_used;
-  uint32_t                  draw_calls;
-  uint32_t                  vertex_buffer_count;
-  uint32_t                  index_buffer_count;
-  uint32_t                  pipeline_count;
-  uint32_t                  texture_count;
-  float                     frametime_avg;
-  float                     frametime_min;
-  float                     frametime_max;
+  uint32_t                encoder_count;
+  uint32_t                transient_memory_used;
+  uint32_t                draw_calls;
+  uint32_t                vertex_buffer_count;
+  uint32_t                index_buffer_count;
+  uint32_t                pipeline_count;
+  uint32_t                texture_count;
+  float                   frametime_avg;
+  float                   frametime_min;
+  float                   frametime_max;
 } kb_frame_stats;
 
 // New uniform test
 typedef struct kb_uniform_buffer_info {
-  uint32_t    slot;
-  const char* name;
-  uint32_t    size;
+  uint32_t                slot;
+  const char*             name;
+  uint32_t                size;
 } kb_uniform_buffer_info;
 
 typedef struct kb_uniform_texture_info {
-  uint32_t    slot;
-  const char* name;
+  uint32_t                slot;
+  const char*             name;
 } kb_uniform_texture_info;
 
 typedef struct kb_uniform_layout {
@@ -186,6 +186,7 @@ typedef struct kb_primitive_info {
 typedef struct kb_vertex_buffer_binding {
   kb_buffer                 buffer;
   uint64_t                  offset;
+  bool                      is_set;
 } kb_vertex_buffer_binding;
 
 typedef struct kb_index_buffer_binding {
@@ -273,6 +274,7 @@ KB_API Int2                       kb_graphics_get_extent                ();
 KB_API void                       kb_graphics_wait_device_idle          ();
 KB_API uint32_t                   kb_graphics_get_current_resource_slot ();
 KB_API void                       kb_graphics_get_frame_stats           (kb_frame_stats* stats);
+KB_API void*                      kb_graphics_get_buffer_mapped         (kb_buffer buffer);
 
 KB_API void*                      kb_graphics_transient_at              (uint64_t offset);
 KB_API uint64_t                   kb_graphics_transient_offset          (void* ptr);
