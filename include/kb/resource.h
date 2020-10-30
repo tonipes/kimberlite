@@ -16,13 +16,10 @@ extern "C" {
 #endif
 
 #define KB_RESOURCE_HASHED_FUNC_DECLS(t_name, handle_t, create_info_t)                              \
-  void      kb_##t_name##_set_name(handle_t handle, const char* name);                              \
-  void      kb_##t_name##_set_hash(handle_t handle, kb_hash hash);                                  \
-  void      kb_##t_name##_remove_name(handle_t handle);                                             \
-  bool      kb_##t_name##_has(const char* name);                                                    \
-  handle_t  kb_##t_name##_get(const char* name);                                                    \
-  bool      kb_##t_name##_has_hash(kb_hash hash);                                                   \
-  handle_t  kb_##t_name##_get_hash(kb_hash hash);                                                   \
+  void      kb_##t_name##_mark(handle_t handle, kb_hash hash);                                      \
+  void      kb_##t_name##_unmark(handle_t handle);                                                  \
+  bool      kb_##t_name##_has(kb_hash hash);                                                        \
+  handle_t  kb_##t_name##_get(kb_hash hash);                                                        \
   handle_t  kb_##t_name##_get_or_alloc(kb_hash hash);                                               \
   void      kb_##t_name##_construct(handle_t h, const create_info_t info);                          \
   void      kb_##t_name##_destruct(handle_t h);                                                     
@@ -73,7 +70,7 @@ struct kb_resource_slot_allocator {
 
 #define KB_RESOURCE_ALLOC_FUNC_DEF(t_name, handle_t, create_info_t, cap)                          \
   kb_resource_slot_allocator<handle_t, create_info_t, cap> t_name##_data;                         \
-  void kb_##t_name##_remove_name(handle_t handle) {                                               \
+  void kb_##t_name##_unmark(handle_t handle) {                                                    \
     kb_table_remove(&(t_name##_data.table), kb_to_arr(handle));                                   \
   }                                                                                               \
   handle_t  kb_##t_name##_allocate() {                                                            \
@@ -84,7 +81,7 @@ struct kb_resource_slot_allocator {
   }                                                                                               \
   void kb_##t_name##_destroy(handle_t handle) {                                                   \
     kb_##t_name##_free(handle);                                                                   \
-    kb_##t_name##_remove_name(handle);                                                            \
+    kb_##t_name##_unmark(handle);                                                                 \
     kb_##t_name##_destruct(handle);                                                               \
   }                                                                                               \
   handle_t kb_##t_name##_create(const create_info_t info) {                                       \
@@ -104,28 +101,19 @@ struct kb_resource_slot_allocator {
   }   
 
 #define KB_RESOURCE_DATA_HASHED_DEF(t_name, handle_t)                                             \
-  void kb_##t_name##_set_hash(handle_t handle, kb_hash _hash) {                                   \
+  void kb_##t_name##_mark(handle_t handle, kb_hash _hash) {                                       \
     kb_table_insert(&(t_name##_data.table), _hash, kb_to_arr(handle));                            \
   }                                                                                               \
-  bool kb_##t_name##_has_hash(kb_hash _hash) {                                                    \
+  bool kb_##t_name##_has(kb_hash _hash) {                                                         \
     return kb_is_valid(handle_t##_from_arr(kb_table_get(&(t_name##_data.table), _hash)));         \
   }                                                                                               \
-  handle_t kb_##t_name##_get_hash(kb_hash _hash) {                                                \
+  handle_t kb_##t_name##_get(kb_hash _hash) {                                                     \
     return handle_t##_from_arr(kb_table_get(&(t_name##_data.table), _hash));                      \
   }                                                                                               \
-  void kb_##t_name##_set_name(handle_t handle, const char* name) {                                \
-    kb_##t_name##_set_hash(handle, kb_hash_string(name));                                         \
-  }                                                                                               \
-  bool kb_##t_name##_has(const char* name) {                                                      \
-    return kb_##t_name##_has_hash(kb_hash_string(name));                                          \
-  }                                                                                               \
-  handle_t kb_##t_name##_get(const char* name) {                                                  \
-    return kb_##t_name##_get_hash(kb_hash_string(name));                                          \
-  }                                                                                               \
   handle_t kb_##t_name##_get_or_alloc(kb_hash hash) {                                             \
-    if (kb_##t_name##_has_hash(hash)) return kb_##t_name##_get_hash(hash);                        \
+    if (kb_##t_name##_has(hash)) return kb_##t_name##_get(hash);                                  \
     handle_t handle = kb_##t_name##_allocate();                                                   \
-    kb_##t_name##_set_hash(handle, hash);                                                         \
+    kb_##t_name##_mark(handle, hash);                                                             \
     return handle;                                                                                \
   }                                                                                               \
 

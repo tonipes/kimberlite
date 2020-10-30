@@ -32,6 +32,10 @@ KB_API kb_hash  kb_hash_string (const char* str);
 
 #ifdef __cplusplus
 
+KB_API_INLINE kb_hash operator ""_h(const char* str, size_t len) {
+  return kb_hash_string(str);
+}
+
 template <typename T> 
 KB_API_INLINE void kb_hash_add(kb_hash_gen* gen, const T& t) {
   kb_hash_add(gen, &t, sizeof(T));

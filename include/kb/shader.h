@@ -76,3 +76,9 @@ KB_API void                       kb_shader_desc_dump                 (kb_shader
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+KB_ENUM_FLAG_OPERATORS(kb_shader_stage);
+
+#endif

@@ -51,6 +51,15 @@
 
 #define KB_ENUM_OF(name, def) enum name { def(KB_ENUM_GEN) }; static const char* name##keys[] = { def(KB_ENUM_GEN_STR) };
 
+#define KB_ENUM_FLAG_OPERATORS(_T) \
+  template<class _T> constexpr inline _T operator~ (_T a) { return (_T)~(int)a; } \
+  template<class _T> constexpr inline _T operator| (_T a, _T b) { return (_T)((int)a | (int)b); } \
+  template<class _T> constexpr inline _T operator& (_T a, _T b) { return (_T)((int)a & (int)b); } \
+  template<class _T> constexpr inline _T operator^ (_T a, _T b) { return (_T)((int)a ^ (int)b); } \
+  template<class _T> constexpr inline _T& operator|= (_T& a, _T b) { return (_T&)((int&)a |= (int)b); } \
+  template<class _T> constexpr inline _T& operator&= (_T& a, _T b) { return (_T&)((int&)a &= (int)b); } \
+  template<class _T> constexpr inline _T& operator^= (_T& a, _T b) { return (_T&)((int&)a ^= (int)b); }
+
 #define KB_COUNTOF(arr) (sizeof(arr) / sizeof(arr[0]))
 
 #define KB_FOURCC(a, b, c, d) (((uint32_t)(a) | ((uint32_t)(b) << 8) | ((uint32_t)(c) << 16) | ((uint32_t)(d) << 24)))
@@ -326,6 +335,7 @@
 #define KB_CONFIG_MAX_GEOMETRIES                512
 #define KB_CONFIG_MAX_AUDIO_TRACKS              512
 
+#define KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS   16         
 #define KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS     16
 #define KB_CONFIG_MAX_VERTEX_ATTRIBS            16 * KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS
 #define KB_CONFIG_MAX_UNIFORM_BINDINGS          16
