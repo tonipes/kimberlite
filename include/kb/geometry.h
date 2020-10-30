@@ -90,8 +90,8 @@ KB_API void kb_geometry_data_write            (const kb_geometry_data* geometry,
 KB_API void kb_geometry_data_dump_info        (const kb_geometry_data* geometry);
 KB_API void kb_geometry_data_destroy          (kb_geometry_data* geometry);
 KB_API void kb_geometry_load                  (kb_geometry target, kb_rwops* rwops);
-KB_API void kb_encoder_submit_mesh            (kb_encoder encoder, kb_mesh mesh);
-KB_API void kb_encoder_submit_primitive_draw  (kb_encoder encoder, kb_mesh mesh, uint32_t prim_index);
+KB_API void kb_encoder_submit_mesh            (kb_encoder encoder, kb_mesh mesh, uint32_t instance_count);
+KB_API void kb_encoder_submit_primitive_draw  (kb_encoder encoder, kb_mesh mesh, uint32_t prim_index, uint32_t instance_count);
 
 #ifdef __cplusplus
 }
