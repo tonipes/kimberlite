@@ -47,13 +47,13 @@ typedef struct kb_gizmo {
 
 KB_API void     kb_gizmo_begin                (kb_gizmo* gizmo, kb_encoder encoder, kb_pipeline pipeline);
 KB_API void     kb_gizmo_end                  (kb_gizmo* gizmo);
-KB_API void     kb_gizmo_state_push           (kb_gizmo* gizmo);
-KB_API void     kb_gizmo_state_pop            (kb_gizmo* gizmo);
-KB_API void     kb_gizmo_state_push_transform (kb_gizmo* gizmo, const Float4x4 mtx, bool flush);
-KB_API void     kb_gizmo_state_pop_transform  (kb_gizmo* gizmo, bool flush);
-KB_API void     kb_gizmo_state_set_color      (kb_gizmo* gizmo, Float4 color);
-KB_API void     kb_gizmo_state_set_lod        (kb_gizmo* gizmo, uint8_t lod);
-KB_API void     kb_gizmo_state_set_wireframe  (kb_gizmo* gizmo, bool wireframe);
+KB_API void     kb_gizmo_push                 (kb_gizmo* gizmo);
+KB_API void     kb_gizmo_pop                  (kb_gizmo* gizmo);
+KB_API void     kb_gizmo_push_transform       (kb_gizmo* gizmo, const Float4x4 mtx, bool flush);
+KB_API void     kb_gizmo_pop_transform        (kb_gizmo* gizmo, bool flush);
+KB_API void     kb_gizmo_set_color            (kb_gizmo* gizmo, Float4 color);
+KB_API void     kb_gizmo_set_lod              (kb_gizmo* gizmo, uint8_t lod);
+KB_API void     kb_gizmo_set_wireframe        (kb_gizmo* gizmo, bool wireframe);
 KB_API void     kb_gizmo_shape_close          (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_shape_move_to        (kb_gizmo* gizmo, const Float3 pos);
 KB_API void     kb_gizmo_shape_line_to        (kb_gizmo* gizmo, const Float3 pos);

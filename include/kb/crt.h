@@ -29,6 +29,7 @@ KB_API void   kb_memcpy_with_stride (void* dst, const void* src, size_t count, s
 KB_API int    kb_strcmp             (const char* a, const char* b);
 KB_API int    kb_strlen             (const char* a);
 KB_API char*  kb_strcpy             (char* dst, const char* src);
+KB_API char*  kb_strncpy            (char* dst, const char* src, size_t n);
 KB_API int    kb_printf             (const char* format, ...);
 KB_API int    kb_snprintf           (char* out, int32_t max, const char* format, ...);
 KB_API int    kb_vsnprintf          (char* out, int32_t max, const char* format, va_list arg_list);
@@ -43,4 +44,18 @@ KB_API void   kb_exit               (int value);
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef __cplusplus
+
+#include <fmt/format.h>
+
+template <typename... T>
+KB_API uint64_t kb_strfmt(char* out, int32_t size, const T&... args) {
+  auto str = fmt::format(args...);
+  int32_t len = str.length() < size ? str.length() : size;
+  kb_strncpy(out, str.c_str(), len);
+  return len;
+}
+
 #endif
