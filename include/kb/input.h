@@ -278,7 +278,6 @@ KB_API          void          kb_input_deinit                       ();
 KB_API          void          kb_input_frame                        ();
 KB_API          bool          kb_input_gamepad_connected            (uint32_t gamepad);
 KB_API          const char*   kb_input_gamepad_name                 (uint32_t gamepad);
-// KB_API_INLINE   Float2        kb_input_mouse_wheel_delta            ();
 KB_API_INLINE   Float2        kb_input_mouse_wheel                  ()                                                { return state_curr.wheel; }
 KB_API_INLINE   bool          kb_input_key_down                     (kb_scancode scancode)                            { return state_curr.keyboard[scancode]; }
 KB_API_INLINE   bool          kb_input_key_up                       (kb_scancode scancode)                            { return !state_curr.keyboard[scancode]; }

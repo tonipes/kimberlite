@@ -12,7 +12,6 @@
 #include <kb/handle.h>
 #include <kb/math.h>
 #include <kb/rwops.h>
-#include <kb/shader.h>
 #include <kb/vertex.h>
 #include <kb/texture.h>
 
@@ -65,7 +64,6 @@ typedef enum kb_cull_mode {
   KB_CULL_NONE                = 0,
   KB_CULL_BACK                = 1,
   KB_CULL_FRONT               = 2,
-  KB_CULL_BOTH                = 3,
 } kb_cull_mode;
 
 typedef enum kb_topology_type {
@@ -75,6 +73,29 @@ typedef enum kb_topology_type {
   KB_TOPOLOGY_LINE_LIST       = 3,
   KB_TOPOLOGY_POINT_LIST      = 4,
 } kb_topology_type;
+
+typedef enum kb_shader_binding_type {
+  KB_SHADER_BINDING_TYPE_UNKNOWN        = 0,
+  KB_SHADER_BINDING_TYPE_TEXTURE        = 1,
+  KB_SHADER_BINDING_TYPE_UNIFORM_BUFFER = 6,
+  KB_SHADER_BINDING_TYPE_STORAGE_BUFFER = 7,
+  KB_SHADER_BINDING_TYPE_UNSUPPORTED    = 0x7FFFFFFF,
+} kb_shader_binding_type;
+
+typedef enum kb_shader_stage {
+  KB_SHADER_STAGE_UNKNOWN               = 0x00000000,
+  KB_SHADER_STAGE_VERTEX                = 0x00000001,
+  KB_SHADER_STAGE_GEOMETRY              = 0x00000008,
+  KB_SHADER_STAGE_FRAGMENT              = 0x00000010,
+  KB_SHADER_STAGE_COMPUTE               = 0x00000020,
+} kb_shader_stage;
+
+typedef struct kb_shader_binding_slot {
+  kb_shader_binding_type        type;
+  uint32_t                      index;
+  uint64_t                      size;
+  kb_shader_stage               stages;
+} kb_shader_binding_slot;
 
 typedef struct kb_frame_stats {
   uint32_t                encoder_count;
@@ -290,7 +311,7 @@ KB_API void                       kb_encoder_end                        (kb_enco
 KB_API void                       kb_encoder_push                       (kb_encoder encoder);
 KB_API void                       kb_encoder_pop                        (kb_encoder encoder);
 KB_API void                       kb_encoder_bind_pipeline              (kb_encoder encoder, kb_pipeline pipeline);
-KB_API void                       kb_encoder_bind_vertex_buffer         (kb_encoder encoder, uint32_t slot, kb_buffer vertex_buffer, uint64_t offset);
+KB_API void                       kb_encoder_bind_buffer         (kb_encoder encoder, uint32_t slot, kb_buffer vertex_buffer, uint64_t offset);
 KB_API void                       kb_encoder_bind_index_buffer          (kb_encoder encoder, kb_buffer index_buffer, uint64_t offset, kb_index_type type);
 KB_API void                       kb_encoder_bind_texture               (kb_encoder encoder, const kb_uniform_slot slot, kb_texture texture);
 KB_API void                       kb_encoder_bind_uniform               (kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size);
@@ -300,4 +321,10 @@ KB_API void                       kb_encoder_reset_frame                (kb_enco
 
 #ifdef __cplusplus
 }
+#endif
+
+#ifdef __cplusplus
+
+KB_ENUM_FLAG_OPERATORS(kb_shader_stage);
+
 #endif

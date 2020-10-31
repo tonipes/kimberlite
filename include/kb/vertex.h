@@ -23,7 +23,7 @@ typedef enum kb_vertex_attribute_type {
 typedef struct kb_simple_vertex {
   Float4                    pos;
   Float4                    color;
-  Float2                    texcoord;
+  Float4                    texcoord;
 } kb_simple_vertex;
 
 typedef struct kb_vertex_attribute {
