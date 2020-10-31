@@ -334,6 +334,7 @@
 #define KB_CONFIG_MAX_FONTS                     512
 #define KB_CONFIG_MAX_GEOMETRIES                512
 #define KB_CONFIG_MAX_AUDIO_TRACKS              512
+#define KB_CONFIG_MAX_UNIFORM_BLOCK_SIZE        256 // ???
 
 #define KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS   16         
 #define KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS     16
