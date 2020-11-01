@@ -575,6 +575,7 @@ FUNC1_DEF(operator-,      auto, Float2,           neg_float2            );
 FUNC2_DEF(operator*,      auto, Float2, Real32,   scale_float2          );
 FUNC2_DEF(operator*,      auto, Float2, Float2,   mul_float2            );
 FUNC2_DEF(operator/,      auto, Float2, Float2,   div_float2            );
+// FUNC2_DEF(operator/,      auto, Float2, Real32,   div_float2            );
 FUNC2_DEF(operator+,      auto, Float2, Float2,   add_float2            );
 FUNC2_DEF(operator-,      auto, Float2, Float2,   sub_float2            );
 FUNC2_DEF(operator==,     auto, Float2, Float2,   equal_float2          );

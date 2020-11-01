@@ -23,55 +23,98 @@ KB_HANDLE(kb_encoder);
 extern "C" {
 #endif
 
+typedef enum kb_compare_func {
+  KB_COMPARE_UNKNOWN              = 0,
+  KB_COMPARE_NEVER                = 1,
+  KB_COMPARE_LESS                 = 2,
+  KB_COMPARE_EQUAL                = 3,
+  KB_COMPARE_LESS_EQUAL           = 4,
+  KB_COMPARE_GREATER              = 5,
+  KB_COMPARE_NOT_EQUAL            = 6,
+  KB_COMPARE_GREATER_EQUAL        = 7,
+  KB_COMPARE_ALWAYS               = 8,
+} kb_compare_func;
+
+typedef enum kb_stencil_op {
+  KB_STENCIL_UNKNOWN              = 0,
+  KB_STENCIL_KEEP                 = 1,
+  KB_STENCIL_ZERO                 = 2,
+  KB_STENCIL_REPLACE              = 3,
+  KB_STENCIL_INCR_CLAMP           = 4,
+  KB_STENCIL_DECR_CLAMP           = 5,
+  KB_STENCIL_INVERT               = 6,
+  KB_STENCIL_INCR_WRAP            = 7,
+  KB_STENCIL_DECR_WRAP            = 8,
+} kb_stencil_op;
+
+typedef enum kb_blend_factor {
+  KB_BLEND_ZERO                   = 0,
+  KB_BLEND_ONE                    = 1,
+  KB_BLEND_SRC_COLOR              = 2,
+  KB_BLEND_ONE_MINUS_SRC_COLOR    = 3,
+  KB_BLEND_SRC_ALPHA              = 4,
+  KB_BLEND_ONE_MINUS_SRC_ALPHA    = 5,
+  KB_BLEND_DST_COLOR              = 6,
+  KB_BLEND_ONE_MINUS_DST_COLOR    = 7,
+  KB_BLEND_DST_ALPHA              = 8,
+  KB_BLEND_ONE_MINUS_DST_ALPHA    = 9,
+  KB_BLEND_SRC_ALPHA_SATURATED    = 10,
+  KB_BLEND_BLEND_COLOR            = 11,
+  KB_BLEND_ONE_MINUS_BLEND_COLOR  = 12,
+  KB_BLEND_BLEND_ALPHA            = 13,
+  KB_BLEND_ONE_MINUS_BLEND_ALPHA  = 14,
+} kb_blend_factor;
+
+
 typedef enum kb_vertex_attrib_format {
-  KB_VERTEX_FORMAT_INVALID  = 0,
-  KB_VERTEX_FORMAT_FLOAT    = 1,
-  KB_VERTEX_FORMAT_FLOAT2   = 2,
-  KB_VERTEX_FORMAT_FLOAT3   = 3,
-  KB_VERTEX_FORMAT_FLOAT4   = 4,
+  KB_VERTEX_FORMAT_UNKNOWN        = 0,
+  KB_VERTEX_FORMAT_FLOAT          = 1,
+  KB_VERTEX_FORMAT_FLOAT2         = 2,
+  KB_VERTEX_FORMAT_FLOAT3         = 3,
+  KB_VERTEX_FORMAT_FLOAT4         = 4,
 } kb_vertex_attrib_format;
 
 typedef enum kb_polygon_mode {
-  KB_POLYGON_MODE_INVALID = 0,
-  KB_POLYGON_MODE_FILL    = 1,
-  KB_POLYGON_MODE_LINE    = 2,
-  KB_POLYGON_MODE_POINT   = 3,
+  KB_POLYGON_MODE_UNKNOWN         = 0,
+  KB_POLYGON_MODE_FILL            = 1,
+  KB_POLYGON_MODE_LINE            = 2,
+  KB_POLYGON_MODE_POINT           = 3,
 } kb_polygon_mode;
 
 typedef enum kb_winding {
-  KB_WINDING_UNKNOWN            = 0,
-  KB_WINDING_CW                 = 1,
-  KB_WINDING_CCW                = 2,
+  KB_WINDING_UNKNOWN              = 0,
+  KB_WINDING_CW                   = 1,
+  KB_WINDING_CCW                  = 2,
 } kb_winding;
 
-typedef enum kb_step_function {
-  KB_STEP_FUNC_INVALID            = 0,
+typedef enum kb_step_func {
+  KB_STEP_FUNC_UNKNOWN            = 0,
   KB_STEP_FUNC_VERTEX             = 1,
   KB_STEP_FUNC_INSTANCE           = 2,
-} kb_step_function;
+} kb_step_func;
 
 typedef enum kb_draw_mode {
-  KB_DRAW_SINGLE              = 0,
-  KB_DRAW_INSTANCED           = 1,
+  KB_DRAW_SINGLE                  = 0,
+  KB_DRAW_INSTANCED               = 1,
 } kb_draw_mode;
 
 typedef enum kb_index_type {
-  KB_INDEX_TYPE_16            = 0,
-  KB_INDEX_TYPE_32            = 1,
+  KB_INDEX_TYPE_16                = 0,
+  KB_INDEX_TYPE_32                = 1,
 } kb_index_type;
 
 typedef enum kb_cull_mode {
-  KB_CULL_NONE                = 0,
-  KB_CULL_BACK                = 1,
-  KB_CULL_FRONT               = 2,
+  KB_CULL_NONE                    = 0,
+  KB_CULL_BACK                    = 1,
+  KB_CULL_FRONT                   = 2,
 } kb_cull_mode;
 
 typedef enum kb_topology_type {
-  KB_TOPOLOGY_TRIANGLE_STRIP  = 0,
-  KB_TOPOLOGY_TRIANGLE_LIST   = 1,
-  KB_TOPOLOGY_LINE_STRIP      = 2,
-  KB_TOPOLOGY_LINE_LIST       = 3,
-  KB_TOPOLOGY_POINT_LIST      = 4,
+  KB_TOPOLOGY_TRIANGLE_STRIP      = 0,
+  KB_TOPOLOGY_TRIANGLE_LIST       = 1,
+  KB_TOPOLOGY_LINE_STRIP          = 2,
+  KB_TOPOLOGY_LINE_LIST           = 3,
+  KB_TOPOLOGY_POINT_LIST          = 4,
 } kb_topology_type;
 
 typedef enum kb_shader_binding_type {
@@ -149,7 +192,7 @@ typedef struct kb_vertex_attrib_info {
 } kb_vertex_attrib_info;
 
 typedef struct kb_vertex_buffer_info {
-  kb_step_function          step_func;
+  kb_step_func          step_func;
   uint32_t                  step_rate;
   uint32_t                  stride;
 } kb_vertex_buffer_info;
@@ -173,6 +216,13 @@ typedef struct kb_rasterizer_info {
 typedef struct kb_sampling_info {
   uint32_t samples;
 } kb_sampling_info;
+
+typedef struct sg_stencil_state {
+  kb_stencil_op   stencil_fail_op;
+  kb_stencil_op   depth_fail_op;
+  kb_stencil_op   pass_op;
+  kb_compare_func compare;
+} sg_stencil_state;
 
 typedef struct kb_depth_stencil_info {
   bool depth_test;
