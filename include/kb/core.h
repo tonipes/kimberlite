@@ -321,21 +321,20 @@
 
 
 #define KB_CONFIG_MAX_GAMEPADS                  8
-#define KB_CONFIG_MAX_INDEX_BUFFERS             512
+#define KB_CONFIG_MAX_BUFFERS                   512
 #define KB_CONFIG_MAX_MATERIALS                 512
 #define KB_CONFIG_MAX_MESHES                    512
 #define KB_CONFIG_MAX_PROGRAMS                  512
 #define KB_CONFIG_MAX_COMMAND_BUFFERS           512
 #define KB_CONFIG_MAX_TEXTURES                  512
-#define KB_CONFIG_MAX_VERTEX_BUFFERS            512
 #define KB_CONFIG_MAX_SOUNDS                    512
 #define KB_CONFIG_MAX_NAME_SIZE                 512
 #define KB_CONFIG_MAX_GIZMOS                    512
 #define KB_CONFIG_MAX_FONTS                     512
-#define KB_CONFIG_MAX_GEOMETRIES                512
+#define KB_CONFIG_MAX_GEOMS                     512
 #define KB_CONFIG_MAX_AUDIO_TRACKS              512
-#define KB_CONFIG_MAX_UNIFORM_BLOCK_SIZE        256 // ???
 
+#define KB_CONFIG_MAX_UNIFORM_BLOCK_SIZE        256
 #define KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS   16         
 #define KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS     16
 #define KB_CONFIG_MAX_VERTEX_ATTRIBS            16 * KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS
@@ -343,8 +342,6 @@
 
 #define KB_CONFIG_MAX_DRAW_CALLS                2048
 #define KB_CONFIG_MAX_ENCODERS                  16
-#define KB_CONFIG_MAX_VERTEX_ATTRIBS            16
-#define KB_CONFIG_MAX_SHADER_BINDINGS           16
 #define KB_CONFIG_TRANSIENT_BUFFER_SIZE         16 * 1024 * KB_CONFIG_MAX_DRAW_CALLS
 #define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
 #define KB_CONFIG_STATS_SAMPLE_COUNT            120

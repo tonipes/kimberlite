@@ -32,8 +32,8 @@ typedef struct kb_material_uniform {
 
 typedef struct kb_material_create_info {
   kb_pipeline               pipeline;
-  kb_material_uniform       uniforms[KB_CONFIG_MAX_SHADER_BINDINGS];
-  kb_material_texture       textures[KB_CONFIG_MAX_SHADER_BINDINGS];
+  kb_material_uniform       uniforms[KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_material_texture       textures[KB_CONFIG_MAX_UNIFORM_BINDINGS];
 } kb_material_create_info;
 
 KB_RESOURCE_HASHED_FUNC_DECLS (material, kb_material, kb_material_create_info)
