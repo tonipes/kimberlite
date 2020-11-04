@@ -502,9 +502,9 @@ KB_API float        ray_plane_intersection(const Ray ray, const Plane plane);
 KB_API_INLINE float deg_to_rad(float deg) { return deg * PI / 180.0f; }
 KB_API_INLINE float rad_to_deg(float rad) { return rad * 180.0f / PI; }
 
-KB_API_INLINE uint32_t align_up(uint32_t a, uint32_t align) {
-  const uint32_t mask = uint32_t(align - 1);
-  return uint32_t( (a + mask) & ~mask);
+KB_API_INLINE uint64_t align_up(uint64_t a, uint64_t align) {
+  const uint64_t mask = uint64_t(align - 1);
+  return uint64_t( (a + mask) & ~mask);
 }
 
 KB_API_INLINE Float2 circle_point(float angle) {

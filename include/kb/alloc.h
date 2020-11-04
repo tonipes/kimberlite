@@ -44,7 +44,7 @@ KB_API uint64_t kb_alloc_high_water_mark    (kb_allocator* alloc);
 #define KB_FREE(alloc, ptr)                                 kb_free     (alloc, ptr, NULL, NULL)
 
 #define KB_DEFAULT_ALLOC(size)                              kb_alloc    (NULL, size,                       KB_DEFAULT_ALIGN, NULL, NULL)
-#define KB_DEFAULT_ALLOC_ALIGN(alloc, size, align)          kb_alloc    (NULL, size,                       align, NULL, NULL)
+#define KB_DEFAULT_ALLOC_ALIGN(size, align)                 kb_alloc    (NULL, size,                       align, NULL, NULL)
 #define KB_DEFAULT_ALLOC_TYPE(type, count)          (type*) kb_alloc    (NULL, sizeof(type) * count,       KB_DEFAULT_ALIGN, NULL, NULL)
 #define KB_DEFAULT_REALLOC_TYPE(type, ptr, count)   (type*) kb_realloc  (NULL, ptr, sizeof(type) * count,  KB_DEFAULT_ALIGN, NULL, NULL)
 #define KB_DEFAULT_REALLOC(ptr, size)                       kb_realloc  (NULL, ptr, size,                  KB_DEFAULT_ALIGN, NULL, NULL)

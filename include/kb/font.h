@@ -67,20 +67,20 @@ typedef struct kb_font_create_info {
 KB_RESOURCE_HASHED_FUNC_DECLS (font, kb_font, kb_font_create_info);
 KB_RESOURCE_ALLOC_FUNC_DECLS  (font, kb_font, kb_font_create_info);
 
-KB_API void   kb_font_data_read                     (kb_font_data* font, kb_rwops* rwops);
-KB_API void   kb_font_data_write                    (const kb_font_data* font, kb_rwops* rwops);
-KB_API void   kb_font_data_dump_info                (const kb_font_data* font);
-KB_API void   kb_font_data_destroy                  (kb_font_data* font);
+KB_API void   kb_font_data_read               (kb_font_data* font, kb_rwops* rwops);
+KB_API void   kb_font_data_write              (const kb_font_data* font, kb_rwops* rwops);
+KB_API void   kb_font_data_dump_info          (const kb_font_data* font);
+KB_API void   kb_font_data_destroy            (kb_font_data* font);
 
-KB_API void   kb_font_break_line                    (kb_font_info* info, float* current_y);
-KB_API void   kb_font_quad_advance                  (kb_font_info* info, int codepoint, float* current_x, float* current_y, FloatRect* pos, FloatRect* uv); 
-KB_API Real32 kb_font_get_line_height               (kb_font_info* info);
-KB_API Real32 kb_font_get_string_height             (kb_font_info* info, const char* str);
-KB_API Real32 kb_font_get_string_width              (kb_font_info* info, const char* str);
-KB_API Real32 kb_font_get_string_line_width         (kb_font_info* info, const char* str);
+KB_API void   kb_font_break_line              (kb_font_info* info, float* current_y);
+KB_API void   kb_font_quad_advance            (kb_font_info* info, int codepoint, float* current_x, float* current_y, FloatRect* pos, FloatRect* uv); 
+KB_API Real32 kb_font_get_line_height         (kb_font_info* info);
+KB_API Real32 kb_font_get_string_height       (kb_font_info* info, const char* str);
+KB_API Real32 kb_font_get_string_width        (kb_font_info* info, const char* str);
+KB_API Real32 kb_font_get_string_line_width   (kb_font_info* info, const char* str);
 
-KB_API void   kb_encoder_bind_font                  (kb_encoder encoder, kb_font font);
-KB_API void   kb_encoder_submit_text                (kb_encoder encoder, kb_font font, const char* str, Float2 origin, Float2 scale, uint32_t instance_count);
+KB_API void   kb_encoder_bind_font            (kb_encoder encoder, kb_font font);
+KB_API void   kb_encoder_submit_text          (kb_encoder encoder, kb_font font, const char* str, Float2 origin, Float2 scale, uint32_t instance_count);
 
 #ifdef __cplusplus
 }
