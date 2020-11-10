@@ -144,8 +144,7 @@ typedef struct kb_frame_stats {
   uint32_t                encoder_count;
   uint32_t                transient_memory_used;
   uint32_t                draw_calls;
-  uint32_t                vertex_buffer_count;
-  uint32_t                index_buffer_count;
+  uint32_t                buffer_count;
   uint32_t                pipeline_count;
   uint32_t                texture_count;
   float                   frametime_avg;

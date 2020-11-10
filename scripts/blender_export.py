@@ -46,14 +46,27 @@ def export_scene(filepath, **kwargs):
 
     scene = bpy.context.scene
     
+    for obj in scene.objects:
+        print("SCENE: {} {} {}".format(obj.name, obj.hide_render, obj.hide_viewport))
+
     # Uses hide_render tag to select what to export
-    export_objs = [obj for obj in scene.objects if not obj.hide_render]
+    # export_objs = [obj for obj in scene.objects if not obj.hide_render]
+    export_objs = [obj for obj in scene.objects]
+
+    hide_state = {}
 
     for obj in export_objs:
+        print("EXPORT: {} {} {} {}".format(obj.name, obj.hide_render, obj.hide_viewport, obj.hide_select))
+        # hide_state[obj.name] = obj.hide_viewport # Save hide_viewport
+        obj.hide_viewport = False
         obj.select_set(True)
+        # obj.hide_set(False)
+        # print("\tOBJ: {} {}".format(obj.name, obj.visible_get()))
     
     bpy.ops.export_scene.gltf(filepath=filepath, **kwargs)
-
+    
+    # for obj in export_objs:
+    #    obj.hide_viewport = hide_state[obj.name] # Reset hide_viewport
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Blender export script')
