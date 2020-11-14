@@ -1,0 +1,7 @@
+subdir('meshoptimizer')
+subdir('cgltf')
+subdir('stb')
+subdir('vkmemalloc')
+subdir('catch')
+subdir('soloud')
+subdir('fmt')

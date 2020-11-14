@@ -17,8 +17,6 @@ if get_option('buildtype').startswith('debug')
   add_project_arguments('-DDEBUG', language : 'objcpp')
 endif
 
-# kb_graphics_lib = 'metal'
-# kb_graphics_lib = 'vulkan'
 kb_graphics_lib = get_option('graphics_backend')
 
 fs = import('fs')
@@ -80,12 +78,6 @@ dep_sdl2    = dependency('sdl2')
 dep_vulkan  = dependency('vulkan')
 
 subdir('libraries')
-
-build_assets = true
-# build_assets = false
-
-subdir('scripts')
 subdir('source')
-subdir('assets')
 subdir('examples')
 subdir('test')

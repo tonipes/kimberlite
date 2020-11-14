@@ -1,7 +1,0 @@
-#!/bin/sh
-
-# Runs tests
-
-cd "${0%/*}/build" # Set working directory
-
-./test/kbtest
