@@ -310,8 +310,8 @@
 #elif KB_GRAPHICS_LIB_NOOP
 #	undef  KB_GRAPHICS_LIB_NAME
 #	define KB_GRAPHICS_LIB_NAME "Noop"
-#else
-#	error "Unknown KB_GRAPHICS_LIB!"
+// #else
+// #	error "Unknown KB_GRAPHICS_LIB!"
 #endif
 
 
