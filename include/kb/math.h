@@ -144,6 +144,11 @@ typedef struct Aabb {
   Float3 max;
 } Aabb;
 
+typedef struct IntAabb {
+  Int3 min;
+  Int3 max;
+} IntAabb;
+
 typedef struct Plane {
   Float3 normal;
   Real32 dist;
@@ -225,6 +230,7 @@ KB_API_INLINE Int32     abs_integer       (Int32 a)                             
 KB_API_INLINE Int32     max_integer       (Int32 a, Int32 b)                                  { return a > b ? a : b;         }
 KB_API_INLINE Int32     min_integer       (Int32 a, Int32 b)                                  { return b > a ? a : b;         }
 KB_API_INLINE Int32     log2_integer      (Int32 a)                                           { return log2(a);               }
+KB_API_INLINE Int32     clamp_integer     (Int32 v, Int32 min, Int32 max)                     { return max_integer(min_integer(v, max), min); }
 
 KB_API_INLINE Real32    nms_scalar        (Real32 a, Real32 b, Real32 c)                      { return c - a * b;             }
 KB_API_INLINE Real32    mad_scalar        (Real32 a, Real32 b, Real32 c)                      { return a * b + c;             }
