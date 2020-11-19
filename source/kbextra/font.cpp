@@ -4,7 +4,7 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/font.h>
+#include <kbextra/font.h>
 
 #include <kb/core.h>
 #include <kb/rwops.h>

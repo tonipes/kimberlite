@@ -4,7 +4,7 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/material.h>
+#include <kbextra/material.h>
 
 #include <kb/core.h>
 #include <kb/rwops.h>

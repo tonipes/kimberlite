@@ -4,7 +4,7 @@ project(
   version: 'alpha',
   license : 'MIT',
   default_options : [
-    'c_std=c99',
+    'c_std=c11',
     'cpp_std=c++14',
     'cpp_rtti=false',   # Disable RTTI
     # 'cpp_eh=none',      # Disable exceptions
@@ -57,6 +57,11 @@ kb_compile_args = [
   '-Wno-nullability-completeness',
   '-Wno-non-virtual-dtor',
   '-Wno-missing-braces',
+  '-Wno-unused-parameter',
+  '-Wno-c99-extensions',
+  '-Wno-gnu-anonymous-struct',
+  '-Wno-nested-anon-types',
+  '-Wno-missing-field-initializers',
 ]
 
 kb_link_args = ['-Wl,-no_pie']

@@ -9,12 +9,12 @@
 #include <kb/core.h>
 #include <kb/time.h>
 #include <kb/array.h>
-#include <kb/geometry.h>
 #include <kb/log.h>
 #include <kb/vertex.h>
 #include <kb/log.h>
 
 #include <kbextra/cliargs.h>
+#include <kbextra/geometry.h>
 
 #include "kb/alloc.cpp"
 #include "kb/hash.cpp"
@@ -23,9 +23,10 @@
 #include "kb/thread.cpp"
 #include "kb/crt.cpp"
 #include "kb/texture.cpp"
-#include "kb/geometry.cpp"
 #include "kb/vertex.cpp"
+
 #include "kbextra/cliargs.cpp"
+#include "kbextra/geometry.cpp"
 
 #include <meshoptimizer/meshoptimizer.h>
 

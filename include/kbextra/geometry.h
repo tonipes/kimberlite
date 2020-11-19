@@ -12,8 +12,9 @@
 #include <kb/vertex.h>
 #include <kb/rwops.h>
 #include <kb/resource.h>
-#include <kb/material.h>
 #include <kb/renderer.h>
+
+#include <kbextra/material.h>
 
 KB_HANDLE(kb_geometry);
 KB_HANDLE(kb_mesh);

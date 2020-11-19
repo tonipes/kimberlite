@@ -20,12 +20,12 @@ src_kimberlite_core = [
   'kb/vertex.cpp',
   'kb/sampler.cpp',
   'kb/input.cpp',
-  'kb/geometry.cpp',
   'kb/texture.cpp',
-  'kb/font.cpp',
-  'kb/gizmo.cpp',
   'kb/renderer.cpp',
-  'kb/material.cpp'
+  'kbextra/material.cpp',
+  'kbextra/geometry.cpp',
+  'kbextra/font.cpp',
+  'kbextra/gizmo.cpp',
 ]
 
 src_kimberlite = [

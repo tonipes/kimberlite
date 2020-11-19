@@ -152,7 +152,6 @@ typedef struct kb_frame_stats {
   float                   frametime_max;
 } kb_frame_stats;
 
-// New uniform test
 typedef struct kb_uniform_buffer_info {
   uint32_t                slot;
   const char*             name;
@@ -316,7 +315,6 @@ typedef struct kb_encoder_pool {
   kb_encoder_state          states[KB_CONFIG_MAX_ENCODERS];
 } kb_encoder_pool;
 
-// TODO:
 typedef struct kb_graphics_pass_info {
   int unused;
 } kb_graphics_pass_info;
@@ -350,9 +348,6 @@ KB_API void*                      kb_graphics_transient_at              (uint64_
 KB_API uint64_t                   kb_graphics_transient_offset          (void* ptr);
 KB_API void*                      kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
 
-// KB_API kb_vertex_layout*          kb_graphics_pipeline_vertex_layout    (kb_pipeline pipeline);
-// KB_API kb_shader_desc*            kb_graphics_pipeline_bindings         (kb_pipeline pipeline);
-// KB_API bool                       kb_pipeline_get_binding_slot          (kb_pipeline pipeline, kb_hash hash, kb_shader_binding_type type, kb_shader_binding_slot* bind_slot);
 KB_API kb_uniform_slot            kb_pipeline_get_uniform_slot          (kb_pipeline pipeline, kb_hash hash, kb_shader_binding_type type, kb_shader_stage stage);
 
 KB_API kb_encoder                 kb_encoder_begin                      ();

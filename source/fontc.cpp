@@ -9,18 +9,19 @@
 #include <kb/core.h>
 #include <kb/time.h>
 #include <kb/texture.h>
-#include <kb/font.h>
 #include <kb/log.h>
 
 #include <kbextra/cliargs.h>
+#include <kbextra/font.h>
 
 #include "kb/alloc.cpp"
 #include "kb/crt.cpp"
 #include "kb/log.cpp"
 #include "kb/thread.cpp"
-#include "kb/font.cpp"
 #include "kb/table.cpp"
+
 #include "kbextra/cliargs.cpp"
+#include "kbextra/font.cpp"
 
 #include "platform/platform_rwops_sdl.cpp"
 

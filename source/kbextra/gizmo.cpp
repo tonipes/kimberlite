@@ -4,7 +4,7 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/gizmo.h>
+#include <kbextra/gizmo.h>
 
 #include <kb/alloc.h>
 

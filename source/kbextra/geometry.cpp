@@ -4,7 +4,7 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/geometry.h>
+#include <kbextra/geometry.h>
 
 #include <kb/crt.h>
 #include <kb/alloc.h>
