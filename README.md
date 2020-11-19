@@ -1,3 +1,3 @@
 # Kimberlite
 
-An experimental game framework
+Platform agnostic IO wrapper library for games.
