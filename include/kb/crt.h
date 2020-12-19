@@ -21,7 +21,8 @@ typedef enum kb_signal {
   KB_SIGTERM  = 6,
 } kb_signal;
 
-typedef void (*kb_signal_handler)(int);
+typedef void  (*kb_signal_handler)(int);
+typedef int   (*kb_compare)(const void*, const void*);
 
 KB_API void   kb_memset             (void* dst, uint8_t ch, size_t count);
 KB_API void   kb_memcpy             (void* dst, const void* src, size_t count);
@@ -41,6 +42,7 @@ KB_API void*  kb_memdup             (void* src, uint64_t size);
 KB_API void   kb_raise              (kb_signal signal);
 KB_API void   kb_set_signal_handler (kb_signal_handler handler, kb_signal signal);
 KB_API void   kb_exit               (int value);
+KB_API void   kb_sort               (void* data, size_t num, size_t size, kb_compare compare);
 
 #ifdef __cplusplus
 }

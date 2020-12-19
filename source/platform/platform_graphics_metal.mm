@@ -76,10 +76,12 @@ KB_INTERNAL uint32_t cv_vertex_attrib_format_size(kb_vertex_attrib_format format
 
 KB_INTERNAL MTLPixelFormat cv_format_mtl(kb_format format) {
   switch (format) {
-    case KB_FORMAT_R8:        return MTLPixelFormatR8Unorm;
-    case KB_FORMAT_R8G8:      return MTLPixelFormatRG8Unorm;
-    case KB_FORMAT_R8G8B8A8:  return MTLPixelFormatRGBA8Unorm;
-    default:                  return MTLPixelFormatInvalid;
+    case KB_FORMAT_R8:              return MTLPixelFormatR8Unorm;
+    case KB_FORMAT_R8G8:            return MTLPixelFormatRG8Unorm;
+    case KB_FORMAT_R8G8B8A8:        return MTLPixelFormatRGBA8Unorm;
+    case KB_FORMAT_DEPTH:           return MTLPixelFormatDepth32Float;
+    case KB_FORMAT_DEPTH_STENCIL:   return MTLPixelFormatDepth32Float_Stencil8;
+    default:                        return MTLPixelFormatInvalid;
   }
 }
 
@@ -124,9 +126,14 @@ struct transient_buffer {
   uint64_t      memory_position;
 };
 
+struct renderpass_ref {
+  MTLRenderPassDescriptor* desc;
+};
+
 KB_RESOURCE_STORAGE_DEF (buffer,        kb_buffer,        buffer_ref,         KB_CONFIG_MAX_BUFFERS);
 KB_RESOURCE_STORAGE_DEF (pipeline,      kb_pipeline,      pipeline_ref,       KB_CONFIG_MAX_PROGRAMS);
 KB_RESOURCE_STORAGE_DEF (texture,       kb_texture,       texture_ref,        KB_CONFIG_MAX_TEXTURES);
+KB_RESOURCE_STORAGE_DEF (renderpass,    kb_renderpass,    renderpass_ref,     KB_CONFIG_MAX_RENDERPASSES);
 
 CAMetalLayer*             metal_layer;
 NSView*                   content_view;
@@ -151,14 +158,14 @@ KB_INTERNAL transient_buffer& get_current_transient_buffer() {
 }
 
 KB_INTERNAL bool acquire_frame_resources() {
-    dispatch_semaphore_wait(in_flight_semaphore, DISPATCH_TIME_FOREVER);
-    
-    current_resource_slot = (current_resource_slot + 1) % KB_CONFIG_MAX_FRAMES_IN_FLIGHT;
+  dispatch_semaphore_wait(in_flight_semaphore, DISPATCH_TIME_FOREVER);
+  
+  current_resource_slot = (current_resource_slot + 1) % KB_CONFIG_MAX_FRAMES_IN_FLIGHT;
 
-    // Reset transient buffer
-    get_current_transient_buffer().memory_position = 0;
+  // Reset transient buffer
+  get_current_transient_buffer().memory_position = 0;
 
-    return true;
+  return true;
 }
 
 KB_INTERNAL kb_shader_binding_type get_binding_type(MTLArgumentType type) {
@@ -359,50 +366,91 @@ KB_API void kb_platform_texture_construct(kb_texture handle, const kb_texture_cr
   texture_ref(handle).sampler = [device newSamplerStateWithDescriptor:sampler_descriptor];
 
   MTLTextureDescriptor* texture_descriptor = [[MTLTextureDescriptor alloc] init];
-  texture_descriptor.pixelFormat      = MTLPixelFormatRGBA8Unorm;
+  texture_descriptor.pixelFormat      = cv_format_mtl(info.texture.format);
   texture_descriptor.width            = info.texture.width;
   texture_descriptor.height           = info.texture.height;
   texture_descriptor.mipmapLevelCount = mip_levels;
 
-  texture_ref(handle).texture = [device newTextureWithDescriptor:texture_descriptor];
+  if (info.texture.render_target) {
+    texture_descriptor.storageMode  = MTLStorageModePrivate;
+    texture_descriptor.usage        = MTLTextureUsageRenderTarget;
+  } else {
 
-  uint32_t src_size = kb_rwops_size(info.rwops);
-  void* src_data = (char*) KB_DEFAULT_ALLOC(src_size);
-  kb_rwops_read(info.rwops, src_data, src_size);
-
-  MTLRegion region = MTLRegionMake2D(0, 0, info.texture.width, info.texture.height);
-  
-  [texture_ref(handle).texture replaceRegion : region 
-    mipmapLevel : 0 
-    withBytes   : src_data 
-    bytesPerRow : 4 * info.texture.width
-  ];
-
-  if (mip_levels > 1) {
-    id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
-
-    id<MTLBlitCommandEncoder> encoder = [command_buffer blitCommandEncoder];
-
-    [encoder generateMipmapsForTexture: texture_ref(handle).texture];
-    [encoder endEncoding];
-
-    [command_buffer commit];
-
-    [command_buffer waitUntilCompleted];
   }
 
-  KB_DEFAULT_FREE(src_data);
+  texture_ref(handle).texture = [device newTextureWithDescriptor:texture_descriptor];
   
+  if (!info.texture.render_target && info.rwops != NULL) {
+    uint32_t src_size = kb_rwops_size(info.rwops);
+    void* src_data = (char*) KB_DEFAULT_ALLOC(src_size);
+    kb_rwops_read(info.rwops, src_data, src_size);
+
+    MTLRegion region = MTLRegionMake2D(0, 0, info.texture.width, info.texture.height);
+
+    [texture_ref(handle).texture replaceRegion : region 
+      mipmapLevel : 0 
+      withBytes   : src_data 
+      bytesPerRow : 4 * info.texture.width
+    ];
+
+    if (mip_levels > 1) {
+      id<MTLCommandBuffer> command_buffer = [command_queue commandBuffer];
+
+      id<MTLBlitCommandEncoder> encoder = [command_buffer blitCommandEncoder];
+
+      [encoder generateMipmapsForTexture: texture_ref(handle).texture];
+      [encoder endEncoding];
+
+      [command_buffer commit];
+
+      [command_buffer waitUntilCompleted];
+    }
+
+    KB_DEFAULT_FREE(src_data);
+  }
+
   [sampler_descriptor release];
   [texture_descriptor release];
 }
 
-KB_API uint32_t kb_graphics_get_current_resource_slot() {
+KB_API uint32_t kb_graphics_get_current_resource_slot() { 
   return 0;
 }
 
 KB_API void kb_platform_texture_destruct(kb_texture handle) {
 
+}
+
+KB_API void kb_platform_renderpass_construct(kb_renderpass handle, const kb_renderpass_create_info info) {
+  renderpass_ref(handle).desc = [MTLRenderPassDescriptor renderPassDescriptor];
+  
+  for (uint32_t i = 0; i < KB_CONFIG_MAX_RENDERPASS_ATTACHMENTS; ++i) {
+    if (!kb_is_valid(info.color_attachments[i])) continue;
+    MTLRenderPassColorAttachmentDescriptor *color_attachment = renderpass_ref(handle).desc.colorAttachments[i];
+    color_attachment.texture      = texture_ref(info.color_attachments[i]).texture;
+    color_attachment.clearColor   = MTLClearColorMake(0.0f, 0.0f, 0.0f, 1.0f);
+    color_attachment.loadAction   = MTLLoadActionClear;
+    color_attachment.storeAction  = MTLStoreActionStore;
+  }
+
+  if (kb_is_valid(info.depth_attachment)) {
+    MTLRenderPassDepthAttachmentDescriptor* depth_attachment = renderpass_ref(handle).desc.depthAttachment;
+    depth_attachment.texture      = texture_ref(info.depth_attachment).texture;
+    depth_attachment.clearDepth   = 1.0;
+    depth_attachment.loadAction   = MTLLoadActionClear;
+    depth_attachment.storeAction  = MTLStoreActionDontCare;
+  }
+
+  if (kb_is_valid(info.stencil_attachment)) {  
+    MTLRenderPassStencilAttachmentDescriptor* stencil_attachment = renderpass_ref(handle).desc.stencilAttachment;
+    stencil_attachment.texture     = texture_ref(info.stencil_attachment).texture;
+    stencil_attachment.loadAction  = MTLLoadActionDontCare;
+    stencil_attachment.storeAction = MTLStoreActionDontCare;
+  }
+}
+
+KB_API void kb_platform_renderpass_destruct(kb_renderpass handle) {
+  // TODO:
 }
 
 KB_API void kb_platform_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
@@ -435,14 +483,13 @@ KB_API uint64_t kb_platform_graphics_transient_offset(void* ptr) {
 }
 
 KB_INTERNAL void create_depth_resources(Int2 size) {
-  MTLTextureDescriptor* depth_texture_descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat : MTLPixelFormatDepth32Float_Stencil8 
-    width       : size.width 
-    height      : size.height 
-    mipmapped   : NO
-  ];
+  MTLTextureDescriptor* depth_texture_descriptor = [[MTLTextureDescriptor alloc] init];
+  depth_texture_descriptor.width            = size.width;
+  depth_texture_descriptor.height           = size.height;
+  depth_texture_descriptor.pixelFormat      = MTLPixelFormatDepth32Float_Stencil8;
+  depth_texture_descriptor.storageMode      = MTLStorageModePrivate;
+  depth_texture_descriptor.usage            = MTLTextureUsageRenderTarget;
 
-  depth_texture_descriptor.storageMode  = MTLStorageModePrivate;
-  depth_texture_descriptor.usage        = MTLTextureUsageRenderTarget;
   depth_texture = [device newTextureWithDescriptor : depth_texture_descriptor];
 
   [depth_texture_descriptor release];
@@ -523,32 +570,6 @@ KB_API void kb_platform_graphics_frame() {
     current_drawable = metal_layer.nextDrawable;
 
     current_command_buffer = [command_queue commandBuffer];  
-
-    { // Clear buffers
-      MTLRenderPassDescriptor* render_pass_desc = [MTLRenderPassDescriptor renderPassDescriptor];
-
-      MTLRenderPassColorAttachmentDescriptor *color_attachment = render_pass_desc.colorAttachments[0];
-      color_attachment.texture      = current_drawable.texture;
-      color_attachment.clearColor   = MTLClearColorMake(0.0f, 0.0f, 0.0f, 1.0f);
-      color_attachment.loadAction   = MTLLoadActionClear;
-      color_attachment.storeAction  = MTLStoreActionStore;
-
-      MTLRenderPassDepthAttachmentDescriptor* depth_attachment = render_pass_desc.depthAttachment;
-      depth_attachment.texture      = depth_texture;
-      depth_attachment.clearDepth   = 1.0;
-      depth_attachment.loadAction   = MTLLoadActionClear;
-      depth_attachment.storeAction  = MTLStoreActionDontCare;
-
-      MTLRenderPassStencilAttachmentDescriptor* stencil_attachment = render_pass_desc.stencilAttachment;
-      stencil_attachment.texture     = depth_texture;
-      stencil_attachment.loadAction  = MTLLoadActionDontCare;
-      stencil_attachment.storeAction = MTLStoreActionDontCare;
-      
-      id<MTLRenderCommandEncoder> render_encoder = [current_command_buffer renderCommandEncoderWithDescriptor : render_pass_desc];
-
-      [render_encoder endEncoding];
-    }
-
     
     { // Run encoders
       kb_graphics_run_encoders();
@@ -582,25 +603,32 @@ KB_API void* kb_platform_graphics_buffer_mapped(kb_buffer buffer) {
   return buffer_ref(buffer).buffer.contents;
 }
 
-KB_API void kb_platform_graphics_submit_calls(kb_graphics_call* calls, uint32_t call_count) {
-  MTLRenderPassDescriptor* render_pass_desc = [MTLRenderPassDescriptor renderPassDescriptor];
+KB_API void kb_platform_graphics_submit_calls(kb_renderpass pass, kb_graphics_call* calls, uint32_t call_count) {
+  MTLRenderPassDescriptor* render_pass_desc;
 
-  MTLRenderPassColorAttachmentDescriptor *color_attachment = render_pass_desc.colorAttachments[0];
-  color_attachment.texture      = current_drawable.texture;
-  color_attachment.loadAction   = MTLLoadActionLoad;
-  color_attachment.storeAction  = MTLStoreActionStore;
+  if (!kb_is_valid(pass)) { // Default
+    render_pass_desc = [MTLRenderPassDescriptor renderPassDescriptor];
 
-  MTLRenderPassDepthAttachmentDescriptor* depth_attachment = render_pass_desc.depthAttachment;
-  depth_attachment.texture      = depth_texture;
-  depth_attachment.clearDepth   = 1.0;
-  depth_attachment.loadAction   = MTLLoadActionLoad;
-  depth_attachment.storeAction  = MTLStoreActionDontCare;
+    MTLRenderPassColorAttachmentDescriptor *color_attachment = render_pass_desc.colorAttachments[0];
+    color_attachment.texture      = current_drawable.texture;
+    color_attachment.clearColor   = MTLClearColorMake(0.0f, 0.0f, 0.0f, 0.0f);
+    color_attachment.loadAction   = MTLLoadActionClear;
+    color_attachment.storeAction  = MTLStoreActionStore;
 
-  MTLRenderPassStencilAttachmentDescriptor* stencil_attachment = render_pass_desc.stencilAttachment;
-  stencil_attachment.texture     = depth_texture;
-  stencil_attachment.loadAction  = MTLLoadActionDontCare;
-  stencil_attachment.storeAction = MTLStoreActionDontCare;
-  
+    MTLRenderPassDepthAttachmentDescriptor* depth_attachment = render_pass_desc.depthAttachment;
+    depth_attachment.texture      = depth_texture;
+    depth_attachment.clearDepth   = 1.0;
+    depth_attachment.loadAction   = MTLLoadActionClear;
+    depth_attachment.storeAction  = MTLStoreActionDontCare;
+
+    MTLRenderPassStencilAttachmentDescriptor* stencil_attachment = render_pass_desc.stencilAttachment;
+    stencil_attachment.texture     = depth_texture;
+    stencil_attachment.loadAction  = MTLLoadActionDontCare;
+    stencil_attachment.storeAction = MTLStoreActionDontCare;
+  } else {
+    render_pass_desc = renderpass_ref(pass).desc;
+  }
+
   id<MTLRenderCommandEncoder> render_encoder = [current_command_buffer renderCommandEncoderWithDescriptor : render_pass_desc];
   
   for (uint32_t call_i = 0; call_i < call_count; ++call_i) {
@@ -611,24 +639,6 @@ KB_API void kb_platform_graphics_submit_calls(kb_graphics_call* calls, uint32_t 
     [render_encoder setCullMode             : pipeline.cull_mode];    
     [render_encoder setFrontFacingWinding   : pipeline.winding];
     [render_encoder setDepthStencilState    : pipeline.depth_stencil_state];
-
-    { // Vertex buffer
-      for (uint32_t bind_i = 0; bind_i < KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS; ++bind_i) {
-        const kb_vertex_buffer_binding& binding = call.vertex_buffer_bindings[bind_i];
-        if (binding.is_set) {
-          id<MTLBuffer> vb = kb_is_valid(binding.buffer) ?
-            buffer_ref(binding.buffer).buffer : 
-            get_current_transient_buffer().buffer;
-
-          uint64_t vb_offset = binding.offset;
-
-          [render_encoder setVertexBuffer : vb 
-            offset  : vb_offset 
-            atIndex : bind_i
-          ];
-        }
-      }
-    }
     
     // Bindings
     for (uint32_t bind_i = 0; bind_i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++bind_i) {
@@ -672,6 +682,24 @@ KB_API void kb_platform_graphics_submit_calls(kb_graphics_call* calls, uint32_t 
           ];
           [render_encoder setFragmentSamplerState : texture_ref(texture_bind.texture).sampler
             atIndex : texture_bind.index
+          ];
+        }
+      }
+    }
+    
+    { // Vertex buffers
+      for (uint32_t bind_i = 0; bind_i < KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS; ++bind_i) {
+        const kb_vertex_buffer_binding& binding = call.vertex_buffer_bindings[bind_i];
+        if (binding.is_set) {
+          id<MTLBuffer> vb = kb_is_valid(binding.buffer) ?
+            buffer_ref(binding.buffer).buffer : 
+            get_current_transient_buffer().buffer;
+
+          uint64_t vb_offset = binding.offset;
+
+          [render_encoder setVertexBuffer : vb 
+            offset  : vb_offset 
+            atIndex : bind_i
           ];
         }
       }

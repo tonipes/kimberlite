@@ -28,7 +28,7 @@ KB_API void           kb_platform_graphics_deinit                     ();
 KB_API void           kb_platform_graphics_frame                      ();
 KB_API Int2           kb_platform_graphics_get_extent                 ();
 KB_API void           kb_platform_graphics_wait_device_idle           ();
-KB_API void           kb_platform_graphics_submit_calls               (kb_graphics_call* calls, uint32_t call_count);
+KB_API void           kb_platform_graphics_submit_calls               (kb_renderpass pass, kb_graphics_call* calls, uint32_t call_count);
 KB_API void*          kb_platform_graphics_transient_alloc            (uint64_t size, uint64_t align);
 KB_API void*          kb_platform_graphics_transient_at               (uint64_t offset);
 KB_API uint64_t       kb_platform_graphics_transient_offset           (void* ptr);
@@ -47,11 +47,13 @@ KB_API void           kb_platform_surface_destroy                     ();
 KB_API void           kb_platform_buffer_construct                    (kb_buffer handle, const kb_buffer_create_info info);
 KB_API void           kb_platform_pipeline_construct                  (kb_pipeline handle, const kb_pipeline_create_info info);
 KB_API void           kb_platform_texture_construct                   (kb_texture handle, const kb_texture_create_info info);
+KB_API void           kb_platform_renderpass_construct                (kb_renderpass handle, const kb_renderpass_create_info info);
 KB_API void           kb_platform_sound_construct                     (kb_sound handle, const kb_sound_create_info info);
 
 KB_API void           kb_platform_buffer_destruct                     (kb_buffer handle);
 KB_API void           kb_platform_pipeline_destruct                   (kb_pipeline handle);
 KB_API void           kb_platform_texture_destruct                    (kb_texture handle);
+KB_API void           kb_platform_renderpass_destruct                 (kb_renderpass handle);
 KB_API void           kb_platform_sound_destruct                      (kb_sound handle);
 
 KB_API void           kb_platform_input_init                          (const kb_input_init_info info);

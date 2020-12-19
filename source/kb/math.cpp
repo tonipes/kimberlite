@@ -10,6 +10,11 @@ const Float3 DirRight    = { 1.0f, 0.0f, 0.0f };
 const Float3 DirUp       = { 0.0f, 1.0f, 0.0f };
 const Float3 DirForward  = { 0.0f, 0.0f, 1.0f };
 
+const Float3 Float2Max   = { FLOATMAX, FLOATMAX };
+const Float3 Float2Min   = { FLOATMIN, FLOATMIN };
+const Float3 Float3Max   = { FLOATMAX, FLOATMAX, FLOATMAX };
+const Float3 Float3Min   = { FLOATMIN, FLOATMIN, FLOATMIN };
+
 const Float4x4 IdentityFloat4x4 = { .m = {
   1.0f, 0.0f, 0.0f, 0.0f,
   0.0f, 1.0f, 0.0f, 0.0f,

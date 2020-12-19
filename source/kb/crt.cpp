@@ -7,6 +7,7 @@
 #include <kb/crt.h>
 
 #include <kb/alloc.h>
+#include <kb/log.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -76,9 +77,11 @@ KB_API bool kb_fromstr_bool(bool* dst, const char* str) {
   return kb_strlen(str) != 0; 
 }
 
-// TODO: 
+// TODO: Not safe. Converts from long to int
 KB_API bool kb_fromstr_int(int32_t* dst, const char* str) {
-  *dst = atoi(str);
+  char* end = nullptr;
+  long tmp = strtol(str, &end, 0);
+  *dst = (int32_t) tmp;
   return true;
 }
 
@@ -110,4 +113,8 @@ KB_API void kb_set_signal_handler(kb_signal_handler handler, kb_signal sig) {
 
 KB_API void kb_exit(int value) {
   exit(value);
+}
+
+KB_API void kb_sort(void* data, size_t num, size_t size, int (*compare)(const void*, const void*)) {
+  qsort(data, num, size, compare);
 }

@@ -321,6 +321,8 @@
 
 
 #define KB_CONFIG_MAX_GAMEPADS                  8
+#define KB_CONFIG_MAX_RENDERPASSES              8
+#define KB_CONFIG_MAX_RENDERPASS_ATTACHMENTS    8
 #define KB_CONFIG_MAX_BUFFERS                   512
 #define KB_CONFIG_MAX_MATERIALS                 512
 #define KB_CONFIG_MAX_MESHES                    512

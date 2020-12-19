@@ -15,10 +15,10 @@ TEST_CASE("initialized array should have correct capacity and count", "[array]")
   
   kb_array_create(&arr, sizeof(uint32_t), 10);
 
-  REQUIRE(arr.capacity == 10);
+  REQUIRE(arr.cap == 10);
   REQUIRE(kb_array_capacity(&arr) == 10);
   
-  REQUIRE(arr.count == 0);
+  REQUIRE(arr.pos == 0);
   REQUIRE(kb_array_count(&arr) == 0);
 }
 
@@ -32,7 +32,6 @@ TEST_CASE("array reserve should be able to increase capacity", "[array]") {
   kb_array_reserve(&arr, 100);
 
   REQUIRE(kb_array_capacity(&arr) >= 100);
-
 }
 
 TEST_CASE("array reserve should not be able to decrease capacity", "[array]") {

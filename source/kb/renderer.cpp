@@ -22,6 +22,9 @@ double          last_frame_start_time = 0;
 kb_frame_stats  frame_stats;
 kb_frame_stats  frame_stats_curr;
 
+kb_graphics_call* draw_call_cache[KB_CONFIG_MAX_RENDERPASSES];
+uint32_t draw_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
+
 static inline kb_encoder_pool&   current_encoder_pool   ()                          { return encoder_pools[kb_graphics_get_current_resource_slot()]; }
 static inline kb_encoder_state&  current_encoder_state  (kb_encoder encoder)        { return current_encoder_pool().states[kb_to_arr(encoder)]; }
 static inline kb_encoder_frame&  current_encoder_frame  (kb_encoder_state& state)   { return state.stack[state.stack_pos]; }
@@ -30,6 +33,7 @@ static inline kb_encoder_frame&  current_encoder_frame  (kb_encoder encoder)    
 KB_RESOURCE_ALLOC_FUNC_DEF  (buffer,        kb_buffer,        kb_buffer_create_info,        KB_CONFIG_MAX_BUFFERS);
 KB_RESOURCE_ALLOC_FUNC_DEF  (texture,       kb_texture,       kb_texture_create_info,       KB_CONFIG_MAX_TEXTURES);
 KB_RESOURCE_ALLOC_FUNC_DEF  (pipeline,      kb_pipeline,      kb_pipeline_create_info,      KB_CONFIG_MAX_PROGRAMS);
+KB_RESOURCE_ALLOC_FUNC_DEF  (renderpass,    kb_renderpass,    kb_renderpass_create_info,    KB_CONFIG_MAX_RENDERPASSES);
 
 KB_RESOURCE_DATA_HASHED_DEF (buffer,        kb_buffer);
 KB_RESOURCE_DATA_HASHED_DEF (texture,       kb_texture);
@@ -77,6 +81,11 @@ KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
 
 KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   kb_platform_graphics_init(info);
+
+  for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
+    draw_call_cache_pos[pass_i] = 0;
+    draw_call_cache[pass_i] = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
+  }
 }
 
 KB_API void kb_graphics_deinit() {
@@ -86,12 +95,25 @@ KB_API void kb_graphics_deinit() {
   kb_texture_purge();
 
   kb_platform_graphics_deinit();
+
+  for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
+    KB_DEFAULT_FREE(draw_call_cache[pass_i]);
+  }
 }
 
 KB_API void kb_graphics_run_encoders() {
-  for (uint32_t i = 0; i < current_encoder_pool().count; ++i) {
-    kb_encoder_state& state = current_encoder_pool().states[i];
-    kb_platform_graphics_submit_calls(state.draw_calls, state.draw_call_count);
+  for (uint32_t encoder_i = 0; encoder_i < current_encoder_pool().count; ++encoder_i) {
+    kb_encoder_state& state = current_encoder_pool().states[encoder_i];
+    for (uint32_t call_i = 0; call_i < state.draw_call_count; ++call_i) {
+      kb_graphics_call& call = state.draw_calls[call_i];
+      draw_call_cache[call.renderpass.idx][draw_call_cache_pos[call.renderpass.idx]++] = call;
+    }
+  }
+
+  for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
+    if (draw_call_cache_pos[pass_i] <= 0) continue;
+    kb_platform_graphics_submit_calls({pass_i}, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
+    draw_call_cache_pos[pass_i] = 0;
   }
 }
 
@@ -135,6 +157,18 @@ KB_API void kb_texture_destruct(kb_texture handle) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_texture_destruct(handle);
+}
+
+KB_API void kb_renderpass_construct(kb_renderpass handle, const kb_renderpass_create_info info) {
+  KB_ASSERT_VALID(handle);
+
+  kb_platform_renderpass_construct(handle, info);
+}
+
+KB_API void kb_renderpass_destruct(kb_renderpass handle) {
+  KB_ASSERT_VALID(handle);
+
+  kb_platform_renderpass_destruct(handle);
 }
 
 KB_API void kb_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
@@ -232,6 +266,8 @@ KB_API kb_encoder kb_encoder_begin() {
   
   kb_encoder_reset_frame(encoder);
 
+// KB_API kb_encoder                 kb_encoder_begin                      (kb_renderpass pass);
+
   return encoder;
 }
 
@@ -262,6 +298,12 @@ KB_API void kb_encoder_pop(kb_encoder encoder) {
   KB_ASSERT(state.stack_pos > 0, "Can't pop when stack at 0");
 
   --state.stack_pos;
+}
+
+KB_API void kb_encoder_bind_renderpass(kb_encoder encoder, kb_renderpass renderpass) {
+  KB_ASSERT_VALID(encoder);
+
+  current_encoder_frame(encoder).renderpass = renderpass;
 }
 
 KB_API void kb_encoder_bind_pipeline(kb_encoder encoder, kb_pipeline pipeline) {
@@ -365,13 +407,13 @@ KB_API void kb_encoder_submit(kb_encoder encoder, uint32_t first_index, uint32_t
     call.vertex_buffer_bindings[binding] = frame.vertex_buffer_bindings[binding];
   }
 
-  call.index_buffer         = frame.index_buffer;
   call.pipeline             = frame.pipeline;
+  call.renderpass           = frame.renderpass;
+  call.index_buffer         = frame.index_buffer;
   call.info.first_vertex    = first_vertex;
   call.info.first_index     = first_index;
   call.info.index_count     = index_count;
   call.info.instance_count  = instance_count;
-
 }
 
 KB_API void* kb_graphics_get_buffer_mapped(kb_buffer buffer) {

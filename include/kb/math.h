@@ -219,6 +219,12 @@ const extern Float3 DirRight;
 const extern Float3 DirUp;
 const extern Float3 DirForward;
 
+const extern Float3 Float2Max;
+const extern Float3 Float2Min;
+
+const extern Float3 Float3Max;
+const extern Float3 Float3Min;
+
 const extern Float4x4 IdentityFloat4x4;
 
 KB_API_INLINE Int32     neg_integer       (Int32 a)                                           { return -a;                    }
@@ -423,6 +429,14 @@ KB_API_INLINE bool        kb_deactivated  (uint8_t* curr, uint8_t* prev, size_t 
 
 KB_API Float3             act_quat        (const Quaternion a, const Float3 b);
 KB_API Quaternion         slerp_quat      (const Quaternion a, const Quaternion b, Real32 t);
+
+KB_API_INLINE bool aabb_contains(IntAabb aabb, Int3 pos) {
+    return true
+      && pos.x >= aabb.min.x && pos.x < aabb.max.x
+      && pos.y >= aabb.min.y && pos.y < aabb.max.y
+      && pos.z >= aabb.min.z && pos.z < aabb.max.z
+    ;
+}
 
 KB_API_INLINE Quaternion inv_quat(const Quaternion a) {
   // TODO: Check
