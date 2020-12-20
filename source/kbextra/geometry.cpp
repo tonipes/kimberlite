@@ -278,7 +278,7 @@ KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, u
   kb_encoder_pop(encoder);
 }
 
-KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t instance_count) {
+KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t instance_count, bool bind_material) {
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(mesh);
 
@@ -293,7 +293,7 @@ KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t in
 
     kb_material material = primitive.material;
     
-    if (kb_is_valid(material)) {
+    if (bind_material && kb_is_valid(material)) {
       kb_encoder_bind_material(encoder, material);
     }
 

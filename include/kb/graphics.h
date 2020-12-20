@@ -370,6 +370,7 @@ KB_API void                       kb_graphics_wait_device_idle          ();
 KB_API uint32_t                   kb_graphics_get_current_resource_slot ();
 KB_API void                       kb_graphics_get_frame_stats           (kb_frame_stats* stats);
 KB_API void*                      kb_graphics_get_buffer_mapped         (kb_buffer buffer);
+KB_API void                       kb_graphics_set_renderpass_order      (uint32_t order, kb_renderpass pass);
 
 KB_API void*                      kb_graphics_transient_at              (uint64_t offset);
 KB_API uint64_t                   kb_graphics_transient_offset          (void* ptr);

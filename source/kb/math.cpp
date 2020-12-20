@@ -84,7 +84,7 @@ KB_API Float4x4 look_at(const Float3 from, const Float3 to, const Float3 global_
 KB_API Float4x4 orthographic(Real32 left, Real32 right, Real32 top, Real32 bottom, Real32 near, Real32 far) {
 		const float aa = 2.0f / (right - left);
 		const float bb = 2.0f / (top - bottom);
-		const float cc = far - near;
+		const float cc = 1.0f / (far - near);
 
 		const float dd = (left + right ) / (left   - right);
 		const float ee = (top  + bottom) / (bottom - top  );

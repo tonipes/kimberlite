@@ -40,6 +40,7 @@ KB_RESOURCE_ALLOC_FUNC_DEF  (renderpass,    kb_renderpass,    kb_renderpass_crea
 KB_RESOURCE_DATA_HASHED_DEF (buffer,        kb_buffer);
 KB_RESOURCE_DATA_HASHED_DEF (texture,       kb_texture);
 KB_RESOURCE_DATA_HASHED_DEF (pipeline,      kb_pipeline);
+KB_RESOURCE_DATA_HASHED_DEF (renderpass,    kb_renderpass);
 
 KB_RESOURCE_STORAGE_DEF     (pipeline_info,         kb_pipeline,      pipeline_info,    KB_CONFIG_MAX_PROGRAMS);
 
@@ -62,6 +63,10 @@ static inline void reset_encoder_pool(kb_encoder_pool* pool) {
   }
 
   pool->count = 0;
+}
+
+KB_API void kb_graphics_set_renderpass_order(uint32_t order, kb_renderpass pass) {
+  renderpass_order[order] = pass;
 }
 
 KB_INTERNAL void update_stats() {
@@ -321,7 +326,7 @@ KB_API void kb_encoder_pop(kb_encoder encoder) {
 
 KB_API void kb_encoder_bind_renderpass(kb_encoder encoder, kb_renderpass renderpass) {
   KB_ASSERT_VALID(encoder);
-  KB_ASSERT_VALID(renderpass);
+  // KB_ASSERT_VALID(renderpass);
 
   current_encoder_frame(encoder).renderpass = renderpass;
 }

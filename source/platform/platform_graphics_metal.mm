@@ -232,39 +232,43 @@ KB_API void kb_platform_pipeline_construct(kb_pipeline handle, const kb_pipeline
   id<MTLFunction> vert_func = nil;
   id<MTLFunction> frag_func = nil;
 
-  int64_t vert_code_size = kb_rwops_size(info.vert_shader.rwops);
-  char*  vert_code = NULL;
-  if (vert_code_size > 0) {
-    vert_code = (char*) KB_DEFAULT_ALLOC(vert_code_size + 1);
-    kb_rwops_read(info.vert_shader.rwops, vert_code, vert_code_size);
-    vert_code[vert_code_size] = '\0';
-  
-    vert_lib = [device
-      newLibraryWithSource  : [NSString stringWithUTF8String: vert_code]
-      options               : nil
-      error                 : &err
-    ];
-  } else {
-    kb_log_error("Failed to load vertex shader");
-  }
-  
-  int64_t frag_code_size = kb_rwops_size(info.frag_shader.rwops);
-  char*  frag_code = NULL;
-  if (frag_code_size > 0) {
-    frag_code = (char*) KB_DEFAULT_ALLOC(frag_code_size + 1);
-    kb_rwops_read(info.frag_shader.rwops, frag_code, frag_code_size);
-    frag_code[frag_code_size] = '\0';
+  if (info.vert_shader.rwops) {
+    int64_t vert_code_size = kb_rwops_size(info.vert_shader.rwops);
+    char*  vert_code = NULL;
+    if (vert_code_size > 0) {
+      vert_code = (char*) KB_DEFAULT_ALLOC(vert_code_size + 1);
+      kb_rwops_read(info.vert_shader.rwops, vert_code, vert_code_size);
+      vert_code[vert_code_size] = '\0';
     
-    frag_lib = [device
-      newLibraryWithSource  : [NSString stringWithUTF8String: frag_code]
-      options               : nil
-      error                 : &err
-    ];
-  } else {
-    kb_log_error("Failed to load fragment shader");
+      vert_lib = [device
+        newLibraryWithSource  : [NSString stringWithUTF8String: vert_code]
+        options               : nil
+        error                 : &err
+      ];
+    } else {
+      kb_log_error("Failed to load vertex shader");
+    }
   }
 
-  if (vert_lib == nil || frag_lib == nil) {
+  if (info.frag_shader.rwops) {
+    int64_t frag_code_size = kb_rwops_size(info.frag_shader.rwops);
+    char*  frag_code = NULL;
+    if (frag_code_size > 0) {
+      frag_code = (char*) KB_DEFAULT_ALLOC(frag_code_size + 1);
+      kb_rwops_read(info.frag_shader.rwops, frag_code, frag_code_size);
+      frag_code[frag_code_size] = '\0';
+      
+      frag_lib = [device
+        newLibraryWithSource  : [NSString stringWithUTF8String: frag_code]
+        options               : nil
+        error                 : &err
+      ];
+    } else {
+      kb_log_error("Failed to load fragment shader");
+    }
+  }
+  
+  if (vert_lib == nil) {
     kb_log_error("Failed to create pipeline. (Compile)");
     kb_log_warn("{}", [err.localizedDescription UTF8String]);
     return;
@@ -272,23 +276,39 @@ KB_API void kb_platform_pipeline_construct(kb_pipeline handle, const kb_pipeline
 
   MTLFunctionConstantValues* constant_values = [MTLFunctionConstantValues new];
 
-  vert_func = [vert_lib 
-    newFunctionWithName : [NSString stringWithUTF8String:info.vert_shader.entry]
-    constantValues : constant_values
-    error : &err
-  ];
-  
-  frag_func = [frag_lib 
-    newFunctionWithName : [NSString stringWithUTF8String:info.frag_shader.entry]
-    constantValues : constant_values
-    error : &err
-  ];
-  
-  if (vert_func == nil || frag_func == nil) {
-    kb_log_error("Failed to create pipeline. (Function init)");
-    kb_log_warn("{}", [err.localizedDescription UTF8String]);
-    return;
+  if (vert_lib != nil) {
+    vert_func = [vert_lib 
+      newFunctionWithName : [NSString stringWithUTF8String:info.vert_shader.entry]
+      constantValues : constant_values
+      error : &err
+    ];
   }
+
+  if (frag_lib != nil) {
+    frag_func = [frag_lib 
+      newFunctionWithName : [NSString stringWithUTF8String:info.frag_shader.entry]
+      constantValues : constant_values
+      error : &err
+    ];
+  }
+
+  // vert_func = [vert_lib 
+  //   newFunctionWithName : [NSString stringWithUTF8String:info.vert_shader.entry]
+  //   constantValues : constant_values
+  //   error : &err
+  // ];
+  
+  // frag_func = [frag_lib 
+  //   newFunctionWithName : [NSString stringWithUTF8String:info.frag_shader.entry]
+  //   constantValues : constant_values
+  //   error : &err
+  // ];
+  
+  // if (vert_func == nil || frag_func == nil) {
+  //   kb_log_error("Failed to create pipeline. (Function init)");
+  //   kb_log_warn("{}", [err.localizedDescription UTF8String]);
+  //   return;
+  // }
 
   MTLVertexDescriptor* vertex_description = [[MTLVertexDescriptor alloc] init];
 
@@ -657,8 +677,10 @@ KB_API void kb_platform_graphics_submit_calls(kb_renderpass pass, kb_graphics_ca
   
   for (uint32_t call_i = 0; call_i < call_count; ++call_i) {
     const kb_graphics_call& call = calls[call_i];
-    struct pipeline_ref& pipeline = pipeline_ref(call.pipeline);
+    KB_ASSERT_VALID(call.pipeline);
 
+    struct pipeline_ref& pipeline = pipeline_ref(call.pipeline);
+  
     [render_encoder setRenderPipelineState  : pipeline.pipeline_state];
     [render_encoder setCullMode             : pipeline.cull_mode];    
     [render_encoder setFrontFacingWinding   : pipeline.winding];
