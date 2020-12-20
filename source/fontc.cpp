@@ -8,7 +8,6 @@
 
 #include <kb/core.h>
 #include <kb/time.h>
-#include <kb/texture.h>
 #include <kb/log.h>
 
 #include <kbextra/cliargs.h>
@@ -109,6 +108,7 @@ int main(int argc, const char* argv[]) {
   }
 
   range_count = MIN(kb_cliargs_count(&args, "from"), kb_cliargs_count(&args, "to"));
+  range_count = MIN(MAX_RANGES, range_count);
   
   for (uint32_t i = 0; i < range_count; ++i) {
     const char* from_str  = kb_cliargs_find(&args, "from",  i);

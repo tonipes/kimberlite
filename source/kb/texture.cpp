@@ -4,8 +4,6 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/texture.h>
-
 #include <kb/crt.h>
 #include <kb/alloc.h>
 #include <kb/rwops.h>

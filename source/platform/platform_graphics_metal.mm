@@ -93,10 +93,13 @@ KB_INTERNAL MTLIndexType cv_index_type_mtl(kb_index_type index_type) {
   }
 }
 
-KB_INTERNAL uint32_t cv_index_size[] {
-  2,
-  4,
-};
+KB_INTERNAL uint32_t cv_index_size(kb_index_type index_type) {
+  switch (index_type) {
+    case KB_INDEX_TYPE_16:  return 2;
+    case KB_INDEX_TYPE_32:  return 4;
+    default:                return 0;
+  }
+}
 
 KB_INTERNAL MTLVertexFormat cv_vertex_attribute[][5] {
   { MTLVertexFormatInvalid, MTLVertexFormatFloat,   MTLVertexFormatFloat2,    MTLVertexFormatFloat3,  MTLVertexFormatFloat4 },
@@ -176,23 +179,47 @@ KB_INTERNAL kb_shader_binding_type get_binding_type(MTLArgumentType type) {
   }
 }
 
-KB_INTERNAL id<MTLBuffer> create_buffer_from_rwops(kb_rwops* rwops, uint64_t size) {
+KB_INTERNAL id<MTLBuffer> create_buffer(MTLResourceOptions options, uint64_t size) {
+  id<MTLBuffer> buffer = [device 
+    newBufferWithLength   : size 
+    options               : options
+  ];
+  
+  return buffer;
+}
+
+KB_INTERNAL void fill_buffer_from_rwops(id<MTLBuffer> target_buffer, kb_rwops* rwops, uint64_t size) {
   uint64_t rwops_size = kb_rwops_size(rwops);
   uint64_t data_size = min(rwops_size, size);
   void* data = KB_DEFAULT_ALLOC(data_size);
   kb_rwops_read(rwops, data, data_size);
-  
-  // TODO: Make device private
-  id<MTLBuffer> buffer = [device 
+
+  // Staging
+  id<MTLBuffer> staging_buffer = [device 
     newBufferWithBytes  : data 
     length              : data_size
-    options             : MTLResourceStorageModeManaged
-    // options             : MTLResourceStorageModePrivate
+    options             : MTLResourceStorageModeShared
   ];
 
-  KB_DEFAULT_FREE(data);
+  id <MTLCommandBuffer> cb = [command_queue commandBuffer];
+
+  id <MTLBlitCommandEncoder> encoder = [cb blitCommandEncoder];
   
-  return buffer;
+  [encoder copyFromBuffer : staging_buffer
+    sourceOffset      : 0
+    toBuffer          : target_buffer
+    destinationOffset : 0 
+    size              : data_size
+  ];
+
+  [encoder endEncoding];
+
+  [cb addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+    [staging_buffer release];
+  }];
+
+  [cb commit];
+
 }
 
 KB_API void kb_platform_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
@@ -326,10 +353,6 @@ KB_API void kb_platform_pipeline_construct(kb_pipeline handle, const kb_pipeline
     kb_log_warn("Pipeline creation error: {}", [err.localizedDescription UTF8String]);
   }
 
-  if (err) {
-    kb_log_warn("Pipeline creation error: {}", [err.localizedDescription UTF8String]);
-  }
-
   pipeline.primitive_type = cv_topology_mtl(info.topology);
   pipeline.winding        = cv_winding_mtl(info.rasterizer.winding);
   pipeline.cull_mode      = cv_cull_mode_mtl(info.rasterizer.cull_mode);
@@ -456,8 +479,12 @@ KB_API void kb_platform_renderpass_destruct(kb_renderpass handle) {
 KB_API void kb_platform_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
   KB_ASSERT_VALID(handle);
   KB_ASSERT(info.size > 0, "Buffer size must be greater than zero");
+
+  buffer_ref(handle).buffer = create_buffer(MTLResourceStorageModePrivate, info.size);
   
-  buffer_ref(handle).buffer = create_buffer_from_rwops(info.rwops, info.size);
+  if (info.rwops) {
+    fill_buffer_from_rwops(buffer_ref(handle).buffer, info.rwops, info.size);
+  }  
 }
 
 KB_API void kb_platform_buffer_destruct(kb_buffer handle) { 
@@ -513,11 +540,11 @@ KB_API void kb_platform_graphics_init(const kb_graphics_init_info info) {
   NSSize layer_size = content_view.layer.frame.size;
 
   metal_layer = CAMetalLayer.layer;
-  metal_layer.device          = device;
-  metal_layer.pixelFormat     = MTLPixelFormatBGRA8Unorm;
-  metal_layer.frame           = content_view.layer.frame;
-  metal_layer.framebufferOnly = true;
-  metal_layer.displaySyncEnabled = info.vsync;
+  metal_layer.device              = device;
+  metal_layer.pixelFormat         = MTLPixelFormatBGRA8Unorm;
+  metal_layer.frame               = content_view.layer.frame;
+  metal_layer.framebufferOnly     = true;
+  metal_layer.displaySyncEnabled  = info.vsync;
 
   metal_layer.frame = content_view.bounds;
   metal_layer.contentsScale = contents_scale;
@@ -531,10 +558,7 @@ KB_API void kb_platform_graphics_init(const kb_graphics_init_info info) {
 
   for (uint32_t i = 0; i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; i++) {
     transient_buffers[i].memory_position = 0;
-    transient_buffers[i].buffer = [device 
-      newBufferWithLength : KB_CONFIG_TRANSIENT_BUFFER_SIZE
-      options             : MTLResourceStorageModeShared
-    ];
+    transient_buffers[i].buffer = create_buffer(MTLResourceStorageModeShared, KB_CONFIG_TRANSIENT_BUFFER_SIZE);
   }
   
   in_flight_semaphore = dispatch_semaphore_create(KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
@@ -576,7 +600,7 @@ KB_API void kb_platform_graphics_frame() {
     }
 
     { // Preset and commit command buffer
-      [current_command_buffer presentDrawable:current_drawable];
+      [current_command_buffer presentDrawable : current_drawable];
 
       __block dispatch_semaphore_t block_semaphore = in_flight_semaphore;
       [current_command_buffer addCompletedHandler:^(id<MTLCommandBuffer> buffer)
@@ -711,7 +735,7 @@ KB_API void kb_platform_graphics_submit_calls(kb_renderpass pass, kb_graphics_ca
         get_current_transient_buffer().buffer;
 
       uint64_t ib_offset    = call.index_buffer.offset;
-      uint64_t index_size   = cv_index_size[call.index_buffer.index_type];
+      uint64_t index_size   = cv_index_size(call.index_buffer.index_type);
       uint64_t full_offset  = ib_offset + (call.info.first_index * index_size);
 
       [render_encoder drawIndexedPrimitives : pipeline.primitive_type

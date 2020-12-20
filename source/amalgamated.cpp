@@ -13,17 +13,18 @@
 #include "kb/time.cpp"
 
 // Graphics
-#include "kb/font.cpp"
 #include "kb/vertex.cpp"
-#include "kb/material.cpp"
 #include "kb/renderer.cpp"
-#include "kb/shader.cpp"
 #include "kb/texture.cpp"
-#include "kb/geometry.cpp"
-#include "kb/gizmo.cpp"
 
 // Audio
 #include "kb/audio.cpp"
 
 // Input
 #include "kb/input.cpp"
+
+// Extra
+#include "kbextra/material.cpp"
+#include "kbextra/font.cpp"
+#include "kbextra/geometry.cpp"
+#include "kbextra/gizmo.cpp"

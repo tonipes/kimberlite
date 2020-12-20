@@ -319,9 +319,7 @@ int main(int argc, const char* argv[]) {
           switch (attrib->type) {
             case cgltf_attribute_type_position: {
               uint32_t start = kb_array_count(&vertex_data.positions);
-              // kb_log_debug("START: {}", start);
-              uint32_t target_count = accessor_count * POSITION_COMPONENT_COUNT;
-              // kb_log_debug("target_count: {}", target_count);
+              // uint32_t target_count = accessor_count * POSITION_COMPONENT_COUNT;
 
               kb_array_resize(&vertex_data.positions, start + accessor_count);
 
@@ -332,7 +330,7 @@ int main(int argc, const char* argv[]) {
 
             case cgltf_attribute_type_normal: {
               uint32_t start = kb_array_count(&vertex_data.normals);
-              uint32_t target_count = accessor_count * NORMAL_COMPONENT_COUNT;
+              // uint32_t target_count = accessor_count * NORMAL_COMPONENT_COUNT;
 
               kb_array_resize(&vertex_data.normals, start + accessor_count);
               
@@ -343,7 +341,7 @@ int main(int argc, const char* argv[]) {
 
             case cgltf_attribute_type_tangent: {
               uint32_t start = kb_array_count(&vertex_data.tangents);
-              uint32_t target_count = accessor_count * TANGENT_COMPONENT_COUNT;
+              // uint32_t target_count = accessor_count * TANGENT_COMPONENT_COUNT;
 
               kb_array_resize(&vertex_data.tangents, start + accessor_count);
               
@@ -354,7 +352,7 @@ int main(int argc, const char* argv[]) {
 
             case cgltf_attribute_type_texcoord: {
               uint32_t start = kb_array_count(&vertex_data.texcoords);
-              uint32_t target_count = accessor_count * TEXCOORD_COMPONENT_COUNT;
+              // uint32_t target_count = accessor_count * TEXCOORD_COMPONENT_COUNT;
 
               kb_array_resize(&vertex_data.texcoords, start + accessor_count);
               
@@ -365,7 +363,7 @@ int main(int argc, const char* argv[]) {
 
             case cgltf_attribute_type_color: {
               uint32_t start = kb_array_count(&vertex_data.colors);
-              uint32_t target_count = accessor_count * COLOR_COMPONENT_COUNT;
+              // uint32_t target_count = accessor_count * COLOR_COMPONENT_COUNT;
 
               kb_array_resize(&vertex_data.colors, start + accessor_count);
               
@@ -376,7 +374,7 @@ int main(int argc, const char* argv[]) {
 
             case cgltf_attribute_type_joints: {
               uint32_t start = kb_array_count(&vertex_data.joints);
-              uint32_t target_count = accessor_count * JOINT_COMPONENT_COUNT;
+              // uint32_t target_count = accessor_count * JOINT_COMPONENT_COUNT;
 
               kb_array_resize(&vertex_data.joints, start + accessor_count);
               
@@ -387,7 +385,7 @@ int main(int argc, const char* argv[]) {
 
             case cgltf_attribute_type_weights: {
               uint32_t start = kb_array_count(&vertex_data.weights);
-              uint32_t target_count = accessor_count * WEIGHT_COMPONENT_COUNT;
+              // uint32_t target_count = accessor_count * WEIGHT_COMPONENT_COUNT;
 
               kb_array_resize(&vertex_data.weights, start + accessor_count);
               
@@ -418,13 +416,13 @@ int main(int argc, const char* argv[]) {
             for (int v = 0; v < 3; ++v) {
               uint32_t vertex_index = cgltf_accessor_read_index(prim->indices, v + i);
           
-              tri.vert[v].position  = has_position  ? prim_first_position_index + vertex_index : -1;
-              tri.vert[v].normal    = has_normal    ? prim_first_normal_index   + vertex_index : -1;
-              tri.vert[v].tangent   = has_tangent   ? prim_first_tangent_index  + vertex_index : -1;
-              tri.vert[v].texcoords = has_texcoord  ? prim_first_texcoord_index + vertex_index : -1;
-              tri.vert[v].colors    = has_color     ? prim_first_color_index    + vertex_index : -1;
-              tri.vert[v].joints    = has_joints    ? prim_first_joints_index   + vertex_index : -1;
-              tri.vert[v].weights   = has_weights   ? prim_first_weights_index  + vertex_index : -1;
+              tri.vert[v].position  = has_position  ? prim_first_position_index + vertex_index : UINT32_MAX;
+              tri.vert[v].normal    = has_normal    ? prim_first_normal_index   + vertex_index : UINT32_MAX;
+              tri.vert[v].tangent   = has_tangent   ? prim_first_tangent_index  + vertex_index : UINT32_MAX;
+              tri.vert[v].texcoords = has_texcoord  ? prim_first_texcoord_index + vertex_index : UINT32_MAX;
+              tri.vert[v].colors    = has_color     ? prim_first_color_index    + vertex_index : UINT32_MAX;
+              tri.vert[v].joints    = has_joints    ? prim_first_joints_index   + vertex_index : UINT32_MAX;
+              tri.vert[v].weights   = has_weights   ? prim_first_weights_index  + vertex_index : UINT32_MAX;
             }
 
           }
@@ -471,13 +469,13 @@ int main(int argc, const char* argv[]) {
       IndexTriangle& tri = *(IndexTriangle*) kb_array_get(&vertex_data.triangles, tri_i);
 
       for (uint32_t i = 0; i < 3; ++i) {
-        has_position  |= tri.vert[i].position   != -1;
-        has_normal    |= tri.vert[i].normal     != -1;
-        has_tangent   |= tri.vert[i].tangent    != -1;
-        has_texcoord  |= tri.vert[i].texcoords  != -1;
-        has_color     |= tri.vert[i].colors     != -1;
-        has_weights   |= tri.vert[i].weights    != -1;
-        has_joints    |= tri.vert[i].joints     != -1;
+        has_position  |= tri.vert[i].position   != UINT32_MAX;
+        has_normal    |= tri.vert[i].normal     != UINT32_MAX;
+        has_tangent   |= tri.vert[i].tangent    != UINT32_MAX;
+        has_texcoord  |= tri.vert[i].texcoords  != UINT32_MAX;
+        has_color     |= tri.vert[i].colors     != UINT32_MAX;
+        has_weights   |= tri.vert[i].weights    != UINT32_MAX;
+        has_joints    |= tri.vert[i].joints     != UINT32_MAX;
       }
     }
     
@@ -539,7 +537,7 @@ int main(int argc, const char* argv[]) {
             const VertexIndices& vert = tri.vert[v];
 
             if (has_position) {
-              uint32_t idx = vert.position == -1 ? 0 : vert.position;
+              uint32_t idx = vert.position == UINT32_MAX ? 0 : vert.position;
               uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_position);
               uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_position);
               
@@ -547,7 +545,7 @@ int main(int argc, const char* argv[]) {
             }
 
             if (has_normal) {
-              uint32_t idx = vert.normal == -1 ? 0 : vert.normal;
+              uint32_t idx = vert.normal == UINT32_MAX ? 0 : vert.normal;
               uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_normal);
               uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_normal);
 
@@ -555,7 +553,7 @@ int main(int argc, const char* argv[]) {
             }
             
             if (has_tangent) {
-              uint32_t idx = vert.tangent == -1 ? 0 : vert.tangent;
+              uint32_t idx = vert.tangent == UINT32_MAX ? 0 : vert.tangent;
               uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_tangent);
               uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_tangent);
 
@@ -563,7 +561,7 @@ int main(int argc, const char* argv[]) {
             }
 
             if (has_texcoord) {
-              uint32_t idx = vert.texcoords == -1 ? 0 : vert.texcoords;
+              uint32_t idx = vert.texcoords == UINT32_MAX ? 0 : vert.texcoords;
               uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_texcoord);
               uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_texcoord);
 
@@ -571,7 +569,7 @@ int main(int argc, const char* argv[]) {
             }
             
             if (has_color) {
-              uint32_t idx = vert.colors == -1 ? 0 : vert.colors;
+              uint32_t idx = vert.colors == UINT32_MAX ? 0 : vert.colors;
               uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_color);
               uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_color);
 
@@ -579,7 +577,7 @@ int main(int argc, const char* argv[]) {
             }
             
             if (has_weights) {
-              uint32_t idx = vert.weights == -1 ? 0 : vert.weights;
+              uint32_t idx = vert.weights == UINT32_MAX ? 0 : vert.weights;
               uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_weights);
               uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_weights);
 
@@ -587,7 +585,7 @@ int main(int argc, const char* argv[]) {
             }
             
             if (has_joints) {
-              uint32_t idx = vert.joints == -1 ? 0 : vert.joints;
+              uint32_t idx = vert.joints == UINT32_MAX ? 0 : vert.joints;
               uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_joints);
               uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_joints);
 

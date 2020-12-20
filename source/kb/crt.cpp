@@ -115,6 +115,6 @@ KB_API void kb_exit(int value) {
   exit(value);
 }
 
-KB_API void kb_sort(void* data, size_t num, size_t size, int (*compare)(const void*, const void*)) {
+KB_API void kb_sort(void* data, size_t num, size_t size, kb_compare compare) {
   qsort(data, num, size, compare);
 }

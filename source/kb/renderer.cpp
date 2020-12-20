@@ -22,8 +22,10 @@ double          last_frame_start_time = 0;
 kb_frame_stats  frame_stats;
 kb_frame_stats  frame_stats_curr;
 
-kb_graphics_call* draw_call_cache[KB_CONFIG_MAX_RENDERPASSES];
-uint32_t draw_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
+kb_graphics_call* draw_call_cache     [KB_CONFIG_MAX_RENDERPASSES];
+uint32_t          draw_call_cache_pos [KB_CONFIG_MAX_RENDERPASSES];
+
+kb_renderpass     renderpass_order[KB_CONFIG_MAX_RENDERPASSES];
 
 static inline kb_encoder_pool&   current_encoder_pool   ()                          { return encoder_pools[kb_graphics_get_current_resource_slot()]; }
 static inline kb_encoder_state&  current_encoder_state  (kb_encoder encoder)        { return current_encoder_pool().states[kb_to_arr(encoder)]; }
@@ -40,6 +42,19 @@ KB_RESOURCE_DATA_HASHED_DEF (texture,       kb_texture);
 KB_RESOURCE_DATA_HASHED_DEF (pipeline,      kb_pipeline);
 
 KB_RESOURCE_STORAGE_DEF     (pipeline_info,         kb_pipeline,      pipeline_info,    KB_CONFIG_MAX_PROGRAMS);
+
+
+#define COMPARE_VALUE(_a, _b) if (_a < _b) return -1; if (_b < _a) return 1;
+
+static int draw_call_compare(const void* a, const void* b) {
+  const kb_graphics_call* aa = (kb_graphics_call*) a;
+  const kb_graphics_call* bb = (kb_graphics_call*) b;
+
+  COMPARE_VALUE(aa->pipeline.idx,             bb->pipeline.idx);
+  COMPARE_VALUE(aa->index_buffer.buffer.idx,  bb->index_buffer.buffer.idx);
+
+  return 0;
+}
 
 static inline void reset_encoder_pool(kb_encoder_pool* pool) {  
   for (uint32_t i = 0; i < pool->count; ++i) {
@@ -82,9 +97,11 @@ KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
 KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   kb_platform_graphics_init(info);
 
+  
   for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
+    renderpass_order[pass_i]    = { pass_i };
     draw_call_cache_pos[pass_i] = 0;
-    draw_call_cache[pass_i] = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
+    draw_call_cache[pass_i]     = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
   }
 }
 
@@ -110,8 +127,12 @@ KB_API void kb_graphics_run_encoders() {
     }
   }
 
-  for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
+  for (uint32_t p = 0; p < KB_CONFIG_MAX_RENDERPASSES; ++p) {
+    kb_renderpass pass = renderpass_order[p];
+    uint32_t pass_i = pass.idx;
+
     if (draw_call_cache_pos[pass_i] <= 0) continue;
+
     kb_platform_graphics_submit_calls({pass_i}, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
     draw_call_cache_pos[pass_i] = 0;
   }
@@ -266,8 +287,6 @@ KB_API kb_encoder kb_encoder_begin() {
   
   kb_encoder_reset_frame(encoder);
 
-// KB_API kb_encoder                 kb_encoder_begin                      (kb_renderpass pass);
-
   return encoder;
 }
 
@@ -302,12 +321,14 @@ KB_API void kb_encoder_pop(kb_encoder encoder) {
 
 KB_API void kb_encoder_bind_renderpass(kb_encoder encoder, kb_renderpass renderpass) {
   KB_ASSERT_VALID(encoder);
+  KB_ASSERT_VALID(renderpass);
 
   current_encoder_frame(encoder).renderpass = renderpass;
 }
 
 KB_API void kb_encoder_bind_pipeline(kb_encoder encoder, kb_pipeline pipeline) {
   KB_ASSERT_VALID(encoder);
+  KB_ASSERT_VALID(pipeline);
 
   current_encoder_frame(encoder).pipeline = pipeline;
 }
@@ -332,6 +353,8 @@ KB_API void kb_encoder_bind_index_buffer(kb_encoder encoder, kb_buffer buffer, u
 
 KB_API void kb_encoder_bind_texture(kb_encoder encoder, const kb_uniform_slot slot, kb_texture texture) {
   KB_ASSERT_VALID(encoder);
+  KB_ASSERT_VALID(texture);
+
   KB_ASSERT(slot.vert_index < KB_CONFIG_MAX_UNIFORM_BINDINGS, "Slot index too large");
   KB_ASSERT(slot.frag_index < KB_CONFIG_MAX_UNIFORM_BINDINGS, "Slot index too large");
 
@@ -350,6 +373,8 @@ KB_API void kb_encoder_bind_texture(kb_encoder encoder, const kb_uniform_slot sl
 
 KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size) {
   KB_ASSERT_VALID(encoder);
+  KB_ASSERT_NOT_NULL(data);
+
   KB_ASSERT(slot.vert_index < KB_CONFIG_MAX_UNIFORM_BINDINGS, "Slot index too large");
   KB_ASSERT(slot.frag_index < KB_CONFIG_MAX_UNIFORM_BINDINGS, "Slot index too large");
 

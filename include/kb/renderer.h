@@ -13,13 +13,12 @@
 #include <kb/math.h>
 #include <kb/rwops.h>
 #include <kb/vertex.h>
-#include <kb/texture.h>
-#include <kb/renderpass.h>
 
 KB_HANDLE(kb_buffer);
 KB_HANDLE(kb_pipeline);
 KB_HANDLE(kb_encoder);
 KB_HANDLE(kb_renderpass);
+KB_HANDLE(kb_texture);
 
 #ifdef __cplusplus
 extern "C" {
@@ -95,11 +94,6 @@ typedef enum kb_step_func {
   KB_STEP_FUNC_INSTANCE           = 2,
 } kb_step_func;
 
-typedef enum kb_draw_mode {
-  KB_DRAW_SINGLE                  = 0,
-  KB_DRAW_INSTANCED               = 1,
-} kb_draw_mode;
-
 typedef enum kb_index_type {
   KB_INDEX_TYPE_16                = 0,
   KB_INDEX_TYPE_32                = 1,
@@ -135,11 +129,39 @@ typedef enum kb_shader_stage {
   KB_SHADER_STAGE_COMPUTE               = 0x00000020,
 } kb_shader_stage;
 
+typedef enum kb_format {
+  KB_FORMAT_UNSUPPORTED   = 0,
+  KB_FORMAT_R8            = 1,
+  KB_FORMAT_R8G8          = 2,
+  KB_FORMAT_R8G8B8        = 3,
+  KB_FORMAT_R8G8B8A8      = 4,
+  KB_FORMAT_DEPTH         = 5,
+  KB_FORMAT_DEPTH_STENCIL = 6,
+} kb_format;
+
+typedef enum kb_filter {
+  KB_FILTER_NEAREST      = 0,
+  KB_FILTER_LINEAR       = 1,
+} kb_filter;
+
+typedef struct kb_texture_info {
+  uint32_t        width;
+  uint32_t        height;
+  kb_format       format;
+  bool            render_target;
+} kb_texture_info;
+
+typedef struct kb_texture_data {
+  kb_texture_info header;
+  uint64_t        data_size;
+  void*           data;
+} kb_texture_data;
+
 typedef struct kb_shader_binding_slot {
-  kb_shader_binding_type        type;
-  uint32_t                      index;
-  uint64_t                      size;
-  kb_shader_stage               stages;
+  kb_shader_binding_type  type;
+  uint32_t                index;
+  uint64_t                size;
+  kb_shader_stage         stages;
 } kb_shader_binding_slot;
 
 typedef struct kb_frame_stats {
@@ -366,8 +388,10 @@ KB_API void                       kb_encoder_bind_index_buffer          (kb_enco
 KB_API void                       kb_encoder_bind_texture               (kb_encoder encoder, const kb_uniform_slot slot, kb_texture texture);
 KB_API void                       kb_encoder_bind_uniform               (kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size);
 KB_API void                       kb_encoder_submit                     (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count, uint32_t instance_count);
-
 KB_API void                       kb_encoder_reset_frame                (kb_encoder encoder);
+
+KB_API void kb_texture_read   (kb_texture_data* dst, kb_rwops* src);
+KB_API void kb_texture_write  (const kb_texture_data* src, kb_rwops* dst);
 
 #ifdef __cplusplus
 }
