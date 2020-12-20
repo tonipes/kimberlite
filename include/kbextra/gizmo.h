@@ -8,7 +8,7 @@
 
 #include <kb/core.h>
 #include <kb/math.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -9,7 +9,7 @@
 #include <kb/core.h>
 #include <kb/rwops.h>
 #include <kb/alloc.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 #include <kb/rwops.h>
 
 KB_API uint32_t kb_count_utf8(const char* str, uint32_t len) {

@@ -8,7 +8,7 @@
 
 #include <kb/core.h>
 #include <kb/time.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 
 #include <kbextra/cliargs.h>
 

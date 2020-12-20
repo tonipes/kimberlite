@@ -12,7 +12,7 @@
 #include <kb/vertex.h>
 #include <kb/rwops.h>
 #include <kb/resource.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 
 #include <kbextra/material.h>
 

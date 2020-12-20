@@ -9,7 +9,7 @@
 #include <kb/core.h>
 #include <kb/rwops.h>
 #include <kb/alloc.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 #include <kb/rwops.h>
 
 #ifndef KB_TOOL_ONLY

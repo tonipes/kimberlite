@@ -8,7 +8,7 @@
 
 #include <kb/crt.h>
 #include <kb/alloc.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 #include <kb/log.h>
 #include <kb/rwops.h>
 

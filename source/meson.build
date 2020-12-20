@@ -21,7 +21,7 @@ src_kimberlite_core = [
   'kb/sampler.cpp',
   'kb/input.cpp',
   'kb/texture.cpp',
-  'kb/renderer.cpp',
+  'kb/graphics.cpp',
   'kbextra/material.cpp',
   'kbextra/geometry.cpp',
   'kbextra/font.cpp',

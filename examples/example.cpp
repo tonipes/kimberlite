@@ -4,7 +4,7 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-// #include <kb/renderer.h>
+// #include <kb/graphics.h>
 #include <kb/input.h>
 // #include <kb/log.h>
 #include <kb/time.h>

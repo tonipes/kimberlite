@@ -12,7 +12,7 @@
 #include <kb/rwops.h>
 #include <kb/table.h>
 #include <kb/resource.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 
 KB_HANDLE(kb_material);
 

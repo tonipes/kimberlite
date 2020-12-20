@@ -6,7 +6,7 @@
 
 #include <kb/platform.h>
 
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 #include <kb/core.h>
 #include <kb/alloc.h>
 #include <kb/alg.h>

@@ -14,7 +14,7 @@
 
 // Graphics
 #include "kb/vertex.cpp"
-#include "kb/renderer.cpp"
+#include "kb/graphics.cpp"
 #include "kb/texture.cpp"
 
 // Audio

@@ -7,7 +7,7 @@
 #include <kb/crt.h>
 #include <kb/alloc.h>
 #include <kb/rwops.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 
 void kb_texture_read(kb_texture_data* dst, kb_rwops* src) {
   kb_read(src, dst->header);

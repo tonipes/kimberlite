@@ -10,7 +10,7 @@
 #include <kb/alloc.h>
 #include <kb/rwops.h>
 #include <kb/math.h>
-#include <kb/renderer.h>
+#include <kb/graphics.h>
 #include <kb/input.h>
 #include <kb/audio.h>
 
