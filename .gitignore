@@ -76,6 +76,7 @@ sourcetrail
 /bin/current
 
 /bin
+/.build
 
 .vscode
 *.sublime-*
