@@ -252,7 +252,7 @@ void kb_font_quad_advance(kb_font_info* info, int codepoint, float* current_x, f
   *current_x += fc->advance;
 }
 
-KB_API Real32 kb_font_get_line_height(kb_font_info* info) {
+KB_API float kb_font_get_line_height(kb_font_info* info) {
   return (info->ascent - info->descent + info->line_gap) * info->scale_factor;
 }
 

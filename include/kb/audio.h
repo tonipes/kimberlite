@@ -12,12 +12,14 @@
 #include <kb/math.h>
 #include <kb/rwops.h>
 
-KB_HANDLE(kb_sound);
-KB_HANDLE(kb_sound_inst);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+KB_HANDLE(kb_sound);
+
+// typedef struct kb_sound       { kb_handle_idx idx; } kb_sound;
+typedef struct kb_sound_inst  { kb_handle_idx idx; } kb_sound_inst;
 
 typedef struct kb_sound_playback_info {
   Float2                  pitch_range;

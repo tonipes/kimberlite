@@ -18,14 +18,17 @@ static inline bool kb_is_valid_idx(kb_handle_idx idx) { return idx != UINT32_MAX
 }
 #endif
 
-#define KB_HANDLE(name_t)                                                                                           \
-	extern "C" {                                                                                                      \
-    typedef struct { kb_handle_idx idx; } name_t;                                                                   \
-  }                                                                                                                 \
-  static inline bool          kb_is_valid         (name_t handle) { return kb_is_valid_idx(handle.idx); }           \
-  static inline kb_handle_idx kb_to_arr           (name_t handle) { return handle.idx - 1; }                        \
-  static inline name_t        name_t##_from_arr   (uint32_t idx)  { return { idx + 1 }; }                           \
-  static inline bool          operator==          (const name_t& a, const name_t& b)  { return a.idx == b.idx; }    \
-  static inline bool          operator!=          (const name_t& a, const name_t& b)  { return !(a == b); }         \
+#ifdef __cplusplus
+template <typename T>
+static inline bool kb_is_valid(T handle) { return kb_is_valid_idx(handle.idx); }
 
-#define KB_ASSERT_VALID(handle) assert(kb_is_valid(handle) && "Invalid handle: '" #handle "'")
+template <typename T>
+static inline kb_handle_idx kb_to_arr(T handle) { return handle.idx - 1; }
+#endif
+
+#define KB_HANDLE(name_t) typedef struct name_t { kb_handle_idx idx; } name_t
+
+
+#define KB_ASSERT_VALID(handle) assert(kb_is_valid_idx(handle.idx) && "Invalid handle: '" #handle "'")
+#define KB_HANDLE_FROM_ARRAY(idx) { idx + 1 }
+#define KB_HANDLE_TO_ARRAY(handle) handle.idx - 1

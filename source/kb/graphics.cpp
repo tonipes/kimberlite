@@ -287,7 +287,7 @@ KB_API kb_encoder kb_encoder_begin() {
   kb_encoder_pool& pool = current_encoder_pool();
 
   uint32_t slot = pool.count++;
-  kb_encoder encoder = kb_encoder_from_arr(slot);
+  kb_encoder encoder = KB_HANDLE_FROM_ARRAY(slot);
   kb_encoder_state& state = current_encoder_state(encoder);
   
   kb_encoder_reset_frame(encoder);

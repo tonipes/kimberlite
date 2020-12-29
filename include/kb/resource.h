@@ -73,8 +73,8 @@ struct kb_resource_slot_allocator {
   void kb_##t_name##_unmark(handle_t handle) {                                                    \
     kb_table_remove(&(t_name##_data.table), kb_to_arr(handle));                                   \
   }                                                                                               \
-  handle_t  kb_##t_name##_allocate() {                                                            \
-    return handle_t##_from_arr(kb_freelist_take(&(t_name##_data.freelist)));                      \
+  handle_t kb_##t_name##_allocate() {                                                             \
+    return (handle_t){ kb_freelist_take(&(t_name##_data.freelist)) + 1 };                         \
   }                                                                                               \
   void kb_##t_name##_free(handle_t handle) {                                                      \
     kb_freelist_return(&(t_name##_data.freelist), kb_to_arr(handle));                             \
@@ -96,7 +96,7 @@ struct kb_resource_slot_allocator {
     uint32_t* dense = kb_freelist_get_dense(&t_name##_data.freelist);                             \
     uint32_t count = kb_##t_name##_count();                                                       \
     for (uint32_t i = 0; i < count; ++i) {                                                        \
-      kb_##t_name##_destroy(handle_t##_from_arr(dense[0]));                                       \
+      kb_##t_name##_destroy(KB_HANDLE_FROM_ARRAY(dense[0]));                                      \
     }                                                                                             \
   }   
 
@@ -105,10 +105,10 @@ struct kb_resource_slot_allocator {
     kb_table_insert(&(t_name##_data.table), _hash, kb_to_arr(handle));                            \
   }                                                                                               \
   bool kb_##t_name##_has(kb_hash _hash) {                                                         \
-    return kb_is_valid(handle_t##_from_arr(kb_table_get(&(t_name##_data.table), _hash)));         \
+    return kb_is_valid_idx(kb_##t_name##_get(_hash).idx);                                         \
   }                                                                                               \
   handle_t kb_##t_name##_get(kb_hash _hash) {                                                     \
-    return handle_t##_from_arr(kb_table_get(&(t_name##_data.table), _hash));                      \
+    return KB_HANDLE_FROM_ARRAY(kb_table_get(&(t_name##_data.table), _hash));                     \
   }                                                                                               \
   handle_t kb_##t_name##_get_or_alloc(kb_hash hash) {                                             \
     if (kb_##t_name##_has(hash)) return kb_##t_name##_get(hash);                                  \
@@ -118,3 +118,6 @@ struct kb_resource_slot_allocator {
   }                                                                                               \
 
 #endif
+
+
+    // return kb_is_valid_idx(kb_table_get(&(t_name##_data.table), _hash) + 1);                      \

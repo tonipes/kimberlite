@@ -14,15 +14,17 @@
 #include <kb/rwops.h>
 #include <kb/vertex.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 KB_HANDLE(kb_buffer);
 KB_HANDLE(kb_pipeline);
 KB_HANDLE(kb_encoder);
 KB_HANDLE(kb_renderpass);
 KB_HANDLE(kb_texture);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// typedef struct kb_buffer      { kb_handle_idx idx; } kb_buffer;
 
 typedef enum kb_compare_func {
   KB_COMPARE_UNKNOWN              = 0,

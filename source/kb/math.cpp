@@ -38,15 +38,15 @@ KB_API Float3 act_quat(const Quaternion a, const Float3 b) {
   return { res.x, res.y, res.z };
 }
 
-KB_API Quaternion slerp_quat(const Quaternion a, const Quaternion b, Real32 t) {
+KB_API Quaternion slerp_quat(const Quaternion a, const Quaternion b, float t) {
   const float tt = 1 - t;
-  Real32 dot = dot_quat(a, b);
+  float dot = dot_quat(a, b);
 
-	Real32 th = acos_scalar(dot);
-	Real32 sn = sin_scalar(th);
+	float th = acos_scalar(dot);
+	float sn = sin_scalar(th);
 
-	Real32 wa = sin_scalar(tt * th) / sn;
-	Real32 wb = sin_scalar(t  * th) / sn;
+	float wa = sin_scalar(tt * th) / sn;
+	float wb = sin_scalar(t  * th) / sn;
   
   Quaternion r {
 	  wa * a.x + wb * b.x,
@@ -81,7 +81,7 @@ KB_API Float4x4 look_at(const Float3 from, const Float3 to, const Float3 global_
   return res;  
 }
 
-KB_API Float4x4 orthographic(Real32 left, Real32 right, Real32 top, Real32 bottom, Real32 near, Real32 far) {
+KB_API Float4x4 orthographic(float left, float right, float top, float bottom, float near, float far) {
 		const float aa = 2.0f / (right - left);
 		const float bb = 2.0f / (top - bottom);
 		const float cc = 1.0f / (far - near);
@@ -103,7 +103,7 @@ KB_API Float4x4 orthographic(Real32 left, Real32 right, Real32 top, Real32 botto
     return res;
 }
 
-KB_API Float4x4 perspective(Real32 fov, Real32 aspect, Real32 near, Real32 far) {
+KB_API Float4x4 perspective(float fov, float aspect, float near, float far) {
   const float height = 1.0f / tan_scalar(deg_to_rad(fov) * 0.5f);
   const float width  = height / aspect;
 
@@ -366,4 +366,17 @@ KB_API float ray_plane_intersection(const Ray ray, const Plane plane) {
   }
 
   return NAN;
+}
+
+KB_API Float3 unproject(Float4x4 unproj, Float3 point) {
+  Float4 v = act_float4x4(unproj, Float4 { point.x, point.y, point.z, 1.0 });
+  return scale_float3(Float3 { v.x, v.y, v.z }, (1.0 / v.w));
+}
+
+KB_API Ray unproject_view(Float4x4 unproj, Float2 p) {
+  const Float3 orig = unproject(unproj, Float3 { 0, 0, -1 });
+  Float3 pp = unproject(unproj, Float3 { p.x, p.y, 0.9999f });
+  Float3 dir = sub_float3(orig, pp);
+
+  return {orig, dir};
 }

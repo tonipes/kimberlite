@@ -16,12 +16,15 @@
 
 #include <kbextra/material.h>
 
-KB_HANDLE(kb_geometry);
-KB_HANDLE(kb_mesh);
+// KB_HANDLE(kb_geometry);
+// KB_HANDLE(kb_mesh);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct kb_geometry  { kb_handle_idx idx; } kb_geometry;
+typedef struct kb_mesh      { kb_handle_idx idx; } kb_mesh;
 
 typedef struct kb_primitive_data {
   uint32_t            first_vertex;

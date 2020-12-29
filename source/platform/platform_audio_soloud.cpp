@@ -62,7 +62,7 @@ KB_API void kb_platform_audio_deinit() {
 
 kb_sound_inst kb_platform_sound_play(kb_sound handle) {
   KB_ASSERT_VALID(handle);
-  return kb_sound_inst_from_arr(soloud.play(sound_ref(handle).wav));
+  return KB_HANDLE_FROM_ARRAY(soloud.play(sound_ref(handle).wav));
 }
 
 KB_API void kb_platform_sound_stop(kb_sound_inst handle) {

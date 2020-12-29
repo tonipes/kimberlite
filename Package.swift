@@ -18,7 +18,12 @@ let package = Package(
       name: "Kimberlite",
       dependencies: [],
       path: ".",
-      sources: ["source/amalgamated.cpp"],
+      sources: [
+        "source/amalgamated.cpp",
+        "source/platform/platform_noop.cpp",
+        "libraries/fmt/src/format.cc",
+        "libraries/fmt/src/format.os",
+      ],
       cxxSettings: [
         .headerSearchPath("include"),
         .headerSearchPath("libraries/fmt/include"),

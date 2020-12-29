@@ -14,11 +14,14 @@
 #include <kb/resource.h>
 #include <kb/graphics.h>
 
-KB_HANDLE(kb_material);
+// KB_HANDLE(kb_material);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct kb_material      { kb_handle_idx idx; } kb_material;
+
 
 typedef struct kb_material_texture {
   kb_hash                   slot_hash;
