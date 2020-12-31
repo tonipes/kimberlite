@@ -8,7 +8,7 @@ let package = Package(
     .library(
       name: "Kimberlite",
       type: .static,
-      targets: ["Kimberlite"]
+      targets: ["Kimberlite", "fmt"]
     )
   ],
   dependencies: [  
@@ -16,17 +16,26 @@ let package = Package(
   targets: [
     .target(
       name: "Kimberlite",
-      dependencies: [],
+      dependencies: ["fmt"],
       path: ".",
       sources: [
         "source/amalgamated.cpp",
-        "source/platform/platform_noop.cpp",
-        "libraries/fmt/src/format.cc",
-        "libraries/fmt/src/format.os",
       ],
       cxxSettings: [
         .headerSearchPath("include"),
         .headerSearchPath("libraries/fmt/include"),
+      ]
+    ),
+    .target(
+      name: "fmt",
+      dependencies: [],
+      path: "libraries/fmt",
+      sources: [
+        "src/format.cc",
+        "src/format.os",
+      ],
+      cxxSettings: [
+        .headerSearchPath("include"),
       ]
     ),
   ],

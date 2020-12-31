@@ -9,7 +9,7 @@
 #include <kb/freelist.h>
 #include <kb/table.h>
 #include <kb/crt.h>
-#include <kb/log.h>
+// #include <kb/log.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,7 +53,7 @@ struct kb_resource_slot_allocator {
   void purge() {
     uint32_t* dense = kb_freelist_get_dense(&freelist);
     for (uint32_t i = 0; i < freelist.count; ++i) {
-      kb_log_debug("Purge: ({}) {}", i, dense[i]);
+      // TODO: Purge
     }
   }
 
@@ -118,6 +118,3 @@ struct kb_resource_slot_allocator {
   }                                                                                               \
 
 #endif
-
-
-    // return kb_is_valid_idx(kb_table_get(&(t_name##_data.table), _hash) + 1);                      \

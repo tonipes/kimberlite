@@ -5,6 +5,7 @@
 // ============================================================================
 
 #include <kb/platform.h>
+#include <kb/log.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>

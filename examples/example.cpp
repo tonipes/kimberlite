@@ -6,7 +6,7 @@
 
 // #include <kb/graphics.h>
 #include <kb/input.h>
-// #include <kb/log.h>
+#include <kb/log.h>
 #include <kb/time.h>
 #include <kb/platform.h>
 // #include <kb/geometry.h>

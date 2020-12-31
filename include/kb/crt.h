@@ -48,16 +48,16 @@ KB_API void   kb_sort               (void* data, size_t num, size_t size, kb_com
 }
 #endif
 
-#ifdef __cplusplus
+// #ifdef __cplusplus
 
-#include <fmt/format.h>
+// #include <fmt/format.h>
 
-template <typename... T>
-KB_API uint64_t kb_strfmt(char* out, int32_t size, const T&... args) {
-  auto str = fmt::format(args...);
-  int32_t len = str.length() < size ? str.length() : size;
-  kb_strncpy(out, str.c_str(), len);
-  return len;
-}
+// template <typename... T>
+// KB_API uint64_t kb_strfmt(char* out, int32_t size, const T&... args) {
+//   auto str = fmt::format(args...);
+//   int32_t len = str.length() < size ? str.length() : size;
+//   kb_strncpy(out, str.c_str(), len);
+//   return len;
+// }
 
-#endif
+// #endif

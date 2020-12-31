@@ -270,7 +270,6 @@ KB_API void kb_platform_pipeline_construct(kb_pipeline handle, const kb_pipeline
   
   if (vert_lib == nil) {
     kb_log_error("Failed to create pipeline. (Compile)");
-    kb_log_warn("{}", [err.localizedDescription UTF8String]);
     return;
   }
 

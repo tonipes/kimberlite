@@ -368,6 +368,7 @@ KB_API void                       kb_graphics_deinit                    ();
 KB_API void                       kb_graphics_frame                     ();
 KB_API void                       kb_graphics_run_encoders              ();
 KB_API Int2                       kb_graphics_get_extent                ();
+KB_API Int2                       kb_graphics_get_aspect                ();
 KB_API void                       kb_graphics_wait_device_idle          ();
 KB_API uint32_t                   kb_graphics_get_current_resource_slot ();
 KB_API void                       kb_graphics_get_frame_stats           (kb_frame_stats* stats);

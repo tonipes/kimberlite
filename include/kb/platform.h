@@ -35,14 +35,7 @@ KB_API uint64_t       kb_platform_graphics_transient_offset           (void* ptr
 KB_API uint64_t       kb_platform_graphics_transient_used             ();
 KB_API uint64_t       kb_platform_graphics_transient_capacity         ();
 KB_API void*          kb_platform_graphics_buffer_mapped              (kb_buffer buffer);
-
-KB_API Int2           kb_platform_surface_get_size                    ();
-KB_API float          kb_platform_surface_get_aspect                  ();
-KB_API void*          kb_platform_surface_get_native_window_handle    ();
-KB_API void           kb_platform_surface_create                      (uint32_t w, uint32_t h);
-KB_API void           kb_platform_surface_set_system_cursor_visible   (bool visible);
-KB_API float          kb_platform_surface_get_scaling                 ();
-KB_API void           kb_platform_surface_destroy                     ();
+KB_API Int2           kb_platform_graphics_surface_get_size           ();
 
 KB_API void           kb_platform_buffer_construct                    (kb_buffer handle, const kb_buffer_create_info info);
 KB_API void           kb_platform_pipeline_construct                  (kb_pipeline handle, const kb_pipeline_create_info info);
@@ -65,7 +58,6 @@ KB_API bool           kb_platform_input_gamepad_connected             (uint32_t 
 KB_API void           kb_platform_audio_init                          (const kb_audio_init_info info);
 KB_API void           kb_platform_audio_frame                         ();
 KB_API void           kb_platform_audio_deinit                        ();
-
 KB_API kb_sound_inst  kb_platform_sound_play                          (kb_sound handle);
 KB_API void           kb_platform_sound_stop                          (kb_sound_inst handle);
 KB_API void           kb_platform_sound_set_volume                    (kb_sound_inst instance, float volume);

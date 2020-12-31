@@ -29,10 +29,6 @@ src_kimberlite_core = [
 ]
 
 src_kimberlite = [
-  'platform/platform_audio_soloud.cpp',
-  'platform/platform_rwops_sdl.cpp',
-  'platform/platform_surface_sdl.cpp',
-  'platform/platform_input_sdl.cpp',
   'platform/platform_macos.mm',
 ] + src_kimberlite_core + src_kimberlite_extra
 
@@ -53,20 +49,20 @@ endif
 
 kb_setup_args = []
 
-if kb_graphics_lib.startswith('vulkan')
-  kb_setup_args += ['-DKB_SETUP_GRAPHICS_LIB_VULKAN']
-  src_kimberlite += ['platform/platform_graphics_vulkan.cpp']
-endif
+# if kb_graphics_lib.startswith('vulkan')
+#   kb_setup_args += ['-DKB_SETUP_GRAPHICS_LIB_VULKAN']
+#   src_kimberlite += ['platform/platform_graphics_vulkan.cpp']
+# endif
 
-if kb_graphics_lib.startswith('metal')
-  kb_setup_args += ['-DKB_SETUP_GRAPHICS_LIB_METAL']
-  src_kimberlite += ['platform/platform_graphics_metal.mm']
-endif
+# if kb_graphics_lib.startswith('metal')
+#   kb_setup_args += ['-DKB_SETUP_GRAPHICS_LIB_METAL']
+#   src_kimberlite += ['platform/platform_graphics_metal.mm']
+# endif
 
-if kb_graphics_lib.startswith('noop')
-  kb_setup_args += ['-DKB_SETUP_GRAPHICS_LIB_NOOP']
-  src_kimberlite += ['platform/platform_graphics_noop.cpp']
-endif
+# if kb_graphics_lib.startswith('noop')
+#   kb_setup_args += ['-DKB_SETUP_GRAPHICS_LIB_NOOP']
+#   src_kimberlite += ['platform/platform_graphics_noop.cpp']
+# endif
 
 kb_cpp_args += kb_setup_args
 kb_objcpp_args += kb_setup_args

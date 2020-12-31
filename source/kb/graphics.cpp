@@ -11,6 +11,8 @@
 #include <kb/sampler.h>
 #include <kb/vertex.h>
 
+#include <kb/log.h>
+
 struct pipeline_info {
   kb_uniform_layout     uniform_layout;
   kb_vertex_layout_info vertex_layout;
@@ -450,4 +452,13 @@ KB_API void* kb_graphics_get_buffer_mapped(kb_buffer buffer) {
   KB_ASSERT_VALID(buffer);
 
   return kb_platform_graphics_buffer_mapped(buffer);
+}
+
+KB_API Int2 kb_graphics_get_extent() {    
+  return kb_platform_graphics_surface_get_size();
+}
+
+KB_API float kb_graphics_surface_get_aspect() {
+  Int2 size = kb_graphics_get_extent();
+  return float(size.x) / float(size.y);
 }
