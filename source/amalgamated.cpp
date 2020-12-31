@@ -18,13 +18,13 @@
 #include "kb/texture.cpp"
 
 // Audio
-// #include "kb/audio.cpp"
+#include "kb/audio.cpp"
 
 // Input
-// #include "kb/input.cpp"
+#include "kb/input.cpp"
 
 // Extra
-// #include "kbextra/material.cpp"
-// #include "kbextra/font.cpp"
-// #include "kbextra/geometry.cpp"
-// #include "kbextra/gizmo.cpp"
+#include "kbextra/material.cpp"
+#include "kbextra/font.cpp"
+#include "kbextra/geometry.cpp"
+#include "kbextra/gizmo.cpp"

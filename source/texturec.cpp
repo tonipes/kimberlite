@@ -23,6 +23,7 @@
 #include <stb_image.h>
 
 #include "platform/platform_rwops_sdl.cpp"
+// #include "platform/platform_rwops_stdio.cpp"
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0

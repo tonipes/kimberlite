@@ -8,7 +8,6 @@
 
 #include <kb/core.h>
 #include <kb/time.h>
-#include <kb/log.h>
 
 #include <kbextra/cliargs.h>
 #include <kbextra/font.h>
@@ -23,6 +22,7 @@
 #include "kbextra/font.cpp"
 
 #include "platform/platform_rwops_sdl.cpp"
+// #include "platform/platform_rwops_stdio.cpp"
 
 #define STB_RECT_PACK_IMPLEMENTATION 
 #include "stb_rect_pack.h"
@@ -135,7 +135,8 @@ int main(int argc, const char* argv[]) {
 
     uint64_t font_data_size = kb_rwops_size(rwops_in);
     unsigned char* font_data = (unsigned char*) KB_DEFAULT_ALLOC(font_data_size);
-    kb_rwops_read(rwops_in, font_data, font_data_size);
+    uint64_t read = kb_rwops_read(rwops_in, font_data, font_data_size);
+    kb_log_debug("Size: {}, Read: {}", font_data_size, read);
 
     stbtt_fontinfo font_info;
     stbtt_InitFont(&font_info, font_data, stbtt_GetFontOffsetForIndex(font_data, 0));

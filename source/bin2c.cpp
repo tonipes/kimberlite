@@ -11,9 +11,12 @@
 
 #include "kb/alloc.cpp"
 #include "kb/crt.cpp"
+
 #include "kbextra/cliargs.cpp"
 
+
 #include "platform/platform_rwops_sdl.cpp"
+// #include "platform/platform_rwops_stdio.cpp"
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0

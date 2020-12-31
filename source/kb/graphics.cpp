@@ -166,49 +166,49 @@ KB_API void kb_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_i
   pipeline_info_ref(handle).uniform_layout  = info.uniform_layout;
   pipeline_info_ref(handle).vertex_layout   = info.vertex_layout;
 
-  kb_platform_pipeline_construct(handle, info);
+  kb_platform_graphics_pipeline_construct(handle, info);
 }
 
 KB_API void kb_pipeline_destruct(kb_pipeline handle) {
   KB_ASSERT_VALID(handle);
 
-  kb_platform_pipeline_destruct(handle);
+  kb_platform_graphics_pipeline_destruct(handle);
 }
 
 KB_API void kb_texture_construct(kb_texture handle, const kb_texture_create_info info) {
   KB_ASSERT_VALID(handle);
 
-  kb_platform_texture_construct(handle, info);
+  kb_platform_graphics_texture_construct(handle, info);
 }
 
 KB_API void kb_texture_destruct(kb_texture handle) {
   KB_ASSERT_VALID(handle);
 
-  kb_platform_texture_destruct(handle);
+  kb_platform_graphics_texture_destruct(handle);
 }
 
 KB_API void kb_renderpass_construct(kb_renderpass handle, const kb_renderpass_create_info info) {
   KB_ASSERT_VALID(handle);
 
-  kb_platform_renderpass_construct(handle, info);
+  kb_platform_graphics_renderpass_construct(handle, info);
 }
 
 KB_API void kb_renderpass_destruct(kb_renderpass handle) {
   KB_ASSERT_VALID(handle);
 
-  kb_platform_renderpass_destruct(handle);
+  kb_platform_graphics_renderpass_destruct(handle);
 }
 
 KB_API void kb_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
   KB_ASSERT_VALID(handle);
 
-  kb_platform_buffer_construct(handle, info);
+  kb_platform_graphics_buffer_construct(handle, info);
 }
 
 KB_API void kb_buffer_destruct(kb_buffer handle) {
   KB_ASSERT_VALID(handle);
 
-  kb_platform_buffer_destruct(handle);
+  kb_platform_graphics_buffer_destruct(handle);
 }
 
 KB_API void kb_graphics_get_frame_stats(kb_frame_stats* stats) {

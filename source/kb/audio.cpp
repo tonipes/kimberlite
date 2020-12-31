@@ -34,15 +34,15 @@ KB_API void kb_audio_deinit() {
 KB_API void kb_sound_construct(kb_sound handle, const kb_sound_create_info info) {
   sound_info_ref(handle) = info.playback;
 
-  kb_platform_sound_construct(handle, info);
+  kb_platform_audio_sound_construct(handle, info);
 }
 
 KB_API void kb_sound_destruct(kb_sound handle) {
-  kb_platform_sound_destruct(handle);
+  kb_platform_audio_sound_destruct(handle);
 }
 
 KB_API kb_sound_inst kb_sound_play(kb_sound handle) {
-  kb_sound_inst inst = kb_platform_sound_play(handle);
+  kb_sound_inst inst = kb_platform_audio_sound_play(handle);
   
   if (has_volume_range(handle)) {
     kb_sound_set_volume(inst, kb_rand_range(NULL, sound_info_ref(handle).volume_range.x, sound_info_ref(handle).volume_range.y));
@@ -56,17 +56,17 @@ KB_API kb_sound_inst kb_sound_play(kb_sound handle) {
 }
 
 KB_API void kb_sound_stop(kb_sound_inst handle) {
-  kb_platform_sound_stop(handle);
+  kb_platform_audio_sound_stop(handle);
 }
 
 KB_API void kb_sound_set_volume(kb_sound_inst instance, float volume) {
-  kb_platform_sound_set_volume(instance, volume);
+  kb_platform_audio_sound_set_volume(instance, volume);
 }
 
 KB_API void kb_sound_set_speed(kb_sound_inst instance, float speed) {
-  kb_platform_sound_set_speed(instance, speed);
+  kb_platform_audio_sound_set_speed(instance, speed);
 }
 
 KB_API void kb_sound_set_pan(kb_sound_inst instance, float pan) {
-  kb_platform_sound_set_pan(instance, pan);  
+  kb_platform_audio_sound_set_pan(instance, pan);  
 }

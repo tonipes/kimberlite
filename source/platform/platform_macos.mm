@@ -22,9 +22,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
+#include "platform_rwops_sdl.cpp"
+
+
 // ############################################################################
 // Types
 // ############################################################################
+
 
 struct buffer_ref {
   id<MTLBuffer> buffer;
@@ -69,10 +73,12 @@ KB_RESOURCE_STORAGE_DEF (renderpass,    kb_renderpass,    renderpass_ref,     KB
 // State
 // ############################################################################
 
+
 kb_freelist               input_gamepad_freelist;
 kb_table                  input_gamepad_table;
 SDL_GameController*       input_gamepad_ptrs[KB_CONFIG_MAX_GAMEPADS];
 
+static NSWindow*          ns_window;
 static SDL_Window*        window_ptr;
 static bool               window_should_close;
 
@@ -90,9 +96,11 @@ dispatch_semaphore_t      graphics_in_flight_semaphore;
 uint32_t                  graphics_current_resource_slot = 0;
 Int2                      graphics_current_extent;
 
+
 // ############################################################################
 // General
 // ############################################################################
+
 
 KB_API bool kb_platform_should_close() {
   return window_should_close;
@@ -111,81 +119,11 @@ KB_API void kb_platform_pump_events() {
   }
 }
 
-// ############################################################################
-// Rwops
-// ############################################################################
-
-KB_INTERNAL const char* cv_rwops_mode(kb_file_mode mode) {
-  switch (mode) {
-    case KB_FILE_MODE_READ:   return "rb";
-    case KB_FILE_MODE_WRITE:  return "wb";
-    default:                  return "";
-  }
-}
-
-KB_INTERNAL int cv_rwops_whence(kb_whence whence) {
-  switch (whence) {
-    case KB_RWOPS_SEEK_BEG:  return RW_SEEK_SET;
-    case KB_RWOPS_SEEK_CUR:  return RW_SEEK_CUR;
-    case KB_RWOPS_SEEK_END:  return RW_SEEK_END;
-    default:                 return RW_SEEK_SET;
-  }
-}
-
-KB_INTERNAL int64_t size_impl(kb_rwops* rwops) {
-  return SDL_RWsize((SDL_RWops*) rwops->impl);
-}
-
-KB_INTERNAL int64_t seek_impl(kb_rwops* rwops, int64_t offset, int whence) {
-  return SDL_RWseek((SDL_RWops*) rwops->impl, offset, whence);
-}
-
-KB_INTERNAL uint64_t read_impl(kb_rwops* rwops, void *ptr, uint64_t size) {
-  return SDL_RWread((SDL_RWops*) rwops->impl, ptr, 1, size);
-}
-
-KB_INTERNAL uint64_t write_impl(kb_rwops* rwops, const void* ptr, uint64_t size) {
-  return SDL_RWwrite((SDL_RWops*) rwops->impl, ptr, 1, size);
-}
-
-KB_INTERNAL int64_t tell_impl(kb_rwops* rwops) {
-  return SDL_RWtell((SDL_RWops*) rwops->impl);
-}
-
-KB_INTERNAL int close_impl(kb_rwops* rwops) {
-  int res = SDL_RWclose((SDL_RWops*) rwops->impl);
-  KB_DEFAULT_FREE(rwops);
-  return res;
-}
-
-KB_INTERNAL inline kb_rwops* create_rwops(SDL_RWops* impl) {
-  kb_rwops* rwops = KB_DEFAULT_ALLOC_TYPE(kb_rwops, 1);
-  rwops->size   = size_impl;
-  rwops->seek   = seek_impl;
-  rwops->read   = read_impl;
-  rwops->close  = close_impl;
-  rwops->write  = write_impl;
-  rwops->tell   = tell_impl;
-  rwops->impl   = impl;
-  
-  return rwops;
-}
-
-KB_API kb_rwops* kb_rwops_open_file(const char* path, kb_file_mode mode) {
-  SDL_RWops* impl = SDL_RWFromFile(path, cv_rwops_mode(mode));
-  if (!impl) return nullptr;
-  return create_rwops(impl);
-}
-
-KB_API kb_rwops* kb_rwops_open_mem(const void* dst, uint64_t size) {
-  SDL_RWops* impl = SDL_RWFromConstMem(dst, size); // TODO: Mode
-  if (!impl) return nullptr;
-  return create_rwops(impl);
-}
 
 // ############################################################################
 // Audio
 // ############################################################################
+
 
 KB_API void kb_platform_audio_init(const kb_audio_init_info info) {
 
@@ -195,32 +133,32 @@ KB_API void kb_platform_audio_deinit() {
 
 };
 
-KB_API void kb_platform_sound_construct(kb_sound handle, const kb_sound_create_info info) {
+KB_API void kb_platform_audio_sound_construct(kb_sound handle, const kb_sound_create_info info) {
 
 }
 
-KB_API void kb_platform_sound_destruct(kb_sound handle) {
+KB_API void kb_platform_audio_sound_destruct(kb_sound handle) {
   KB_ASSERT_VALID(handle);
 }
 
-KB_API kb_sound_inst kb_platform_sound_play(kb_sound handle) {
+KB_API kb_sound_inst kb_platform_audio_sound_play(kb_sound handle) {
   KB_ASSERT_VALID(handle);
   return { 0 };
 }
 
-KB_API void kb_platform_sound_stop(kb_sound_inst handle) {
+KB_API void kb_platform_audio_sound_stop(kb_sound_inst handle) {
 
 }
 
-KB_API void kb_platform_sound_set_volume(kb_sound_inst handle, float volume) {
+KB_API void kb_platform_audio_sound_set_volume(kb_sound_inst handle, float volume) {
 
 }
 
-KB_API void kb_platform_sound_set_speed(kb_sound_inst handle, float speed) {
+KB_API void kb_platform_audio_sound_set_speed(kb_sound_inst handle, float speed) {
 
 }
 
-KB_API void kb_platform_sound_set_pan(kb_sound_inst handle, float pan) {
+KB_API void kb_platform_audio_sound_set_pan(kb_sound_inst handle, float pan) {
 
 }
 
@@ -332,9 +270,11 @@ KB_API bool kb_input_gamepad_connected(uint32_t gamepad) {
   return input_gamepad_ptrs[gamepad] != NULL;
 }
 
+
 // ############################################################################
 // Graphics
 // ############################################################################
+
 
 KB_INTERNAL MTLCullMode cv_cull_mode_mtl(kb_cull_mode mode) {
   switch (mode) {
@@ -491,7 +431,7 @@ KB_INTERNAL void fill_buffer_from_rwops(id<MTLBuffer> target_buffer, kb_rwops* r
 
 }
 
-KB_API void kb_platform_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
+KB_API void kb_platform_graphics_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
   NSError* err = NULL;
 
   struct pipeline_ref& pipeline = pipeline_ref(handle);
@@ -631,7 +571,7 @@ KB_API void kb_platform_pipeline_construct(kb_pipeline handle, const kb_pipeline
   [pipeline_description release];
 }
 
-KB_API void kb_platform_pipeline_destruct(kb_pipeline handle) {
+KB_API void kb_platform_graphics_pipeline_destruct(kb_pipeline handle) {
   // TODO:
 }
 
@@ -640,7 +580,7 @@ KB_INTERNAL MTLSamplerMinMagFilter cv_filter[] {
   MTLSamplerMinMagFilterLinear,
 };
 
-KB_API void kb_platform_texture_construct(kb_texture handle, const kb_texture_create_info info) {
+KB_API void kb_platform_graphics_texture_construct(kb_texture handle, const kb_texture_create_info info) {
   int mip_levels = info.mipmaps ? floor(kb_log2(max(info.texture.width, info.texture.height))) + 1 : 1;
 
   MTLSamplerDescriptor* sampler_descriptor = [[MTLSamplerDescriptor alloc] init];
@@ -710,11 +650,11 @@ KB_API uint32_t kb_graphics_get_current_resource_slot() {
   return 0;
 }
 
-KB_API void kb_platform_texture_destruct(kb_texture handle) {
+KB_API void kb_platform_graphics_texture_destruct(kb_texture handle) {
 
 }
 
-KB_API void kb_platform_renderpass_construct(kb_renderpass handle, const kb_renderpass_create_info info) {
+KB_API void kb_platform_graphics_renderpass_construct(kb_renderpass handle, const kb_renderpass_create_info info) {
   renderpass_ref(handle).desc = [MTLRenderPassDescriptor renderPassDescriptor];
   
   for (uint32_t i = 0; i < KB_CONFIG_MAX_RENDERPASS_ATTACHMENTS; ++i) {
@@ -742,11 +682,11 @@ KB_API void kb_platform_renderpass_construct(kb_renderpass handle, const kb_rend
   }
 }
 
-KB_API void kb_platform_renderpass_destruct(kb_renderpass handle) {
+KB_API void kb_platform_graphics_renderpass_destruct(kb_renderpass handle) {
   // TODO:
 }
 
-KB_API void kb_platform_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
+KB_API void kb_platform_graphics_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
   KB_ASSERT_VALID(handle);
   KB_ASSERT(info.size > 0, "Buffer size must be greater than zero");
 
@@ -757,7 +697,7 @@ KB_API void kb_platform_buffer_construct(kb_buffer handle, const kb_buffer_creat
   }  
 }
 
-KB_API void kb_platform_buffer_destruct(kb_buffer handle) { 
+KB_API void kb_platform_graphics_buffer_destruct(kb_buffer handle) { 
   [buffer_ref(handle).buffer release];
 }
 
@@ -806,9 +746,6 @@ KB_API void kb_platform_graphics_init(const kb_graphics_init_info info) {
   );
 
   SDL_ShowCursor(!info.hide_cursor);
-
-  // kb_platform_surface_create(info.resolution.x, info.resolution.y);   
-  // kb_platform_surface_set_system_cursor_visible(!info.hide_cursor);   
 
   graphics_device = MTLCreateSystemDefaultDevice();
   graphics_library = [graphics_device newDefaultLibrary];

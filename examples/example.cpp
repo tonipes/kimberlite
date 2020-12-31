@@ -21,6 +21,10 @@ const uint32_t  msaa              = 0;
 const Int2      resolution        = { 1600, 900 };
 const float     max_frametime     = 0.33f;
 
+// int main(int argc, char** argv) {
+
+// }
+
 int main(int argc, char** argv) {
   kb_log_set_level(KB_LOG_LEVEL_TRACE);
 
@@ -32,8 +36,8 @@ int main(int argc, char** argv) {
 
   kb_graphics_init(graphics_init_info);
 
-  kb_input_init_info input_init_info {};
-  kb_input_init(input_init_info);
+  // kb_input_init_info input_init_info {};
+  // kb_input_init(input_init_info);
 
   double t = 0.0;
   double dt = 0.016;
@@ -52,20 +56,18 @@ int main(int argc, char** argv) {
     
     while (accumulator >= dt) {
       t += dt;
-      accumulator -= dt;        
-      kb_input_frame();
-      
+      accumulator -= dt;      
       // Update
     }
 
     // Render
     
-    kb_graphics_frame();
+    // kb_graphics_frame();
   }
 
   kb_graphics_wait_device_idle();
   
-  kb_input_deinit();
+  // kb_input_deinit();
   kb_graphics_deinit();
 
   return 0;

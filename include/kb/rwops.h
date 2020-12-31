@@ -31,7 +31,10 @@ typedef struct kb_rwops {
   int       (*close)  (struct kb_rwops* rwops);
   int64_t   (*tell)   (struct kb_rwops* rwops);
   uint64_t  (*write)  (struct kb_rwops* rwops, const void *ptr, uint64_t size);
-  void* impl;
+  void*     impl; 
+  uint64_t  mem_pos;  // Used with memory rwops
+  uint64_t  mem_size;  // Used with memory rwops
+
 } kb_rwops;
 
 KB_API kb_rwops*  kb_rwops_open_file  (const char* path, kb_file_mode mode);
