@@ -22,51 +22,52 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
-#include "platform_rwops_sdl.cpp"
-
 
 // ############################################################################
 // Types
 // ############################################################################
 
-
-struct buffer_ref {
+typedef struct buffer_data {
   id<MTLBuffer> buffer;
-};
+} buffer_data;
 
-struct pipeline_ref {
+typedef struct pipeline_data {
   id<MTLRenderPipelineState>  pipeline_state;
   id<MTLDepthStencilState>    depth_stencil_state;
   MTLPrimitiveType            primitive_type;
   MTLWinding                  winding;
   MTLCullMode                 cull_mode;
-};
+} pipeline_data;
 
-struct texture_ref {
+typedef struct texture_data {
   id<MTLTexture>      texture;
   id<MTLSamplerState> sampler;
-};
+} texture_data;
 
-struct transient_buffer {
+typedef struct transient_buffer {
   id<MTLBuffer> buffer;
   uint64_t      memory_position;
-};
+} transient_buffer;
 
-struct renderpass_ref {
+typedef struct renderpass_data {
   MTLRenderPassDescriptor* desc;
-};
+} renderpass_data;
 
 static const uint32_t window_flags = 0
   | SDL_WINDOW_SHOWN
   | SDL_WINDOW_RESIZABLE
-  | SDL_WINDOW_VULKAN
-  | SDL_WINDOW_ALLOW_HIGHDPI
 ;
 
-KB_RESOURCE_STORAGE_DEF (buffer,        kb_buffer,        buffer_ref,         KB_CONFIG_MAX_BUFFERS);
-KB_RESOURCE_STORAGE_DEF (pipeline,      kb_pipeline,      pipeline_ref,       KB_CONFIG_MAX_PROGRAMS);
-KB_RESOURCE_STORAGE_DEF (texture,       kb_texture,       texture_ref,        KB_CONFIG_MAX_TEXTURES);
-KB_RESOURCE_STORAGE_DEF (renderpass,    kb_renderpass,    renderpass_ref,     KB_CONFIG_MAX_RENDERPASSES);
+#define STORAGE_DEF(t_name, handle_t, ref_t, cap)                                     \
+  ref_t t_name##_refs [cap];                                                          \
+  ref_t* t_name##_ref(handle_t handle) {                                              \
+    return &t_name##_refs[handle.idx + 1];                                            \
+  }
+
+STORAGE_DEF(buffer,        kb_buffer,        buffer_data,         KB_CONFIG_MAX_BUFFERS);
+STORAGE_DEF(pipeline,      kb_pipeline,      pipeline_data,       KB_CONFIG_MAX_PROGRAMS);
+STORAGE_DEF(texture,       kb_texture,       texture_data,        KB_CONFIG_MAX_TEXTURES);
+STORAGE_DEF(renderpass,    kb_renderpass,    renderpass_data,     KB_CONFIG_MAX_RENDERPASSES);
 
 
 // ############################################################################
@@ -91,6 +92,7 @@ id<CAMetalDrawable>       graphics_current_drawable;
 id<MTLTexture>            graphics_depth_texture;
 id<MTLCommandBuffer>      graphics_current_command_buffer;
 CGFloat                   graphics_contents_scale;
+
 transient_buffer          graphics_transient_buffers[KB_CONFIG_MAX_FRAMES_IN_FLIGHT];
 dispatch_semaphore_t      graphics_in_flight_semaphore;
 uint32_t                  graphics_current_resource_slot = 0;
@@ -143,7 +145,7 @@ KB_API void kb_platform_audio_sound_destruct(kb_sound handle) {
 
 KB_API kb_sound_inst kb_platform_audio_sound_play(kb_sound handle) {
   KB_ASSERT_VALID(handle);
-  return { 0 };
+  return (kb_sound_inst) { 0 };
 }
 
 KB_API void kb_platform_audio_sound_stop(kb_sound_inst handle) {
@@ -173,19 +175,19 @@ static void gamepad_add(int32_t i) {
   SDL_JoystickID id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(input_gamepad_ptrs[slot]));
   kb_table_insert(&input_gamepad_table, id, slot);
 
-  kb_log_debug("Gamepad added ({}) ({})", slot, id);
+//  kb_log_debug("Gamepad added ({}) ({})", slot, id);
 }
 
 static void gamepad_remove(int32_t i) {
   uint32_t slot = kb_table_get(&input_gamepad_table, i);
 
-  if (slot != UINT32_MAX && input_gamepad_ptrs[slot] != nullptr) {
-    SDL_GameControllerClose(input_gamepad_ptrs[slot]);    
-    input_gamepad_ptrs[slot] = nullptr;
+  if (slot != UINT32_MAX && input_gamepad_ptrs[slot] != NULL) {
+    SDL_GameControllerClose(input_gamepad_ptrs[slot]);
+    input_gamepad_ptrs[slot] = NULL;
     kb_freelist_return(&input_gamepad_freelist, slot);
     kb_table_remove(&input_gamepad_table, i);
     
-    kb_log_debug("Gamepad removed ({}) ({})", slot, i);
+//    kb_log_debug("Gamepad removed ({}) ({})", slot, i);
   }
 }
 
@@ -229,13 +231,13 @@ static int input_event_watch(void* userdata, SDL_Event* event) {
   
   if (event->type == SDL_JOYDEVICEADDED) {
     if (SDL_IsGameController(event->jdevice.which)) {
-      kb_log_debug("Add joy {}", event->jdevice.which);
+//      kb_log_debug("Add joy {}", event->jdevice.which);
       gamepad_add(event->jdevice.which);
     }
   }
 
   if (event->type == SDL_JOYDEVICEREMOVED) {
-    kb_log_debug("Remove joy {}", event->jdevice.which);
+//    kb_log_debug("Remove joy {}", event->jdevice.which);
     gamepad_remove(event->jdevice.which);
   }
 
@@ -246,10 +248,10 @@ KB_API void kb_platform_input_init(const kb_input_init_info info) {
   kb_freelist_create  (&input_gamepad_freelist, KB_CONFIG_MAX_GAMEPADS);
   kb_table_create     (&input_gamepad_table,    KB_CONFIG_MAX_GAMEPADS);
 
-  SDL_AddEventWatch(input_event_watch, nullptr);
+  SDL_AddEventWatch(input_event_watch, NULL);
   
   if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER)) {
-    kb_log_error("Failed to init input gamecontrollers: {}", SDL_GetError());
+//    kb_log_error("Failed to init input gamecontrollers: {}", SDL_GetError());
   }
 }
 
@@ -261,8 +263,8 @@ KB_API void kb_platform_input_deinit() {
 
 }
 
-KB_API const char* kb_input_gamepad_name(uint32_t gamepad) {
-  if (!kb_input_gamepad_connected(gamepad)) return nullptr;
+KB_API const char* kb_platform_input_gamepad_name(uint32_t gamepad) {
+  if (!kb_input_gamepad_connected(gamepad)) return NULL;
   return SDL_GameControllerName(input_gamepad_ptrs[gamepad]);
 }
 
@@ -359,14 +361,14 @@ KB_INTERNAL uint32_t cv_index_size(kb_index_type index_type) {
   }
 }
 
-KB_INTERNAL MTLVertexFormat cv_vertex_attribute[][5] {
+KB_INTERNAL MTLVertexFormat cv_vertex_attribute[3][5] = {
   { MTLVertexFormatInvalid, MTLVertexFormatFloat,   MTLVertexFormatFloat2,    MTLVertexFormatFloat3,  MTLVertexFormatFloat4 },
   { MTLVertexFormatInvalid, MTLVertexFormatInt,     MTLVertexFormatInt2,      MTLVertexFormatInt3,    MTLVertexFormatInt4   },
   { MTLVertexFormatInvalid, MTLVertexFormatUInt,    MTLVertexFormatUInt2,     MTLVertexFormatUInt3,   MTLVertexFormatUInt4  },
 };
 
-KB_INTERNAL transient_buffer& get_current_transient_buffer() {
-  return graphics_transient_buffers[graphics_current_resource_slot];
+KB_INTERNAL transient_buffer* get_current_transient_buffer() {
+  return &graphics_transient_buffers[graphics_current_resource_slot];
 }
 
 KB_INTERNAL bool acquire_frame_resources() {
@@ -375,7 +377,7 @@ KB_INTERNAL bool acquire_frame_resources() {
   graphics_current_resource_slot = (graphics_current_resource_slot + 1) % KB_CONFIG_MAX_FRAMES_IN_FLIGHT;
 
   // Reset transient buffer
-  get_current_transient_buffer().memory_position = 0;
+  get_current_transient_buffer()->memory_position = 0;
 
   return true;
 }
@@ -389,8 +391,8 @@ KB_INTERNAL kb_shader_binding_type get_binding_type(MTLArgumentType type) {
 }
 
 KB_INTERNAL id<MTLBuffer> create_buffer(MTLResourceOptions options, uint64_t size) {
-  id<MTLBuffer> buffer = [graphics_device 
-    newBufferWithLength   : size 
+  id<MTLBuffer> buffer = [graphics_device
+    newBufferWithLength   : size
     options               : options
   ];
   
@@ -399,13 +401,13 @@ KB_INTERNAL id<MTLBuffer> create_buffer(MTLResourceOptions options, uint64_t siz
 
 KB_INTERNAL void fill_buffer_from_rwops(id<MTLBuffer> target_buffer, kb_rwops* rwops, uint64_t size) {
   uint64_t rwops_size = kb_rwops_size(rwops);
-  uint64_t data_size = min(rwops_size, size);
+  uint64_t data_size = KB_MIN(rwops_size, size);
   void* data = KB_DEFAULT_ALLOC(data_size);
   kb_rwops_read(rwops, data, data_size);
 
   // Staging
-  id<MTLBuffer> staging_buffer = [graphics_device 
-    newBufferWithBytes  : data 
+  id<MTLBuffer> staging_buffer = [graphics_device
+    newBufferWithBytes  : data
     length              : data_size
     options             : MTLResourceStorageModeShared
   ];
@@ -413,18 +415,18 @@ KB_INTERNAL void fill_buffer_from_rwops(id<MTLBuffer> target_buffer, kb_rwops* r
   id <MTLCommandBuffer> cb = [graphics_command_queue commandBuffer];
 
   id <MTLBlitCommandEncoder> encoder = [cb blitCommandEncoder];
-  
+
   [encoder copyFromBuffer : staging_buffer
     sourceOffset      : 0
     toBuffer          : target_buffer
-    destinationOffset : 0 
+    destinationOffset : 0
     size              : data_size
   ];
 
   [encoder endEncoding];
 
   [cb addCompletedHandler:^(id<MTLCommandBuffer> cb) {
-    [staging_buffer release];
+    // [staging_buffer release];
   }];
 
   [cb commit];
@@ -434,7 +436,7 @@ KB_INTERNAL void fill_buffer_from_rwops(id<MTLBuffer> target_buffer, kb_rwops* r
 KB_API void kb_platform_graphics_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
   NSError* err = NULL;
 
-  struct pipeline_ref& pipeline = pipeline_ref(handle);
+  pipeline_data* pipeline = pipeline_ref(handle);
 
   id<MTLLibrary>  vert_lib  = nil;
   id<MTLLibrary>  frag_lib  = nil;
@@ -448,14 +450,14 @@ KB_API void kb_platform_graphics_pipeline_construct(kb_pipeline handle, const kb
       vert_code = (char*) KB_DEFAULT_ALLOC(vert_code_size + 1);
       kb_rwops_read(info.vert_shader.rwops, vert_code, vert_code_size);
       vert_code[vert_code_size] = '\0';
-    
+
       vert_lib = [graphics_device
         newLibraryWithSource  : [NSString stringWithUTF8String: vert_code]
         options               : nil
         error                 : &err
       ];
     } else {
-      kb_log_error("Failed to load vertex shader");
+//      kb_log_error("Failed to load vertex shader");
     }
   }
 
@@ -466,26 +468,26 @@ KB_API void kb_platform_graphics_pipeline_construct(kb_pipeline handle, const kb
       frag_code = (char*) KB_DEFAULT_ALLOC(frag_code_size + 1);
       kb_rwops_read(info.frag_shader.rwops, frag_code, frag_code_size);
       frag_code[frag_code_size] = '\0';
-      
+
       frag_lib = [graphics_device
         newLibraryWithSource  : [NSString stringWithUTF8String: frag_code]
         options               : nil
         error                 : &err
       ];
     } else {
-      kb_log_error("Failed to load fragment shader");
+//      kb_log_error("Failed to load fragment shader");
     }
   }
-  
+
   if (vert_lib == nil) {
-    kb_log_error("Failed to create pipeline. (Compile)");
+//    kb_log_error("Failed to create pipeline. (Compile)");
     return;
   }
 
   MTLFunctionConstantValues* constant_values = [MTLFunctionConstantValues new];
 
   if (vert_lib != nil) {
-    vert_func = [vert_lib 
+    vert_func = [vert_lib
       newFunctionWithName : [NSString stringWithUTF8String:info.vert_shader.entry]
       constantValues : constant_values
       error : &err
@@ -493,7 +495,7 @@ KB_API void kb_platform_graphics_pipeline_construct(kb_pipeline handle, const kb
   }
 
   if (frag_lib != nil) {
-    frag_func = [frag_lib 
+    frag_func = [frag_lib
       newFunctionWithName : [NSString stringWithUTF8String:info.frag_shader.entry]
       constantValues : constant_values
       error : &err
@@ -506,25 +508,25 @@ KB_API void kb_platform_graphics_pipeline_construct(kb_pipeline handle, const kb
   uint32_t strides[KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS] = { 0 };
 
   for (uint32_t i = 0; i < KB_CONFIG_MAX_VERTEX_ATTRIBS; i++) {
-    const kb_vertex_attrib_info& attrib = info.vertex_layout.attribs[i];
-    
-    if (attrib.format == KB_VERTEX_FORMAT_UNKNOWN) break;
-    
-    vertex_description.attributes[i].bufferIndex  = attrib.buffer;
-    vertex_description.attributes[i].offset       = attrib.offset;
-    vertex_description.attributes[i].format       = cv_vertex_attrib_format_mtl(attrib.format);
-    strides[attrib.buffer] += cv_vertex_attrib_format_size(attrib.format);
+    const kb_vertex_attrib_info* attrib = &info.vertex_layout.attribs[i];
+
+    if (attrib->format == KB_VERTEX_FORMAT_UNKNOWN) break;
+
+    vertex_description.attributes[i].bufferIndex  = attrib->buffer;
+    vertex_description.attributes[i].offset       = attrib->offset;
+    vertex_description.attributes[i].format       = cv_vertex_attrib_format_mtl(attrib->format);
+    strides[attrib->buffer] += cv_vertex_attrib_format_size(attrib->format);
   }
 
   // Vertex buffers
   for (uint32_t i = 0; i < KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS; i++) {
-    const kb_vertex_buffer_info& buffer = info.vertex_layout.buffers[i];
-    
-    if (buffer.step_func == KB_STEP_FUNC_UNKNOWN) break;
-    
-    vertex_description.layouts[i].stride        = buffer.stride == 0 ? strides[i] : buffer.stride;
-    vertex_description.layouts[i].stepRate      = buffer.step_rate;
-    vertex_description.layouts[i].stepFunction  = cv_step_function_mtl(buffer.step_func);
+    const kb_vertex_buffer_info* buffer = &info.vertex_layout.buffers[i];
+
+    if (buffer->step_func == KB_STEP_FUNC_UNKNOWN) break;
+
+    vertex_description.layouts[i].stride        = buffer->stride == 0 ? strides[i] : buffer->stride;
+    vertex_description.layouts[i].stepRate      = buffer->step_rate;
+    vertex_description.layouts[i].stepFunction  = cv_step_function_mtl(buffer->step_func);
   }
 
   MTLRenderPipelineDescriptor* pipeline_description = [[MTLRenderPipelineDescriptor alloc] init];
@@ -546,42 +548,42 @@ KB_API void kb_platform_graphics_pipeline_construct(kb_pipeline handle, const kb
   pipeline_description.colorAttachments[0].sourceAlphaBlendFactor       = MTLBlendFactorSourceAlpha;
   pipeline_description.colorAttachments[0].sourceRGBBlendFactor         = MTLBlendFactorSourceAlpha;
 
-  pipeline.pipeline_state = [graphics_device newRenderPipelineStateWithDescriptor:pipeline_description error: &err];
+  pipeline->pipeline_state = [graphics_device newRenderPipelineStateWithDescriptor:pipeline_description error: &err];
 
   MTLDepthStencilDescriptor* depth_descriptor = [[MTLDepthStencilDescriptor alloc] init];
   depth_descriptor.depthWriteEnabled    = YES;
   depth_descriptor.depthCompareFunction = MTLCompareFunctionLess;
-  
+
   depth_descriptor.backFaceStencil.depthFailureOperation = MTLStencilOperationKeep;
   depth_descriptor.frontFaceStencil.depthFailureOperation = MTLStencilOperationKeep;
-    
-  pipeline.depth_stencil_state = [graphics_device newDepthStencilStateWithDescriptor : depth_descriptor];
-  
-  [depth_descriptor release];
+
+  pipeline->depth_stencil_state = [graphics_device newDepthStencilStateWithDescriptor : depth_descriptor];
+
+  // [depth_descriptor release];
 
   if (err) {
-    kb_log_warn("Pipeline creation error: {}", [err.localizedDescription UTF8String]);
+//    kb_log_warn("Pipeline creation error: {}", [err.localizedDescription UTF8String]);
   }
 
-  pipeline.primitive_type = cv_topology_mtl(info.topology);
-  pipeline.winding        = cv_winding_mtl(info.rasterizer.winding);
-  pipeline.cull_mode      = cv_cull_mode_mtl(info.rasterizer.cull_mode);
+  pipeline->primitive_type = cv_topology_mtl(info.topology);
+  pipeline->winding        = cv_winding_mtl(info.rasterizer.winding);
+  pipeline->cull_mode      = cv_cull_mode_mtl(info.rasterizer.cull_mode);
 
-  [vertex_description release];
-  [pipeline_description release];
+//   [vertex_description release];
+//   [pipeline_description release];
 }
 
 KB_API void kb_platform_graphics_pipeline_destruct(kb_pipeline handle) {
   // TODO:
 }
 
-KB_INTERNAL MTLSamplerMinMagFilter cv_filter[] {
+KB_INTERNAL MTLSamplerMinMagFilter cv_filter[2] = {
   MTLSamplerMinMagFilterNearest,
   MTLSamplerMinMagFilterLinear,
 };
 
 KB_API void kb_platform_graphics_texture_construct(kb_texture handle, const kb_texture_create_info info) {
-  int mip_levels = info.mipmaps ? floor(kb_log2(max(info.texture.width, info.texture.height))) + 1 : 1;
+  int mip_levels = info.mipmaps ? floor(log2_integer(KB_MAX(info.texture.width, info.texture.height))) + 1 : 1;
 
   MTLSamplerDescriptor* sampler_descriptor = [[MTLSamplerDescriptor alloc] init];
   sampler_descriptor.rAddressMode     = MTLSamplerAddressModeRepeat;
@@ -596,7 +598,7 @@ KB_API void kb_platform_graphics_texture_construct(kb_texture handle, const kb_t
   sampler_descriptor.lodMinClamp      = 0.0f;
   sampler_descriptor.compareFunction  = MTLCompareFunctionAlways;
 
-  texture_ref(handle).sampler = [graphics_device newSamplerStateWithDescriptor:sampler_descriptor];
+  texture_ref(handle)->sampler = [graphics_device newSamplerStateWithDescriptor:sampler_descriptor];
 
   MTLTextureDescriptor* texture_descriptor = [[MTLTextureDescriptor alloc] init];
   texture_descriptor.pixelFormat      = cv_format_mtl(info.texture.format);
@@ -611,18 +613,18 @@ KB_API void kb_platform_graphics_texture_construct(kb_texture handle, const kb_t
 
   }
 
-  texture_ref(handle).texture = [graphics_device newTextureWithDescriptor:texture_descriptor];
-  
+  texture_ref(handle)->texture = [graphics_device newTextureWithDescriptor:texture_descriptor];
+
   if (!info.texture.render_target && info.rwops != NULL) {
-    uint32_t src_size = kb_rwops_size(info.rwops);
+    uint64_t src_size = kb_rwops_size(info.rwops);
     void* src_data = (char*) KB_DEFAULT_ALLOC(src_size);
     kb_rwops_read(info.rwops, src_data, src_size);
 
     MTLRegion region = MTLRegionMake2D(0, 0, info.texture.width, info.texture.height);
 
-    [texture_ref(handle).texture replaceRegion : region 
-      mipmapLevel : 0 
-      withBytes   : src_data 
+    [texture_ref(handle)->texture replaceRegion : region
+      mipmapLevel : 0
+      withBytes   : src_data
       bytesPerRow : 4 * info.texture.width
     ];
 
@@ -631,7 +633,7 @@ KB_API void kb_platform_graphics_texture_construct(kb_texture handle, const kb_t
 
       id<MTLBlitCommandEncoder> encoder = [command_buffer blitCommandEncoder];
 
-      [encoder generateMipmapsForTexture: texture_ref(handle).texture];
+      [encoder generateMipmapsForTexture: texture_ref(handle)->texture];
       [encoder endEncoding];
 
       [command_buffer commit];
@@ -642,11 +644,11 @@ KB_API void kb_platform_graphics_texture_construct(kb_texture handle, const kb_t
     KB_DEFAULT_FREE(src_data);
   }
 
-  [sampler_descriptor release];
-  [texture_descriptor release];
+  // [sampler_descriptor release];
+  // [texture_descriptor release];
 }
 
-KB_API uint32_t kb_graphics_get_current_resource_slot() { 
+KB_API uint32_t kb_graphics_get_current_resource_slot() {
   return 0;
 }
 
@@ -654,29 +656,32 @@ KB_API void kb_platform_graphics_texture_destruct(kb_texture handle) {
 
 }
 
+#define KB_VALID(handle) kb_is_valid_idx(handle.idx)
+
 KB_API void kb_platform_graphics_renderpass_construct(kb_renderpass handle, const kb_renderpass_create_info info) {
-  renderpass_ref(handle).desc = [MTLRenderPassDescriptor renderPassDescriptor];
-  
+  renderpass_ref(handle)->desc = [MTLRenderPassDescriptor renderPassDescriptor];
+
   for (uint32_t i = 0; i < KB_CONFIG_MAX_RENDERPASS_ATTACHMENTS; ++i) {
-    if (!kb_is_valid(info.color_attachments[i])) continue;
-    MTLRenderPassColorAttachmentDescriptor *color_attachment = renderpass_ref(handle).desc.colorAttachments[i];
-    color_attachment.texture      = texture_ref(info.color_attachments[i]).texture;
+    if (!KB_VALID(info.color_attachments[i])) continue;
+    
+    MTLRenderPassColorAttachmentDescriptor *color_attachment = renderpass_ref(handle)->desc.colorAttachments[i];
+    color_attachment.texture      = texture_ref(info.color_attachments[i])->texture;
     color_attachment.clearColor   = MTLClearColorMake(0.0f, 0.0f, 0.0f, 1.0f);
     color_attachment.loadAction   = MTLLoadActionClear;
     color_attachment.storeAction  = MTLStoreActionStore;
   }
 
-  if (kb_is_valid(info.depth_attachment)) {
-    MTLRenderPassDepthAttachmentDescriptor* depth_attachment = renderpass_ref(handle).desc.depthAttachment;
-    depth_attachment.texture      = texture_ref(info.depth_attachment).texture;
+  if (KB_VALID(info.depth_attachment)) {
+    MTLRenderPassDepthAttachmentDescriptor* depth_attachment = renderpass_ref(handle)->desc.depthAttachment;
+    depth_attachment.texture      = texture_ref(info.depth_attachment)->texture;
     depth_attachment.clearDepth   = 1.0;
     depth_attachment.loadAction   = MTLLoadActionClear;
     depth_attachment.storeAction  = MTLStoreActionDontCare;
   }
 
-  if (kb_is_valid(info.stencil_attachment)) {  
-    MTLRenderPassStencilAttachmentDescriptor* stencil_attachment = renderpass_ref(handle).desc.stencilAttachment;
-    stencil_attachment.texture     = texture_ref(info.stencil_attachment).texture;
+  if (KB_VALID(info.stencil_attachment)) {
+    MTLRenderPassStencilAttachmentDescriptor* stencil_attachment = renderpass_ref(handle)->desc.stencilAttachment;
+    stencil_attachment.texture     = texture_ref(info.stencil_attachment)->texture;
     stencil_attachment.loadAction  = MTLLoadActionDontCare;
     stencil_attachment.storeAction = MTLStoreActionDontCare;
   }
@@ -690,32 +695,32 @@ KB_API void kb_platform_graphics_buffer_construct(kb_buffer handle, const kb_buf
   KB_ASSERT_VALID(handle);
   KB_ASSERT(info.size > 0, "Buffer size must be greater than zero");
 
-  buffer_ref(handle).buffer = create_buffer(MTLResourceStorageModePrivate, info.size);
-  
+  buffer_ref(handle)->buffer = create_buffer(MTLResourceStorageModePrivate, info.size);
+
   if (info.rwops) {
-    fill_buffer_from_rwops(buffer_ref(handle).buffer, info.rwops, info.size);
-  }  
+    fill_buffer_from_rwops(buffer_ref(handle)->buffer, info.rwops, info.size);
+  }
 }
 
-KB_API void kb_platform_graphics_buffer_destruct(kb_buffer handle) { 
-  [buffer_ref(handle).buffer release];
+KB_API void kb_platform_graphics_buffer_destruct(kb_buffer handle) {
+  // [buffer_ref(handle).buffer release];
 }
 
 KB_API void* kb_platform_graphics_transient_alloc(uint64_t size, uint64_t align) {
-  transient_buffer& buffer = get_current_transient_buffer();
-  uint64_t p = align_up(buffer.memory_position, align);
-  buffer.memory_position = p + size;
-  return ((uint8_t*) buffer.buffer.contents) + p;
+  transient_buffer* buffer = get_current_transient_buffer();
+  uint64_t p = align_up(buffer->memory_position, align);
+  buffer->memory_position = p + size;
+  return ((uint8_t*) buffer->buffer.contents) + p;
 }
 
 KB_API void* kb_platform_graphics_transient_at(uint64_t offset) {
-  transient_buffer& buffer = get_current_transient_buffer();
-  if (offset > buffer.memory_position) return NULL;
-  return ((uint8_t*) buffer.buffer.contents) + offset;
+  transient_buffer* buffer = get_current_transient_buffer();
+  if (offset > buffer->memory_position) return NULL;
+  return ((uint8_t*) buffer->buffer.contents) + offset;
 }
 
 KB_API uint64_t kb_platform_graphics_transient_offset(void* ptr) {
-  uint8_t* zero = (uint8_t*) get_current_transient_buffer().buffer.contents;
+  uint8_t* zero = (uint8_t*) get_current_transient_buffer()->buffer.contents;
   return ((uint8_t*) ptr) - zero;
 }
 
@@ -729,7 +734,7 @@ KB_INTERNAL void create_depth_resources(Int2 size) {
 
   graphics_depth_texture = [graphics_device newTextureWithDescriptor : depth_texture_descriptor];
 
-  [depth_texture_descriptor release];
+  // [depth_texture_descriptor release];
 }
 
 KB_API Int2 kb_platform_graphics_surface_get_size() {
@@ -746,17 +751,18 @@ KB_API void kb_platform_graphics_init(const kb_graphics_init_info info) {
   );
 
   SDL_ShowCursor(!info.hide_cursor);
-
+    
   graphics_device = MTLCreateSystemDefaultDevice();
   graphics_library = [graphics_device newDefaultLibrary];
   graphics_command_queue = [graphics_device newCommandQueue];
-
+    
   SDL_SysWMinfo wmi;
   
   SDL_VERSION(&wmi.version);
 
   if (!SDL_GetWindowWMInfo(window_ptr, &wmi)) {
-    kb_log_error("Couldn't get syswminfo");
+    NSLog(@"Couldn't get syswminfo");
+    return;
   }
 
   NSWindow* window = wmi.info.cocoa.window;
@@ -781,7 +787,10 @@ KB_API void kb_platform_graphics_init(const kb_graphics_init_info info) {
 
   graphics_content_view.layer = graphics_metal_layer;
 
-  graphics_current_extent = {(int32_t)(layer_size.width * graphics_contents_scale), (int32_t)(layer_size.height * graphics_contents_scale)};
+  graphics_current_extent = (Int2) {
+    (int32_t) (layer_size.width * graphics_contents_scale),
+    (int32_t) (layer_size.height * graphics_contents_scale)
+  };
 
   create_depth_resources(graphics_current_extent);
 
@@ -803,27 +812,27 @@ KB_API void kb_platform_graphics_deinit() {
   SDL_DestroyWindow(window_ptr);
 }
 
-// KB_API Int2 kb_graphics_get_extent() {    
-//   return { (Int32) (graphics_metal_layer.drawableSize.width), (Int32) (graphics_metal_layer.drawableSize.   height) };
-// }
-
 KB_API void kb_platform_graphics_frame() {
   Int2 new_extent = {
-    (int32_t) (graphics_content_view.layer.frame.size.width * graphics_contents_scale), 
+    (int32_t) (graphics_content_view.layer.frame.size.width * graphics_contents_scale),
     (int32_t) (graphics_content_view.layer.frame.size.height * graphics_contents_scale)
   };
 
   if (new_extent.x != graphics_current_extent.x || new_extent.y != graphics_current_extent.y) {
     graphics_current_extent = new_extent;
     create_depth_resources(graphics_current_extent);
-    graphics_metal_layer.drawableSize = {graphics_content_view.layer.frame.size.width * graphics_contents_scale, graphics_content_view.layer.frame.size.height * graphics_contents_scale};
+    
+    graphics_metal_layer.drawableSize = (CGSize) {
+      graphics_content_view.layer.frame.size.width * graphics_contents_scale,
+      graphics_content_view.layer.frame.size.height * graphics_contents_scale
+    };
   }
 
   @autoreleasepool {
     graphics_current_drawable = graphics_metal_layer.nextDrawable;
 
-    graphics_current_command_buffer = [graphics_command_queue commandBuffer];  
-    
+    graphics_current_command_buffer = [graphics_command_queue commandBuffer];
+
     { // Run encoders
       kb_graphics_run_encoders();
     }
@@ -839,13 +848,14 @@ KB_API void kb_platform_graphics_frame() {
 
       [graphics_current_command_buffer commit];
     }
-    
+
     acquire_frame_resources();
   }
 }
 
 KB_API uint64_t kb_platform_graphics_transient_used() {
-  return get_current_transient_buffer().memory_position;
+  return 0;
+  return get_current_transient_buffer()->memory_position;
 }
 
 KB_API uint64_t kb_platform_graphics_transient_capacity() {
@@ -853,13 +863,13 @@ KB_API uint64_t kb_platform_graphics_transient_capacity() {
 }
 
 KB_API void* kb_platform_graphics_buffer_mapped(kb_buffer buffer) {
-  return buffer_ref(buffer).buffer.contents;
+  return buffer_ref(buffer)->buffer.contents;
 }
 
 KB_API void kb_platform_graphics_submit_calls(kb_renderpass pass, kb_graphics_call* calls, uint32_t call_count) {
   MTLRenderPassDescriptor* render_pass_desc;
-
-  if (!kb_is_valid(pass)) { // Default
+  
+  if (!KB_VALID(pass)) { // Default
     render_pass_desc = [MTLRenderPassDescriptor renderPassDescriptor];
 
     MTLRenderPassColorAttachmentDescriptor *color_attachment = render_pass_desc.colorAttachments[0];
@@ -879,81 +889,83 @@ KB_API void kb_platform_graphics_submit_calls(kb_renderpass pass, kb_graphics_ca
     stencil_attachment.loadAction  = MTLLoadActionDontCare;
     stencil_attachment.storeAction = MTLStoreActionDontCare;
   } else {
-    render_pass_desc = renderpass_ref(pass).desc;
+    render_pass_desc = renderpass_ref(pass)->desc;
   }
 
   id<MTLRenderCommandEncoder> render_encoder = [graphics_current_command_buffer renderCommandEncoderWithDescriptor : render_pass_desc];
-  
-  for (uint32_t call_i = 0; call_i < call_count; ++call_i) {
-    const kb_graphics_call& call = calls[call_i];
-    KB_ASSERT_VALID(call.pipeline);
 
-    struct pipeline_ref& pipeline = pipeline_ref(call.pipeline);
-  
-    [render_encoder setRenderPipelineState  : pipeline.pipeline_state];
-    [render_encoder setCullMode             : pipeline.cull_mode];    
-    [render_encoder setFrontFacingWinding   : pipeline.winding];
-    [render_encoder setDepthStencilState    : pipeline.depth_stencil_state];
-    
+  for (uint32_t call_i = 0; call_i < call_count; ++call_i) {
+    const kb_graphics_call* call = &calls[call_i];
+    KB_ASSERT_VALID(call->pipeline);
+
+    pipeline_data* pipeline = pipeline_ref(call->pipeline);
+
+    [render_encoder setRenderPipelineState  : pipeline->pipeline_state];
+    [render_encoder setCullMode             : pipeline->cull_mode];
+    [render_encoder setFrontFacingWinding   : pipeline->winding];
+    [render_encoder setDepthStencilState    : pipeline->depth_stencil_state];
+
     // Bindings
     for (uint32_t bind_i = 0; bind_i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++bind_i) {
       { // Vertex uniform
-        const kb_uniform_binding& uniform_bind = call.vert_uniform_bindings[bind_i];
-        if (uniform_bind.size > 0) {
-          [render_encoder setVertexBuffer : get_current_transient_buffer().buffer
-            offset  : uniform_bind.offset
-            atIndex : uniform_bind.index
+        
+        if (call->vert_uniform_bindings[bind_i].size > 0) {
+          [render_encoder setVertexBuffer : get_current_transient_buffer()->buffer
+            offset  : call->vert_uniform_bindings[bind_i].offset
+            atIndex : call->vert_uniform_bindings[bind_i].index
           ];
-        }  
+        }
       }
-      
+
       { // Fragment uniform
-        const kb_uniform_binding& uniform_bind = call.frag_uniform_bindings[bind_i];
-        if (uniform_bind.size > 0) {
-          [render_encoder setFragmentBuffer : get_current_transient_buffer().buffer
-            offset  : uniform_bind.offset
-            atIndex : uniform_bind.index
+        
+        if (call->frag_uniform_bindings[bind_i].size > 0) {
+          [render_encoder setFragmentBuffer : get_current_transient_buffer()->buffer
+            offset  : call->frag_uniform_bindings[bind_i].offset
+            atIndex : call->frag_uniform_bindings[bind_i].index
           ];
-        }  
+        }
       }
 
       { // Vertex texture
-        const kb_texture_binding& texture_bind = call.vert_texture_bindings[bind_i];
-        if (kb_is_valid(texture_bind.texture)) {
-          [render_encoder setVertexTexture : texture_ref(texture_bind.texture).texture 
-            atIndex : texture_bind.index
+        const kb_texture_binding* texture_bind = &call->vert_texture_bindings[bind_i];
+        
+        if (KB_VALID(texture_bind->texture)) {
+          [render_encoder setVertexTexture : texture_ref(texture_bind->texture)->texture
+            atIndex : texture_bind->index
           ];
-          [render_encoder setVertexSamplerState : texture_ref(texture_bind.texture).sampler
-            atIndex : texture_bind.index
+          [render_encoder setVertexSamplerState : texture_ref(texture_bind->texture)->sampler
+            atIndex : texture_bind->index
           ];
-        }  
+        }
       }
 
       { // Fragment texture
-        const kb_texture_binding& texture_bind = call.frag_texture_bindings[bind_i];
-        if (kb_is_valid(texture_bind.texture)) {
-          [render_encoder setFragmentTexture : texture_ref(texture_bind.texture).texture 
-            atIndex : texture_bind.index
+        const kb_texture_binding* texture_bind = &call->frag_texture_bindings[bind_i];
+        
+        if (KB_VALID(texture_bind->texture)) {
+          [render_encoder setFragmentTexture : texture_ref(texture_bind->texture)->texture
+            atIndex : texture_bind->index
           ];
-          [render_encoder setFragmentSamplerState : texture_ref(texture_bind.texture).sampler
-            atIndex : texture_bind.index
+          [render_encoder setFragmentSamplerState : texture_ref(texture_bind->texture)->sampler
+            atIndex : texture_bind->index
           ];
         }
       }
     }
-    
+
     { // Vertex buffers
       for (uint32_t bind_i = 0; bind_i < KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS; ++bind_i) {
-        const kb_vertex_buffer_binding& binding = call.vertex_buffer_bindings[bind_i];
-        if (binding.is_set) {
-          id<MTLBuffer> vb = kb_is_valid(binding.buffer) ?
-            buffer_ref(binding.buffer).buffer : 
-            get_current_transient_buffer().buffer;
+        const kb_vertex_buffer_binding* binding = &call->vertex_buffer_bindings[bind_i];
+        if (binding->is_set) {
+          id<MTLBuffer> vb = KB_VALID(binding->buffer) ?
+            buffer_ref(binding->buffer)->buffer :
+            get_current_transient_buffer()->buffer;
 
-          uint64_t vb_offset = binding.offset;
+          uint64_t vb_offset = binding->offset;
 
-          [render_encoder setVertexBuffer : vb 
-            offset  : vb_offset 
+          [render_encoder setVertexBuffer : vb
+            offset  : vb_offset
             atIndex : bind_i
           ];
         }
@@ -961,21 +973,21 @@ KB_API void kb_platform_graphics_submit_calls(kb_renderpass pass, kb_graphics_ca
     }
 
     { // Call
-      id<MTLBuffer> ib = kb_is_valid(call.index_buffer.buffer) ?
-        buffer_ref(call.index_buffer.buffer).buffer : 
-        get_current_transient_buffer().buffer;
+      id<MTLBuffer> ib = KB_VALID(call->index_buffer.buffer) ?
+        buffer_ref(call->index_buffer.buffer)->buffer :
+        get_current_transient_buffer()->buffer;
 
-      uint64_t ib_offset    = call.index_buffer.offset;
-      uint64_t index_size   = cv_index_size(call.index_buffer.index_type);
-      uint64_t full_offset  = ib_offset + (call.info.first_index * index_size);
+      uint64_t ib_offset    = call->index_buffer.offset;
+      uint64_t index_size   = cv_index_size(call->index_buffer.index_type);
+      uint64_t full_offset  = ib_offset + (call->info.first_index * index_size);
 
-      [render_encoder drawIndexedPrimitives : pipeline.primitive_type
-        indexCount        : call.info.index_count
-        indexType         : cv_index_type_mtl(call.index_buffer.index_type)
+      [render_encoder drawIndexedPrimitives : pipeline->primitive_type
+        indexCount        : call->info.index_count
+        indexType         : cv_index_type_mtl(call->index_buffer.index_type)
         indexBuffer       : ib
         indexBufferOffset : full_offset
-        instanceCount     : call.info.instance_count
-        baseVertex        : call.info.first_vertex
+        instanceCount     : call->info.instance_count
+        baseVertex        : call->info.first_vertex
         baseInstance      : 0 // TODO:
       ];
     }
@@ -983,4 +995,78 @@ KB_API void kb_platform_graphics_submit_calls(kb_renderpass pass, kb_graphics_ca
   }
 
   [render_encoder endEncoding];
+}
+
+
+// ############################################################################
+// RWops
+// ############################################################################
+
+
+KB_INTERNAL const char* cv_rwops_mode(kb_file_mode mode) {
+  switch (mode) {
+    case KB_FILE_MODE_READ:   return "rb";
+    case KB_FILE_MODE_WRITE:  return "wb";
+    default:                  return "";
+  }
+}
+
+KB_INTERNAL int cv_rwops_whence(kb_whence whence) {
+  switch (whence) {
+    case KB_RWOPS_SEEK_BEG:  return RW_SEEK_SET;
+    case KB_RWOPS_SEEK_CUR:  return RW_SEEK_CUR;
+    case KB_RWOPS_SEEK_END:  return RW_SEEK_END;
+    default:                 return RW_SEEK_SET;
+  }
+}
+
+KB_INTERNAL int64_t size_impl(kb_rwops* rwops) {
+  return SDL_RWsize((SDL_RWops*) rwops->impl);
+}
+
+KB_INTERNAL int64_t seek_impl(kb_rwops* rwops, int64_t offset, int whence) {
+  return SDL_RWseek((SDL_RWops*) rwops->impl, offset, whence);
+}
+
+KB_INTERNAL uint64_t read_impl(kb_rwops* rwops, void *ptr, uint64_t size) {
+  return SDL_RWread((SDL_RWops*) rwops->impl, ptr, 1, size);
+}
+
+KB_INTERNAL uint64_t write_impl(kb_rwops* rwops, const void* ptr, uint64_t size) {
+  return SDL_RWwrite((SDL_RWops*) rwops->impl, ptr, 1, size);
+}
+
+KB_INTERNAL int64_t tell_impl(kb_rwops* rwops) {
+  return SDL_RWtell((SDL_RWops*) rwops->impl);
+}
+
+KB_INTERNAL int close_impl(kb_rwops* rwops) {
+  int res = SDL_RWclose((SDL_RWops*) rwops->impl);
+  KB_DEFAULT_FREE(rwops);
+  return res;
+}
+
+KB_INTERNAL inline kb_rwops* create_rwops(SDL_RWops* impl) {
+  kb_rwops* rwops = KB_DEFAULT_ALLOC_TYPE(kb_rwops, 1);
+  rwops->size   = size_impl;
+  rwops->seek   = seek_impl;
+  rwops->read   = read_impl;
+  rwops->close  = close_impl;
+  rwops->write  = write_impl;
+  rwops->tell   = tell_impl;
+  rwops->impl   = impl;
+  
+  return rwops;
+}
+
+KB_API kb_rwops* kb_rwops_open_file(const char* path, kb_file_mode mode) {
+  SDL_RWops* impl = SDL_RWFromFile(path, cv_rwops_mode(mode));
+  if (!impl) return NULL;
+  return create_rwops(impl);
+}
+
+KB_API kb_rwops* kb_rwops_open_mem(const void* dst, uint64_t size) {
+  SDL_RWops* impl = SDL_RWFromConstMem(dst, (int) size);
+  if (!impl) return NULL;
+  return create_rwops(impl);
 }

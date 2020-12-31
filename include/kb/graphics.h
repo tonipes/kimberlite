@@ -24,8 +24,6 @@ KB_HANDLE(kb_encoder);
 KB_HANDLE(kb_renderpass);
 KB_HANDLE(kb_texture);
 
-// typedef struct kb_buffer      { kb_handle_idx idx; } kb_buffer;
-
 typedef enum kb_compare_func {
   KB_COMPARE_UNKNOWN              = 0,
   KB_COMPARE_NEVER                = 1,
@@ -269,6 +267,7 @@ typedef struct kb_graphics_init_info {
   bool                      vsync;
   Int2                      resolution;
   bool                      hide_cursor;
+  void*                     backend_ptr;
 } kb_graphics_init_info;
 
 typedef struct kb_primitive_info {
