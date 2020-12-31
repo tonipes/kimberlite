@@ -66,7 +66,7 @@ struct kb_resource_slot_allocator {
   ref_t t_name##_refs [cap];                                                                      \
   inline ref_t& t_name##_ref(handle_t handle) {                                                   \
     return t_name##_refs[kb_to_arr(handle)];                                                      \
-  }           
+  }
 
 #define KB_RESOURCE_ALLOC_FUNC_DEF(t_name, handle_t, create_info_t, cap)                          \
   kb_resource_slot_allocator<handle_t, create_info_t, cap> t_name##_data;                         \

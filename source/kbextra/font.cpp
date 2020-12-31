@@ -405,7 +405,7 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   
   Float2 align_offset = {
     -line_width * fnt.info.pixel_height,
-    -str_dim.height * fnt.info.pixel_height,
+    -str_dim.y * fnt.info.pixel_height,
   };
 
   for (uint32_t i = 0; i < codepoints; ++i) {

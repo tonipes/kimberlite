@@ -721,8 +721,8 @@ KB_API uint64_t kb_platform_graphics_transient_offset(void* ptr) {
 
 KB_INTERNAL void create_depth_resources(Int2 size) {
   MTLTextureDescriptor* depth_texture_descriptor = [[MTLTextureDescriptor alloc] init];
-  depth_texture_descriptor.width            = size.width;
-  depth_texture_descriptor.height           = size.height;
+  depth_texture_descriptor.width            = size.x;
+  depth_texture_descriptor.height           = size.y;
   depth_texture_descriptor.pixelFormat      = MTLPixelFormatDepth32Float_Stencil8;
   depth_texture_descriptor.storageMode      = MTLStorageModePrivate;
   depth_texture_descriptor.usage            = MTLTextureUsageRenderTarget;

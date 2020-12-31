@@ -45,29 +45,9 @@ extern "C" {
 #define MIN(_a, _b) _a < _b ? _a : _b
 #define CLAMP(_t, _min, _max) _t > _max ? _max : (_t < _min ? _min : _t)
 
-#define VECTOR_TYPE_2(name, type)               \
-typedef union {                                 \
-  struct { type x,     y;      };               \
-  struct { type width, height; };               \
-  struct { type u,     v;      };               \
-  type m[2];                                    \
-} name;
-
-#define VECTOR_TYPE_3(name, type)               \
-typedef union {                                 \
-  struct { type x,     y,       z;      };      \
-  struct { type r,     g,       b;      };      \
-  struct { type width, height,  depth;  };      \
-  struct { type u,     v,       w;      };      \
-  type m[3];                                    \
-} name;
-
-#define VECTOR_TYPE_4(name, type)               \
-typedef union {                                 \
-  struct { type x,     y,       z,    w;  };    \
-  struct { type r,     g,       b,    a;  };    \
-  type m[4];                                    \
-} name;
+#define VECTOR_TYPE_2(name, type) typedef struct name { type x, y; } name;
+#define VECTOR_TYPE_3(name, type) typedef struct name { type x, y, z; } name;
+#define VECTOR_TYPE_4(name, type) typedef struct name { type x, y, z, w; } name;
 
 typedef int8_t    Int8;
 typedef int16_t   Int16;
@@ -93,10 +73,6 @@ typedef uint64_t  UInt64;
 #define FLOATMAX   3.402823e+38f
 #define EPSILON    FLT_EPSILON
 
-typedef enum Axis {
-  AxisX, AxisY, AxisZ
-} Axis;
-
 VECTOR_TYPE_2(Int2, Int32)
 VECTOR_TYPE_3(Int3, Int32)
 VECTOR_TYPE_4(Int4, Int32)
@@ -104,10 +80,11 @@ VECTOR_TYPE_4(Int4, Int32)
 VECTOR_TYPE_2(Float2, float)
 VECTOR_TYPE_3(Float3, float)
 VECTOR_TYPE_4(Float4, float)
+VECTOR_TYPE_4(Quaternion, float)
 
-typedef struct Quaternion {
-  float x, y, z, w;
-} Quaternion;
+typedef enum Axis {
+  AxisX, AxisY, AxisZ
+} Axis;
 
 typedef struct Float3x3 {
   union {

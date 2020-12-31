@@ -29,5 +29,7 @@ static inline kb_handle_idx kb_to_arr(T handle) { return handle.idx - 1; }
 #define KB_HANDLE(name_t) typedef struct name_t { kb_handle_idx idx; } name_t
 
 #define KB_ASSERT_VALID(handle) assert(kb_is_valid_idx(handle.idx) && "Invalid handle: '" #handle "'")
+#define KB_IS_VALID(handle) kb_is_valid_idx(handle.idx)
+
 #define KB_HANDLE_FROM_ARRAY(idx) { idx + 1 }
 #define KB_HANDLE_TO_ARRAY(handle) handle.idx - 1
