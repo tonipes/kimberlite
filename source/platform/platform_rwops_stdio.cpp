@@ -105,7 +105,7 @@ KB_API kb_rwops* kb_rwops_open_file(const char* path, kb_file_mode mode) {
 // KB_INTERNAL uint64_t write_impl_mem(kb_rwops* rwops, const void* ptr, uint64_t count) {
 //   if (!rwops) return 0;
 
-//   uint64_t write_count = MIN(rwops->mem_size - rwops->mem_pos, count);
+//   uint64_t write_count = KB_MIN(rwops->mem_size - rwops->mem_pos, count);
   
 //   kb_memcpy(rwops->impl, ptr, write_count);
 

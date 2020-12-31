@@ -37,7 +37,7 @@ void* real_to_aligned(void* ptr, uint32_t header_size, uint32_t align) {
 }
 
 uint64_t total_alloc_size(uint64_t size, uint64_t align) {
-  uint64_t total_align    = MAX(align, sizeof(kb_alloc_header));
+  uint64_t total_align    = KB_MAX(align, sizeof(kb_alloc_header));
   uint64_t total_size     = size + total_align;
   return total_size;
 }

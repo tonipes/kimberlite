@@ -41,9 +41,9 @@ extern "C" {
 #define ELEMWISE_COMB_OP2_T3(func, comb) func(a.x, b.x) comb func(a.y, b.y) comb func(a.z, b.z)
 #define ELEMWISE_COMB_OP2_T4(func, comb) func(a.x, b.x) comb func(a.y, b.y) comb func(a.z, b.z) comb func(a.w, b.w)
 
-#define MAX(_a, _b) _a > _b ? _a : _b
-#define MIN(_a, _b) _a < _b ? _a : _b
-#define CLAMP(_t, _min, _max) _t > _max ? _max : (_t < _min ? _min : _t)
+#define KB_MAX(_a, _b) _a > _b ? _a : _b
+#define KB_MIN(_a, _b) _a < _b ? _a : _b
+#define KB_CLAMP(_t, _min, _max) _t > _max ? _max : (_t < _min ? _min : _t)
 
 #define VECTOR_TYPE_2(name, type) typedef struct name { type x, y; } name;
 #define VECTOR_TYPE_3(name, type) typedef struct name { type x, y, z; } name;

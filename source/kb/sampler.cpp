@@ -38,7 +38,7 @@ KB_API void kb_sampler_destroy(kb_sampler* sampler) {
 KB_API void kb_sampler_push(kb_sampler* sampler, float value) {
   KB_ASSERT_NOT_NULL(sampler);
 
-  sampler->count = MIN(sampler->count + 1, sampler->capacity);
+  sampler->count = KB_MIN(sampler->count + 1, sampler->capacity);
 
   sampler->values[sampler->offset] = value;
   sampler->offset = (sampler->offset + 1) % sampler->capacity;
