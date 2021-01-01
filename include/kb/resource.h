@@ -31,6 +31,12 @@ extern "C" {
   uint32_t kb_##t_name##_count();                                                                   \
   void     kb_##t_name##_purge();                                                                   \
 
+#define KB_RESOURCE_STORAGE_DEF(t_name, handle_t, ref_t, cap)                                     \
+  ref_t t_name##_refs [cap];                                                                      \
+  ref_t* t_name##_ref(handle_t handle) {                                                          \
+    return &t_name##_refs[handle.idx + 1];                                                        \
+  }
+  
 #ifdef __cplusplus
 }
 #endif
@@ -62,11 +68,6 @@ struct kb_resource_slot_allocator {
   kb_table      table;
 };
 
-#define KB_RESOURCE_STORAGE_DEF(t_name, handle_t, ref_t, cap)                                     \
-  ref_t t_name##_refs [cap];                                                                      \
-  inline ref_t& t_name##_ref(handle_t handle) {                                                   \
-    return t_name##_refs[kb_to_arr(handle)];                                                      \
-  }
 
 #define KB_RESOURCE_ALLOC_FUNC_DEF(t_name, handle_t, create_info_t, cap)                          \
   kb_resource_slot_allocator<handle_t, create_info_t, cap> t_name##_data;                         \

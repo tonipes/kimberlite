@@ -330,32 +330,32 @@ KB_RESOURCE_ALLOC_FUNC_DEF    (font, kb_font, kb_font_create_info, KB_CONFIG_MAX
 KB_RESOURCE_DATA_HASHED_DEF   (font, kb_font);
 
 void kb_font_construct(kb_font handle, const kb_font_create_info info) {
-  kb_font_ref& ref = font_ref(handle);
+  // kb_font_ref& ref = font_ref(handle);
 
-  ref.info            = info.info;
-  ref.info.chars      = (kb_font_char*) kb_memdup(info.info.chars, sizeof(kb_font_char) * info.info.char_count);
-  kb_table_copy(&ref.info.char_table, &info.info.char_table);
+  font_ref(handle)->info            = info.info;
+  font_ref(handle)->info.chars      = (kb_font_char*) kb_memdup(info.info.chars, sizeof(kb_font_char) * info.info.char_count);
+  kb_table_copy(&font_ref(handle)->info.char_table, &info.info.char_table);
 
-  ref.atlas_height  = info.atlas_height;
-  ref.atlas_width   = info.atlas_width;
-  ref.atlas         = info.atlas;
-  ref.pipeline      = info.pipeline;
+  font_ref(handle)->atlas_height  = info.atlas_height;
+  font_ref(handle)->atlas_width   = info.atlas_width;
+  font_ref(handle)->atlas         = info.atlas;
+  font_ref(handle)->pipeline      = info.pipeline;
 }
 
 void kb_font_destruct(kb_font handle) { 
-  KB_DEFAULT_FREE(font_ref(handle).info.chars);
-  kb_table_destroy(&font_ref(handle).info.char_table);
-  kb_texture_destruct(font_ref(handle).atlas);
+  KB_DEFAULT_FREE(font_ref(handle)->info.chars);
+  kb_table_destroy(&font_ref(handle)->info.char_table);
+  kb_texture_destruct(font_ref(handle)->atlas);
 }
 
 KB_API void kb_encoder_bind_font(kb_encoder encoder, kb_font font) {
-  kb_encoder_bind_pipeline(encoder, font_ref(font).pipeline);
+  kb_encoder_bind_pipeline(encoder, font_ref(font)->pipeline);
   
   kb_uniform_slot atlas_slot = kb_pipeline_get_uniform_slot(
-    font_ref(font).pipeline, "color_map"_h, KB_SHADER_BINDING_TYPE_TEXTURE, KB_SHADER_STAGE_FRAGMENT
+    font_ref(font)->pipeline, "color_map"_h, KB_SHADER_BINDING_TYPE_TEXTURE, KB_SHADER_STAGE_FRAGMENT
   );
   
-  kb_encoder_bind_texture(encoder, atlas_slot, font_ref(font).atlas);
+  kb_encoder_bind_texture(encoder, atlas_slot, font_ref(font)->atlas);
 }
 
 void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, uint32_t len, Float2 origin, Float2 scale, Float2 align, Float2 offset, uint32_t instance_count) {
@@ -363,7 +363,7 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
 
   if (codepoints == 0) return;
 
-  kb_font_ref& fnt = font_ref(font);
+  kb_font_ref* fnt = font_ref(font);
 
   uint32_t max_vertices = codepoints * 4;
   uint32_t max_indices  = codepoints * 6;
@@ -380,12 +380,12 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   uint32_t indices  = 0;
   uint32_t vertices = 0;
 
-  Float2 scale_factor = scale * (1.0f /  fnt.info.pixel_height);
+  Float2 scale_factor = scale * (1.0f /  fnt->info.pixel_height);
   scale_factor.y *= -1;
 
-  float pos_offset = (float) (fnt.info.ascent) * fnt.info.scale_factor;
+  float pos_offset = (float) (fnt->info.ascent) * fnt->info.scale_factor;
   
-  Float2 str_dim = kb_font_get_string_dimensions(&fnt.info, str, len);
+  Float2 str_dim = kb_font_get_string_dimensions(&fnt->info, str, len);
 
   float origin_x = pos_offset * offset.x;
   float origin_y = pos_offset * offset.y;
@@ -400,14 +400,14 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   
   uint32_t strpos = 0;
   
-  Float2 padding = { fnt.info.padding, fnt.info.padding };
+  Float2 padding = { fnt->info.padding, fnt->info.padding };
 
   float line_width = 0.0f;
-  kb_font_advance_line(&fnt.info, str, len, &line_width);
+  kb_font_advance_line(&fnt->info, str, len, &line_width);
   
   Float2 align_offset = {
-    -line_width * fnt.info.pixel_height,
-    -str_dim.y * fnt.info.pixel_height,
+    -line_width * fnt->info.pixel_height,
+    -str_dim.y * fnt->info.pixel_height,
   };
 
   for (uint32_t i = 0; i < codepoints; ++i) {
@@ -415,18 +415,18 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
     strpos += kb_from_utf8(&codep, &str[strpos], len - strpos);
 
     if (codep == '\n') { // Linebreak
-      kb_font_break_line(&fnt.info, &current_pos.y);
-      kb_font_advance_line(&fnt.info, &str[strpos], len - strpos, &line_width);
-      align_offset.x = -line_width * fnt.info.pixel_height;
+      kb_font_break_line(&fnt->info, &current_pos.y);
+      kb_font_advance_line(&fnt->info, &str[strpos], len - strpos, &line_width);
+      align_offset.x = -line_width * fnt->info.pixel_height;
       current_pos.x = origin_x;
       continue;
     }
 
     if (codep == '\t') { // Tab
-      kb_font_quad_advance(&fnt.info, codep, &current_pos.x, &current_pos.y, &pos, &uv);
+      kb_font_quad_advance(&fnt->info, codep, &current_pos.x, &current_pos.y, &pos, &uv);
       continue;
     }
-    kb_font_quad_advance(&fnt.info, codep, &current_pos.x, &current_pos.y, &pos, &uv);
+    kb_font_quad_advance(&fnt->info, codep, &current_pos.x, &current_pos.y, &pos, &uv);
     
     Float2 current_align = (align_offset * align);
   
@@ -469,7 +469,7 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
 }
 
 KB_API kb_font_info* kb_font_get_info(kb_font font) {
-  return &font_ref(font).info;
+  return &font_ref(font)->info;
 }
 
 #endif

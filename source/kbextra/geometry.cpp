@@ -196,21 +196,21 @@ KB_RESOURCE_DATA_HASHED_DEF (geometry, kb_geometry);
 void kb_mesh_construct(kb_mesh handle, const kb_mesh_create_info info) {
   KB_ASSERT_VALID(handle);
 
-  mesh_ref(handle).vertex_buffer  = info.vertex_buffer;
-  mesh_ref(handle).index_buffer   = info.index_buffer;
+  mesh_ref(handle)->vertex_buffer  = info.vertex_buffer;
+  mesh_ref(handle)->index_buffer   = info.index_buffer;
 
-  mesh_ref(handle).primitive_count  = info.primitive_count;
-  mesh_ref(handle).primitives       = KB_DEFAULT_ALLOC_TYPE(kb_primitive_ref, info.primitive_count);
+  mesh_ref(handle)->primitive_count  = info.primitive_count;
+  mesh_ref(handle)->primitives       = KB_DEFAULT_ALLOC_TYPE(kb_primitive_ref, info.primitive_count);
 
   for (uint32_t i = 0; i < info.primitive_count; ++i) {
-    mesh_ref(handle).primitives[i].first_index  = info.primitives[i].first_index;
-    mesh_ref(handle).primitives[i].first_vertex = info.primitives[i].first_vertex;
-    mesh_ref(handle).primitives[i].index_count  = info.primitives[i].index_count;
-    mesh_ref(handle).primitives[i].vertex_count = info.primitives[i].vertex_count;
+    mesh_ref(handle)->primitives[i].first_index  = info.primitives[i].first_index;
+    mesh_ref(handle)->primitives[i].first_vertex = info.primitives[i].first_vertex;
+    mesh_ref(handle)->primitives[i].index_count  = info.primitives[i].index_count;
+    mesh_ref(handle)->primitives[i].vertex_count = info.primitives[i].vertex_count;
     
-    mesh_ref(handle).primitives[i].material = { };
+    mesh_ref(handle)->primitives[i].material = { };
     if (info.material_count > info.primitives[i].material) {
-      mesh_ref(handle).primitives[i].material = info.materials[info.primitives[i].material];
+      mesh_ref(handle)->primitives[i].material = info.materials[info.primitives[i].material];
     }
   }
 }
@@ -218,52 +218,50 @@ void kb_mesh_construct(kb_mesh handle, const kb_mesh_create_info info) {
 void kb_mesh_destruct(kb_mesh handle) {
   KB_ASSERT_VALID(handle);
 
-  KB_DEFAULT_FREE(mesh_ref(handle).primitives);
+  KB_DEFAULT_FREE(mesh_ref(handle)->primitives);
 }
 
 void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info info) {
   KB_ASSERT_VALID(handle);
 
-  geometry_ref(handle).index_buffer   = info.index_buffer;
-  geometry_ref(handle).vertex_buffer  = info.vertex_buffer;
+  geometry_ref(handle)->index_buffer   = info.index_buffer;
+  geometry_ref(handle)->vertex_buffer  = info.vertex_buffer;
 
-  geometry_ref(handle).mesh_count     = info.mesh_count;
-  geometry_ref(handle).meshes         = KB_DEFAULT_ALLOC_TYPE(kb_mesh, info.mesh_count);
-  kb_memcpy(geometry_ref(handle).meshes, info.meshes, sizeof(kb_mesh) * info.mesh_count);
+  geometry_ref(handle)->mesh_count     = info.mesh_count;
+  geometry_ref(handle)->meshes         = KB_DEFAULT_ALLOC_TYPE(kb_mesh, info.mesh_count);
+  kb_memcpy(geometry_ref(handle)->meshes, info.meshes, sizeof(kb_mesh) * info.mesh_count);
 
-  geometry_ref(handle).material_count = info.material_count;
-  geometry_ref(handle).materials      = KB_DEFAULT_ALLOC_TYPE(kb_material, info.material_count);
-  kb_memcpy(geometry_ref(handle).materials, info.materials, sizeof(kb_material) * info.material_count);
+  geometry_ref(handle)->material_count = info.material_count;
+  geometry_ref(handle)->materials      = KB_DEFAULT_ALLOC_TYPE(kb_material, info.material_count);
+  kb_memcpy(geometry_ref(handle)->materials, info.materials, sizeof(kb_material) * info.material_count);
 }
 
 void kb_geometry_destruct(kb_geometry handle) {
   KB_ASSERT_VALID(handle);
   
-  kb_buffer_destroy(geometry_ref(handle).index_buffer);
-  kb_buffer_destroy(geometry_ref(handle).vertex_buffer);
+  kb_buffer_destroy(geometry_ref(handle)->index_buffer);
+  kb_buffer_destroy(geometry_ref(handle)->vertex_buffer);
 
-  for (uint32_t i = 0; i < geometry_ref(handle).mesh_count; i++) {
-    kb_mesh_destroy(geometry_ref(handle).meshes[i]);
+  for (uint32_t i = 0; i < geometry_ref(handle)->mesh_count; i++) {
+    kb_mesh_destroy(geometry_ref(handle)->meshes[i]);
   }
 
-  KB_DEFAULT_FREE(geometry_ref(handle).meshes);
-  KB_DEFAULT_FREE(geometry_ref(handle).materials);
+  KB_DEFAULT_FREE(geometry_ref(handle)->meshes);
+  KB_DEFAULT_FREE(geometry_ref(handle)->materials);
 }
 
 KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, uint32_t prim_index, uint32_t instance_count) {
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(mesh);
 
-  kb_mesh_ref& ref = mesh_ref(mesh);
-
-  KB_ASSERT(ref.primitive_count > prim_index, "Primitive index too large");
+  KB_ASSERT(mesh_ref(mesh)->primitive_count > prim_index, "Primitive index too large");
 
   kb_encoder_push(encoder);
   
-  kb_encoder_bind_buffer(encoder, 0, ref.vertex_buffer, 0);
-  kb_encoder_bind_index_buffer(encoder, ref.index_buffer, 0, KB_INDEX_TYPE_32);
+  kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
+  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
 
-  kb_primitive_ref& primitive = ref.primitives[0];
+  kb_primitive_ref& primitive = mesh_ref(mesh)->primitives[0];
 
   kb_encoder_submit(encoder, 
     primitive.first_index,
@@ -279,14 +277,13 @@ KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t in
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(mesh);
 
-  kb_mesh_ref& ref = mesh_ref(mesh);
   kb_encoder_push(encoder);
   
-  kb_encoder_bind_buffer(encoder, 0, ref.vertex_buffer, 0);
-  kb_encoder_bind_index_buffer(encoder, ref.index_buffer, 0, KB_INDEX_TYPE_32);
+  kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
+  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
 
-  for (uint32_t i = 0; i < ref.primitive_count; ++i) {
-    kb_primitive_ref& primitive = ref.primitives[i];
+  for (uint32_t i = 0; i < mesh_ref(mesh)->primitive_count; ++i) {
+    kb_primitive_ref& primitive = mesh_ref(mesh)->primitives[i];
 
     kb_material material = primitive.material;
     
