@@ -371,8 +371,8 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   uint32_t vertex_alloc_size = max_vertices  * sizeof(kb_simple_vertex);
   uint32_t index_alloc_size  = max_indices   * sizeof(uint16_t);
 
-  kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_transient_alloc(vertex_alloc_size,  16);
-  uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_transient_alloc(index_alloc_size,   16);
+  kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_transient_alloc(vertex_alloc_size,  256);
+  uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_transient_alloc(index_alloc_size,   256);
 
   kb_simple_vertex* vertex_data = vertex_data_buffer;
   uint16_t*         index_data  = index_data_buffer;

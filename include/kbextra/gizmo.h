@@ -16,6 +16,8 @@
 extern "C" {
 #endif
 
+KB_HANDLE(kb_gizmo_handle);
+
 typedef enum kb_gizmo_action {
   KB_GIZMO_ACTION_NONE = 0,
   KB_GIZMO_ACTION_MOVE = 1,
@@ -46,6 +48,7 @@ typedef struct kb_gizmo {
   Float4x4            mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
   kb_gizmo_attribs    attribs[KB_CONFIG_GIZMO_STACK_SIZE];
 } kb_gizmo;
+
 
 KB_API void     kb_gizmo_begin                (kb_gizmo* gizmo, kb_encoder encoder, kb_pipeline pipeline);
 KB_API void     kb_gizmo_end                  (kb_gizmo* gizmo);

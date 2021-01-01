@@ -8,10 +8,26 @@
 
 #include <kb/alloc.h>
 
-//  #include <kbextra/vertex.h>
-
-// static const uint8_t circle_lods[] = { 37, 29, 23, 17, 11 };
 static const uint8_t circle_lods[] = { 12 };
+
+typedef struct kb_gizmo_state {
+  uint16_t            line_vertex_cache_pos;
+  uint16_t            line_index_cache_pos;
+  uint32_t            mtx_stack_pos;
+  uint32_t            attrib_stack_pos;
+  Float4x4            view;
+  Float4x4            proj;
+  Float3              current_pos;
+  kb_gizmo_action     action;
+  kb_encoder          encoder;
+  kb_pipeline         pipeline;
+  kb_simple_vertex*   line_vertex_cache;
+  uint16_t*           line_index_cache;
+  Float4x4            mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
+  kb_gizmo_attribs    attribs[KB_CONFIG_GIZMO_STACK_SIZE];
+} kb_gizmo_state;
+
+KB_RESOURCE_STORAGE_DEF(gizmo, kb_gizmo_handle, kb_gizmo_state, KB_CONFIG_MAX_GIZMOS);
 
 inline uint8_t get_circle_lod(uint8_t lod) {
   lod = lod > KB_COUNTOF(circle_lods) - 1 ? KB_COUNTOF(circle_lods) - 1 : lod;
@@ -63,8 +79,8 @@ KB_API void kb_gizmo_flush(kb_gizmo* gizmo, bool force) {
     uint64_t vertex_alloc_size  = gizmo->line_vertex_cache_pos * sizeof(kb_simple_vertex);
     uint64_t index_alloc_size   = gizmo->line_index_cache_pos  * sizeof(uint16_t);
 
-    kb_simple_vertex* vertex_data_buffer  = (kb_simple_vertex*)   kb_graphics_transient_alloc(vertex_alloc_size,  16);
-    uint16_t*         index_data_buffer   = (uint16_t*)           kb_graphics_transient_alloc(index_alloc_size,   16);
+    kb_simple_vertex* vertex_data_buffer  = (kb_simple_vertex*)   kb_graphics_transient_alloc(vertex_alloc_size,  256);
+    uint16_t*         index_data_buffer   = (uint16_t*)           kb_graphics_transient_alloc(index_alloc_size,   256);
     
     uint64_t vertex_data_buffer_offset  = kb_graphics_transient_offset(vertex_data_buffer);
     uint64_t index_data_buffer_offset   = kb_graphics_transient_offset(index_data_buffer);

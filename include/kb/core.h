@@ -323,6 +323,7 @@
 #define KB_CONFIG_MAX_GAMEPADS                  8
 #define KB_CONFIG_MAX_RENDERPASSES              8
 #define KB_CONFIG_MAX_RENDERPASS_ATTACHMENTS    8
+#define KB_CONFIG_MAX_GIZMOS                    8
 #define KB_CONFIG_MAX_BUFFERS                   512
 #define KB_CONFIG_MAX_MATERIALS                 512
 #define KB_CONFIG_MAX_MESHES                    512
@@ -331,7 +332,6 @@
 #define KB_CONFIG_MAX_TEXTURES                  512
 #define KB_CONFIG_MAX_SOUNDS                    512
 #define KB_CONFIG_MAX_NAME_SIZE                 512
-#define KB_CONFIG_MAX_GIZMOS                    512
 #define KB_CONFIG_MAX_FONTS                     512
 #define KB_CONFIG_MAX_GEOMS                     512
 #define KB_CONFIG_MAX_AUDIO_TRACKS              512
