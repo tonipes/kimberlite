@@ -13,7 +13,6 @@
 #include "kb/time.cpp"
 
 // Graphics
-#include "kb/vertex.cpp"
 #include "kb/graphics.cpp"
 #include "kb/texture.cpp"
 
@@ -28,3 +27,4 @@
 #include "kbextra/font.cpp"
 #include "kbextra/geometry.cpp"
 #include "kbextra/gizmo.cpp"
+#include "kbextra/vertex.cpp"
