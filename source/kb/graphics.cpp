@@ -11,18 +11,17 @@
 #include <kb/sampler.h>
 #include <kb/log.h>
 
-// #include <kbextra/vertex.h>
-
 struct pipeline_info {
   kb_uniform_layout     uniform_layout;
   kb_vertex_layout_info vertex_layout;
 };
 
-kb_encoder_pool encoder_pools[KB_CONFIG_MAX_FRAMES_IN_FLIGHT];
-kb_sampler      frametime_sampler = kb_sampler_construct<100>();
-double          last_frame_start_time = 0;
-kb_frame_stats  frame_stats;
-kb_frame_stats  frame_stats_curr;
+kb_encoder_pool*  encoder_pools;
+
+kb_sampler        frametime_sampler = kb_sampler_construct<100>();
+double            last_frame_start_time = 0;
+kb_frame_stats    frame_stats;
+kb_frame_stats    frame_stats_curr;
 
 kb_graphics_call* draw_call_cache     [KB_CONFIG_MAX_RENDERPASSES];
 uint32_t          draw_call_cache_pos [KB_CONFIG_MAX_RENDERPASSES];
@@ -46,7 +45,6 @@ KB_RESOURCE_DATA_HASHED_DEF (renderpass,    kb_renderpass);
 
 KB_RESOURCE_STORAGE_DEF     (pipeline_info,         kb_pipeline,      pipeline_info,    KB_CONFIG_MAX_PROGRAMS);
 
-
 #define COMPARE_VALUE(_a, _b) if (_a < _b) return -1; if (_b < _a) return 1;
 
 static int draw_call_compare(const void* a, const void* b) {
@@ -57,14 +55,6 @@ static int draw_call_compare(const void* a, const void* b) {
   COMPARE_VALUE(aa->index_buffer.buffer.idx,  bb->index_buffer.buffer.idx);
 
   return 0;
-}
-
-static inline void reset_encoder_pool(kb_encoder_pool* pool) {  
-  for (uint32_t i = 0; i < pool->count; ++i) {
-    pool->states[i] = {};
-  }
-
-  pool->count = 0;
 }
 
 KB_API void kb_graphics_set_renderpass_order(uint32_t order, kb_renderpass pass) {
@@ -104,12 +94,13 @@ KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
 KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   kb_platform_graphics_init(info);
 
-  
   for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
     renderpass_order[pass_i]    = { pass_i };
     draw_call_cache_pos[pass_i] = 0;
     draw_call_cache[pass_i]     = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
   }
+  
+  encoder_pools = KB_DEFAULT_ALLOC_TYPE(kb_encoder_pool, KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
 }
 
 KB_API void kb_graphics_deinit() {
@@ -123,6 +114,8 @@ KB_API void kb_graphics_deinit() {
   for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
     KB_DEFAULT_FREE(draw_call_cache[pass_i]);
   }
+  
+  KB_DEFAULT_FREE(encoder_pools);
 }
 
 KB_API void kb_graphics_run_encoders() {
@@ -146,17 +139,24 @@ KB_API void kb_graphics_run_encoders() {
 }
 
 KB_API void kb_graphics_frame() {
-  double current = kb_time();
-  double frametime = current - last_frame_start_time;
-  last_frame_start_time = current;
+  // double current = kb_time();
+  // double frametime = current - last_frame_start_time;
+  // last_frame_start_time = current;
   
-  kb_sampler_push(&frametime_sampler, frametime);
+  // kb_sampler_push(&frametime_sampler, frametime);
 
-  update_stats();
+  // update_stats();
   
   kb_platform_graphics_frame();
 
-  reset_encoder_pool(&current_encoder_pool());
+  // Reset pool
+  
+  kb_encoder_pool& current_pool = current_encoder_pool();
+  for (int i = 0; i < current_pool.count; ++i) {
+    current_pool.states[i] = {};
+  }
+
+  current_pool.count = 0;
 }
 
 KB_API void kb_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
@@ -417,17 +417,12 @@ KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot sl
 KB_API void kb_encoder_submit(kb_encoder encoder, uint32_t first_index, uint32_t first_vertex, uint32_t index_count, uint32_t instance_count) {
   KB_ASSERT_VALID(encoder);
 
-  // if (index_count == 0) return;
-
   kb_encoder_state& state = current_encoder_state(encoder);
   kb_encoder_frame& frame = current_encoder_frame(encoder);
   
-  // KB_ASSERT_VALID(frame.pipeline);
-
   KB_ASSERT(state.draw_call_count < KB_CONFIG_MAX_DRAW_CALLS, "Too many draw calls (KB_CONFIG_MAX_DRAW_CALLS)");
   
-  uint32_t call_idx = state.draw_call_count++;
-  kb_graphics_call& call = state.draw_calls[call_idx];
+  kb_graphics_call& call = state.draw_calls[state.draw_call_count++];
   
   for (uint32_t binding = 0; binding < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++binding) {
     call.vert_uniform_bindings[binding] = frame.vert_uniform_bindings[binding];
