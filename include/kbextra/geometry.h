@@ -9,22 +9,19 @@
 #include <kb/math.h>
 #include <kb/handle.h>
 #include <kb/hash.h>
-#include <kb/vertex.h>
 #include <kb/rwops.h>
 #include <kb/resource.h>
 #include <kb/graphics.h>
 
+#include <kbextra/vertex.h>
 #include <kbextra/material.h>
-
-// KB_HANDLE(kb_geometry);
-// KB_HANDLE(kb_mesh);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct kb_geometry  { kb_handle_idx idx; } kb_geometry;
-typedef struct kb_mesh      { kb_handle_idx idx; } kb_mesh;
+KB_HANDLE(kb_geometry);
+KB_HANDLE(kb_mesh);
 
 typedef struct kb_primitive_data {
   uint32_t            first_vertex;
@@ -57,7 +54,6 @@ typedef struct kb_geometry_data {
   uint32_t            index_size;
   uint32_t            index_data_size;
   uint32_t            vertex_data_size;
-  kb_vertex_layout    vertex_layout;
   kb_mesh_data*       meshes;
   kb_node_data*       nodes;
   kb_hash*            materials;

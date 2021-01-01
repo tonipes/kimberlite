@@ -39,7 +39,6 @@ void kb_geometry_data_dump_info(const kb_geometry_data* geom) {
   kb_log_debug("\tIndices: ({})", geom->index_data_size / geom->index_size);
   kb_log_debug("\tIndex data: {} bytes", geom->index_data_size);
   kb_log_debug("\tVertex data: {} bytes", geom->vertex_data_size);
-  kb_vertex_layout_dump(&geom->vertex_layout);
 }
 
 void kb_geometry_data_read(kb_geometry_data* geom, kb_rwops* rwops) {
@@ -57,7 +56,6 @@ void kb_geometry_data_read(kb_geometry_data* geom, kb_rwops* rwops) {
   kb_read(rwops, geom->index_size);
   kb_read(rwops, geom->index_data_size);
   kb_read(rwops, geom->vertex_data_size);
-  kb_read(rwops, geom->vertex_layout);
   
   // Meshes
   geom->meshes = KB_DEFAULT_ALLOC_TYPE(kb_mesh_data, geom->mesh_count);
@@ -112,7 +110,6 @@ void kb_geometry_data_write(const kb_geometry_data* geom, kb_rwops* rwops) {
   kb_write(rwops, geom->index_size);
   kb_write(rwops, geom->index_data_size);
   kb_write(rwops, geom->vertex_data_size);
-  kb_write(rwops, geom->vertex_layout);
 
   // Meshes
   for (uint32_t i = 0; i < geom->mesh_count; i++) {

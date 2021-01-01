@@ -4,15 +4,30 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/vertex.h>
+#include <kbextra/vertex.h>
 
 #include <kb/crt.h>
 #include <kb/log.h>
 
-uint32_t cv_attrib_sizes[] {
-  sizeof(float)
+const kb_vertex_layout_info kb_simple_vertex_layout_info = {
+  .attribs = {
+    { .buffer = 0, .format = KB_VERTEX_FORMAT_FLOAT4 }, // Position
+    { .buffer = 0, .format = KB_VERTEX_FORMAT_FLOAT4 }, // Color
+    { .buffer = 0, .format = KB_VERTEX_FORMAT_FLOAT4 }, // Texcord
+  },
+  .buffers = {
+    { .step_rate = 1, .step_func = KB_STEP_FUNC_VERTEX, .stride = sizeof(kb_simple_vertex) },
+  }
 };
 
+KB_INTERNAL uint64_t cv_attrib_sizes(kb_vertex_attribute_type type) {
+  switch (type) {
+    case KB_ATTRIB_FLOAT:   return 4;
+    case KB_ATTRIB_SINT:    return 4;
+    case KB_ATTRIB_UINT:    return 4;
+    default:                return 0;
+  }
+}
 void kb_vertex_layout_begin(kb_vertex_layout* layout) {
   KB_ASSERT_NOT_NULL(layout);
 
@@ -38,7 +53,7 @@ uint32_t kb_vertex_layout_add(kb_vertex_layout* layout, kb_vertex_attribute_type
 }
 
 uint32_t kb_vertex_layout_attrib_size(kb_vertex_attribute_type type, uint32_t count) {
-  return cv_attrib_sizes[type] * count;
+  return cv_attrib_sizes(type) * count;
 }
 
 void kb_vertex_layout_end(kb_vertex_layout* layout) {

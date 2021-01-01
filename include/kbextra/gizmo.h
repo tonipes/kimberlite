@@ -10,6 +10,8 @@
 #include <kb/math.h>
 #include <kb/graphics.h>
 
+#include <kbextra/vertex.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

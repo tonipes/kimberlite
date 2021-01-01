@@ -12,7 +12,6 @@
 #include <kb/handle.h>
 #include <kb/math.h>
 #include <kb/rwops.h>
-#include <kb/vertex.h>
 
 #ifdef __cplusplus
 extern "C" {

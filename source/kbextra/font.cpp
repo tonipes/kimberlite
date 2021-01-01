@@ -12,6 +12,8 @@
 #include <kb/graphics.h>
 #include <kb/rwops.h>
 
+#include <kbextra/vertex.h>
+
 KB_API uint32_t kb_count_utf8(const char* str, uint32_t len) {
   const char* in_text     = str;
   const char* in_text_end = in_text + len;

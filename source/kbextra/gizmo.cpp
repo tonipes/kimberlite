@@ -8,6 +8,8 @@
 
 #include <kb/alloc.h>
 
+//  #include <kbextra/vertex.h>
+
 // static const uint8_t circle_lods[] = { 37, 29, 23, 17, 11 };
 static const uint8_t circle_lods[] = { 12 };
 

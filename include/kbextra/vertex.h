@@ -10,6 +10,8 @@
 #include <kb/hash.h>
 #include <kb/math.h>
 
+#include <kb/graphics.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -25,6 +27,8 @@ typedef struct kb_simple_vertex {
   Float4                    color;
   Float4                    texcoord;
 } kb_simple_vertex;
+
+extern const kb_vertex_layout_info kb_simple_vertex_layout_info;
 
 typedef struct kb_vertex_attribute {
   uint32_t                  location;
@@ -43,11 +47,9 @@ typedef struct kb_vertex_layout {
 KB_API void      kb_vertex_layout_begin         (kb_vertex_layout* layout);
 KB_API uint32_t  kb_vertex_layout_add           (kb_vertex_layout* layout, kb_vertex_attribute_type type, uint32_t num);
 KB_API void      kb_vertex_layout_end           (kb_vertex_layout* layout);
-KB_API void      kb_vertex_layout_load          (kb_vertex_layout* layout, void* spirv_code, uint32_t code_size);
 KB_API uint32_t  kb_vertex_layout_stride        (const kb_vertex_layout* layout);
 KB_API uint32_t  kb_vertex_layout_offset        (const kb_vertex_layout* layout, uint32_t attrib);
 KB_API uint32_t  kb_vertex_layout_size          (const kb_vertex_layout* layout, uint32_t attrib);
-KB_API void      kb_vertex_layout_dump          (const kb_vertex_layout* layout);
 KB_API bool      kb_vertex_layout_match         (const kb_vertex_layout* a, const kb_vertex_layout* b);
 KB_API uint32_t  kb_vertex_layout_attrib_size   (kb_vertex_attribute_type type, uint32_t num);
 

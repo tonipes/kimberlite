@@ -10,11 +10,11 @@
 #include <kb/time.h>
 #include <kb/array.h>
 #include <kb/log.h>
-#include <kb/vertex.h>
 #include <kb/log.h>
 
 #include <kbextra/cliargs.h>
 #include <kbextra/geometry.h>
+#include <kbextra/vertex.h>
 
 #include "kb/alloc.cpp"
 #include "kb/hash.cpp"
@@ -23,8 +23,8 @@
 #include "kb/thread.cpp"
 #include "kb/crt.cpp"
 #include "kb/texture.cpp"
-#include "kb/vertex.cpp"
 
+#include "kbextra/vertex.cpp"
 #include "kbextra/cliargs.cpp"
 #include "kbextra/geometry.cpp"
 
@@ -488,17 +488,19 @@ int main(int argc, const char* argv[]) {
     int32_t attrib_joints    = -1;
     int32_t attrib_weights   = -1;
 
-    kb_vertex_layout_begin(&geom.vertex_layout);
-      if (has_position) attrib_position = kb_vertex_layout_add(&geom.vertex_layout, KB_ATTRIB_FLOAT, POSITION_COMPONENT_COUNT);
-      if (has_normal)   attrib_normal   = kb_vertex_layout_add(&geom.vertex_layout, KB_ATTRIB_FLOAT, NORMAL_COMPONENT_COUNT);
-      if (has_tangent)  attrib_tangent  = kb_vertex_layout_add(&geom.vertex_layout, KB_ATTRIB_FLOAT, TANGENT_COMPONENT_COUNT);
-      if (has_texcoord) attrib_texcoord = kb_vertex_layout_add(&geom.vertex_layout, KB_ATTRIB_FLOAT, TEXCOORD_COMPONENT_COUNT);
-      if (has_color)    attrib_color    = kb_vertex_layout_add(&geom.vertex_layout, KB_ATTRIB_FLOAT, COLOR_COMPONENT_COUNT);
-      if (has_weights)  attrib_weights  = kb_vertex_layout_add(&geom.vertex_layout, KB_ATTRIB_FLOAT, WEIGHT_COMPONENT_COUNT);
-      if (has_joints)   attrib_joints   = kb_vertex_layout_add(&geom.vertex_layout, KB_ATTRIB_FLOAT, JOINT_COMPONENT_COUNT);
-    kb_vertex_layout_end(&geom.vertex_layout);
+    kb_vertex_layout vertex_layout;
 
-    uint32_t vertex_stride = kb_vertex_layout_stride(&geom.vertex_layout);
+    kb_vertex_layout_begin(&vertex_layout);
+      if (has_position) attrib_position = kb_vertex_layout_add(&vertex_layout, KB_ATTRIB_FLOAT, POSITION_COMPONENT_COUNT);
+      if (has_normal)   attrib_normal   = kb_vertex_layout_add(&vertex_layout, KB_ATTRIB_FLOAT, NORMAL_COMPONENT_COUNT);
+      if (has_tangent)  attrib_tangent  = kb_vertex_layout_add(&vertex_layout, KB_ATTRIB_FLOAT, TANGENT_COMPONENT_COUNT);
+      if (has_texcoord) attrib_texcoord = kb_vertex_layout_add(&vertex_layout, KB_ATTRIB_FLOAT, TEXCOORD_COMPONENT_COUNT);
+      if (has_color)    attrib_color    = kb_vertex_layout_add(&vertex_layout, KB_ATTRIB_FLOAT, COLOR_COMPONENT_COUNT);
+      if (has_weights)  attrib_weights  = kb_vertex_layout_add(&vertex_layout, KB_ATTRIB_FLOAT, WEIGHT_COMPONENT_COUNT);
+      if (has_joints)   attrib_joints   = kb_vertex_layout_add(&vertex_layout, KB_ATTRIB_FLOAT, JOINT_COMPONENT_COUNT);
+    kb_vertex_layout_end(&vertex_layout);
+
+    uint32_t vertex_stride = kb_vertex_layout_stride(&vertex_layout);
 
     uint64_t max_vertex_count = kb_array_count(&vertex_data.triangles) * 3;
     uint64_t max_index_count  = kb_array_count(&vertex_data.triangles) * 3;
@@ -539,56 +541,56 @@ int main(int argc, const char* argv[]) {
 
             if (has_position) {
               uint32_t idx = vert.position == UINT32_MAX ? 0 : vert.position;
-              uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_position);
-              uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_position);
+              uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_position);
+              uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_position);
               
               kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.positions, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             if (has_normal) {
               uint32_t idx = vert.normal == UINT32_MAX ? 0 : vert.normal;
-              uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_normal);
-              uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_normal);
+              uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_normal);
+              uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_normal);
 
               kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.normals, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_tangent) {
               uint32_t idx = vert.tangent == UINT32_MAX ? 0 : vert.tangent;
-              uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_tangent);
-              uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_tangent);
+              uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_tangent);
+              uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_tangent);
 
               kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.tangents, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             if (has_texcoord) {
               uint32_t idx = vert.texcoords == UINT32_MAX ? 0 : vert.texcoords;
-              uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_texcoord);
-              uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_texcoord);
+              uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_texcoord);
+              uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_texcoord);
 
               kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.texcoords, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_color) {
               uint32_t idx = vert.colors == UINT32_MAX ? 0 : vert.colors;
-              uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_color);
-              uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_color);
+              uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_color);
+              uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_color);
 
               kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.colors, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_weights) {
               uint32_t idx = vert.weights == UINT32_MAX ? 0 : vert.weights;
-              uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_weights);
-              uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_weights);
+              uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_weights);
+              uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_weights);
 
               kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.weights, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_joints) {
               uint32_t idx = vert.joints == UINT32_MAX ? 0 : vert.joints;
-              uint32_t attrib_size   = kb_vertex_layout_size(&geom.vertex_layout, attrib_joints);
-              uint32_t attrib_offset = kb_vertex_layout_offset(&geom.vertex_layout, attrib_joints);
+              uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_joints);
+              uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_joints);
 
               kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.joints, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
@@ -662,10 +664,6 @@ int main(int argc, const char* argv[]) {
   //#####################################################################################################################
   // Export
   //#####################################################################################################################
-  
-  kb_vertex_layout_dump(&geom.vertex_layout);
-  
-  // kb_geometry_data_dump_info(&geom);
 
   kb_geometry_data_write(&geom, rwops_out);
   

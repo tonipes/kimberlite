@@ -9,9 +9,9 @@
 #include <kb/platform.h>
 #include <kb/time.h>
 #include <kb/sampler.h>
-#include <kb/vertex.h>
-
 #include <kb/log.h>
+
+// #include <kbextra/vertex.h>
 
 struct pipeline_info {
   kb_uniform_layout     uniform_layout;
@@ -423,7 +423,7 @@ KB_API void kb_encoder_submit(kb_encoder encoder, uint32_t first_index, uint32_t
   kb_encoder_frame& frame = current_encoder_frame(encoder);
   
   // KB_ASSERT_VALID(frame.pipeline);
-  
+
   KB_ASSERT(state.draw_call_count < KB_CONFIG_MAX_DRAW_CALLS, "Too many draw calls (KB_CONFIG_MAX_DRAW_CALLS)");
   
   uint32_t call_idx = state.draw_call_count++;
