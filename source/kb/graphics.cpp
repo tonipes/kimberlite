@@ -417,12 +417,13 @@ KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot sl
 KB_API void kb_encoder_submit(kb_encoder encoder, uint32_t first_index, uint32_t first_vertex, uint32_t index_count, uint32_t instance_count) {
   KB_ASSERT_VALID(encoder);
 
-  if (index_count == 0) return;
+  // if (index_count == 0) return;
 
   kb_encoder_state& state = current_encoder_state(encoder);
   kb_encoder_frame& frame = current_encoder_frame(encoder);
   
-  KB_ASSERT_VALID(frame.pipeline);
+  // KB_ASSERT_VALID(frame.pipeline);
+  
   KB_ASSERT(state.draw_call_count < KB_CONFIG_MAX_DRAW_CALLS, "Too many draw calls (KB_CONFIG_MAX_DRAW_CALLS)");
   
   uint32_t call_idx = state.draw_call_count++;

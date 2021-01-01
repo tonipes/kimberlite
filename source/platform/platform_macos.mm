@@ -79,7 +79,6 @@ kb_freelist               input_gamepad_freelist;
 kb_table                  input_gamepad_table;
 SDL_GameController*       input_gamepad_ptrs[KB_CONFIG_MAX_GAMEPADS];
 
-static NSWindow*          ns_window;
 static SDL_Window*        window_ptr;
 static bool               window_should_close;
 
@@ -742,6 +741,7 @@ KB_API Int2 kb_platform_graphics_surface_get_size() {
   SDL_GetWindowSize(window_ptr, &size.x, &size.y);
   return size;
 }
+
 
 KB_API void kb_platform_graphics_init(const kb_graphics_init_info info) {
   window_should_close = false;
