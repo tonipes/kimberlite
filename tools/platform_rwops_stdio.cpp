@@ -141,6 +141,7 @@ KB_INTERNAL kb_rwops* create_rwops_file(FILE* impl) {
   rwops->write    = write_impl_file;
   rwops->tell     = tell_impl_file;
   rwops->impl     = impl;
+  rwops->mem_ptr  = NULL;
   rwops->mem_pos  = 0;
   rwops->mem_size = 0;
   
@@ -148,7 +149,7 @@ KB_INTERNAL kb_rwops* create_rwops_file(FILE* impl) {
 }
 
 KB_API kb_rwops* kb_rwops_open_file(const char* path, kb_file_mode mode) {
-  FILE *impl = fopen(path, "r");
+  FILE *impl = fopen(path, cv_rwops_mode(mode));
 
   if (!impl) return NULL;
       
@@ -156,7 +157,7 @@ KB_API kb_rwops* kb_rwops_open_file(const char* path, kb_file_mode mode) {
 }
 
 
-KB_API kb_rwops* kb_rwops_open_mem(void* dst, int64_t size) {
-  if (!dst) return nullptr;
-  return create_rwops_mem((char*) dst, size);
+KB_API kb_rwops* kb_rwops_open_mem(void* ptr, int64_t size) {
+  if (!ptr) return nullptr;
+  return create_rwops_mem((char*) ptr, size);
 }
