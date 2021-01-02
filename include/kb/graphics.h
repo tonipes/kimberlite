@@ -163,18 +163,6 @@ typedef struct kb_shader_binding_slot {
   kb_shader_stage         stages;
 } kb_shader_binding_slot;
 
-typedef struct kb_frame_stats {
-  uint32_t                encoder_count;
-  uint32_t                transient_memory_used;
-  uint32_t                draw_calls;
-  uint32_t                buffer_count;
-  uint32_t                pipeline_count;
-  uint32_t                texture_count;
-  float                   frametime_avg;
-  float                   frametime_min;
-  float                   frametime_max;
-} kb_frame_stats;
-
 typedef struct kb_uniform_buffer_info {
   uint32_t                slot;
   const char*             name;
@@ -317,29 +305,6 @@ typedef struct kb_graphics_call {
   kb_graphics_call_info     info;
 } kb_graphics_call;
 
-typedef struct kb_encoder_frame {
-  kb_renderpass             renderpass;
-  kb_pipeline               pipeline;
-  kb_vertex_buffer_binding  vertex_buffer_bindings[KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS];
-  kb_index_buffer_binding   index_buffer;
-  kb_texture_binding        vert_texture_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
-  kb_uniform_binding        vert_uniform_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
-  kb_texture_binding        frag_texture_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
-  kb_uniform_binding        frag_uniform_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
-} kb_encoder_frame;
-
-typedef struct kb_encoder_state {
-  uint32_t                  stack_pos;
-  uint32_t                  draw_call_count;
-  kb_encoder_frame          stack[KB_CONFIG_GIZMO_STACK_SIZE];  
-  kb_graphics_call          draw_calls[KB_CONFIG_MAX_DRAW_CALLS];
-} kb_encoder_state;
-
-typedef struct kb_encoder_pool {
-  uint16_t                  count;
-  kb_encoder_state          states[KB_CONFIG_MAX_ENCODERS];
-} kb_encoder_pool;
-
 typedef struct kb_graphics_pass_info {
   int                       unused;
 } kb_graphics_pass_info;
@@ -366,10 +331,9 @@ KB_API void                       kb_graphics_deinit                    ();
 KB_API void                       kb_graphics_frame                     ();
 KB_API void                       kb_graphics_run_encoders              ();
 KB_API Int2                       kb_graphics_get_extent                ();
-KB_API Int2                       kb_graphics_get_aspect                ();
+KB_API float                      kb_graphics_get_aspect                ();
 KB_API void                       kb_graphics_wait_device_idle          ();
 KB_API uint32_t                   kb_graphics_get_current_resource_slot ();
-KB_API void                       kb_graphics_get_frame_stats           (kb_frame_stats* stats);
 KB_API void*                      kb_graphics_get_buffer_mapped         (kb_buffer buffer);
 KB_API void                       kb_graphics_set_renderpass_order      (uint32_t order, kb_renderpass pass);
 

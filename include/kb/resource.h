@@ -57,10 +57,10 @@ struct kb_resource_slot_allocator {
   }
   
   void purge() {
-    uint32_t* dense = kb_freelist_get_dense(&freelist);
-    for (uint32_t i = 0; i < freelist.count; ++i) {
-      // TODO: Purge
-    }
+//    uint32_t* dense = kb_freelist_get_dense(&freelist);
+//    for (uint32_t i = 0; i < freelist.count; ++i) {
+//      // TODO: Purge
+//    }
   }
 
   // uint16_t      refcount  [cap];

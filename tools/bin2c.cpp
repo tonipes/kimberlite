@@ -14,9 +14,7 @@
 
 #include "kbextra/cliargs.cpp"
 
-
-#include "platform/platform_rwops_sdl.cpp"
-// #include "platform/platform_rwops_stdio.cpp"
+#include "platform_rwops_stdio.cpp"
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0
@@ -81,26 +79,26 @@ int main(int argc, const char* argv[]) {
 
   // Write header
   count = kb_snprintf(buf, BUF_SIZE, "static const uint8_t %s[] = {\n  ", arr_name);
-  kb_rwops_write(rwops_out, buf, count);
+  kb_rwops_write(rwops_out, buf, 1, count);
 
   // Dump file
   unsigned char c;
   uint32_t col = 0;
-  while (kb_rwops_read(rwops_in, &c, 1) == 1) {
+  while (kb_rwops_read(rwops_in, &c, 1, 1) == 1) {
     count = kb_snprintf(buf, BUF_SIZE, "0x%.2X, ", (int) c);
 
-    kb_rwops_write(rwops_out, buf, count);
+    kb_rwops_write(rwops_out, buf, 1, count);
 
     col += count;
     if (col >= MAX_COL) {
       col = 0;
-      kb_rwops_write(rwops_out, "\n  ", 3);
+      kb_rwops_write(rwops_out, "\n  ", 1, 3);
     }
   }
 
   // Ending
-  if (col != 0) kb_rwops_write(rwops_out, "\n", 1);
-  kb_rwops_write(rwops_out, "};\n", 3);
+  if (col != 0) kb_rwops_write(rwops_out, "\n", 1, 1);
+  kb_rwops_write(rwops_out, "};\n", 1, 3);
 
   // Cleanup
   kb_rwops_close(rwops_in);

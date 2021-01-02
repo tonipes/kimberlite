@@ -11,27 +11,81 @@
 #include <kb/sampler.h>
 #include <kb/log.h>
 
-struct pipeline_info {
+typedef struct pipeline_info {
   kb_uniform_layout     uniform_layout;
   kb_vertex_layout_info vertex_layout;
-};
+} pipeline_info;
+
+typedef struct kb_encoder_frame {
+  kb_renderpass             renderpass;
+  kb_pipeline               pipeline;
+  kb_vertex_buffer_binding  vertex_buffer_bindings[KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS];
+  kb_index_buffer_binding   index_buffer;
+  kb_texture_binding        vert_texture_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_binding        vert_uniform_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_texture_binding        frag_texture_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_binding        frag_uniform_bindings [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+} kb_encoder_frame;
+
+typedef struct kb_encoder_state {
+  uint32_t                  stack_pos;
+  uint32_t                  draw_call_count;
+  kb_encoder_frame          stack[KB_CONFIG_GIZMO_STACK_SIZE];
+  kb_graphics_call*         draw_calls;
+} kb_encoder_state;
+
+typedef struct kb_encoder_pool {
+  uint16_t                  count;
+  kb_encoder_state          states[KB_CONFIG_MAX_ENCODERS];
+} kb_encoder_pool;
 
 kb_encoder_pool*  encoder_pools;
 
-kb_sampler        frametime_sampler = kb_sampler_construct<100>();
-double            last_frame_start_time = 0;
-kb_frame_stats    frame_stats;
-kb_frame_stats    frame_stats_curr;
+void reset_encoder_state(kb_encoder_state& state) {
+  state.stack_pos = 0;
+  state.draw_call_count = 0;
+}
+
+void construct_encoder_pools() {
+  encoder_pools = KB_DEFAULT_ALLOC_TYPE(kb_encoder_pool, KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
+
+  for (int pool_i = 0; pool_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; ++pool_i) {
+    for (int state_i = 0; state_i < KB_CONFIG_MAX_ENCODERS; ++state_i) {
+      encoder_pools[pool_i].states[state_i].draw_calls = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
+    }
+  }
+}
+
+void destruct_encoder_pools() {
+  for (int pool_i = 0; pool_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; ++pool_i) {
+    for (int state_i = 0; state_i < KB_CONFIG_MAX_ENCODERS; ++state_i) {
+      KB_DEFAULT_FREE(encoder_pools[pool_i].states[state_i].draw_calls);
+    }
+  }
+
+  KB_DEFAULT_FREE(encoder_pools);
+}
 
 kb_graphics_call* draw_call_cache     [KB_CONFIG_MAX_RENDERPASSES];
 uint32_t          draw_call_cache_pos [KB_CONFIG_MAX_RENDERPASSES];
 
 kb_renderpass     renderpass_order[KB_CONFIG_MAX_RENDERPASSES];
 
-static inline kb_encoder_pool&   current_encoder_pool   ()                          { return encoder_pools[kb_graphics_get_current_resource_slot()]; }
-static inline kb_encoder_state&  current_encoder_state  (kb_encoder encoder)        { return current_encoder_pool().states[kb_to_arr(encoder)]; }
-static inline kb_encoder_frame&  current_encoder_frame  (kb_encoder_state& state)   { return state.stack[state.stack_pos]; }
-static inline kb_encoder_frame&  current_encoder_frame  (kb_encoder encoder)        { return current_encoder_frame(current_encoder_state(encoder)); }
+kb_encoder_pool& current_encoder_pool() {
+  return encoder_pools[kb_graphics_get_current_resource_slot()];
+}
+
+kb_encoder_state& current_encoder_state(kb_encoder encoder) {
+  return current_encoder_pool().states[kb_to_arr(encoder)];
+}
+
+kb_encoder_frame& current_encoder_frame(kb_encoder_state& state) {
+  return state.stack[state.stack_pos];
+}
+
+kb_encoder_frame& current_encoder_frame(kb_encoder encoder) {
+  return current_encoder_frame(current_encoder_state(encoder));
+}
 
 KB_RESOURCE_ALLOC_FUNC_DEF  (buffer,        kb_buffer,        kb_buffer_create_info,        KB_CONFIG_MAX_BUFFERS);
 KB_RESOURCE_ALLOC_FUNC_DEF  (texture,       kb_texture,       kb_texture_create_info,       KB_CONFIG_MAX_TEXTURES);
@@ -61,24 +115,6 @@ KB_API void kb_graphics_set_renderpass_order(uint32_t order, kb_renderpass pass)
   renderpass_order[order] = pass;
 }
 
-KB_INTERNAL void update_stats() {
-  frame_stats = frame_stats_curr;
-  frame_stats_curr = {};
-  
-  frame_stats_curr.draw_calls = 0;
-  for (uint32_t i = 0; i < current_encoder_pool().count; ++i) {
-    frame_stats_curr.draw_calls += current_encoder_pool().states[i].draw_call_count;
-  }
-  frame_stats_curr.buffer_count           = kb_buffer_count();
-  frame_stats_curr.encoder_count         = current_encoder_pool().count;
-  frame_stats_curr.pipeline_count        = kb_pipeline_count();
-  frame_stats_curr.texture_count         = kb_texture_count();
-  frame_stats_curr.frametime_avg         = frametime_sampler.avg;
-  frame_stats_curr.frametime_min         = frametime_sampler.min;
-  frame_stats_curr.frametime_max         = frametime_sampler.max;
-  frame_stats_curr.transient_memory_used = kb_platform_graphics_transient_used();
-}
-
 KB_API void* kb_graphics_transient_alloc(uint64_t size, uint64_t align) {
   return kb_platform_graphics_transient_alloc(size, align);
 }
@@ -100,7 +136,7 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
     draw_call_cache[pass_i]     = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
   }
   
-  encoder_pools = KB_DEFAULT_ALLOC_TYPE(kb_encoder_pool, KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
+  construct_encoder_pools();
 }
 
 KB_API void kb_graphics_deinit() {
@@ -115,7 +151,7 @@ KB_API void kb_graphics_deinit() {
     KB_DEFAULT_FREE(draw_call_cache[pass_i]);
   }
   
-  KB_DEFAULT_FREE(encoder_pools);
+  destruct_encoder_pools();
 }
 
 KB_API void kb_graphics_run_encoders() {
@@ -139,23 +175,13 @@ KB_API void kb_graphics_run_encoders() {
 }
 
 KB_API void kb_graphics_frame() {
-  double current = kb_time();
-  double frametime = current - last_frame_start_time;
-  last_frame_start_time = current;
-  
-  kb_sampler_push(&frametime_sampler, frametime);
-
-  update_stats();
-  
   kb_platform_graphics_frame();
-
-  // Reset pool
-
+  
+  // Reset pools
   kb_encoder_pool& current_pool = current_encoder_pool();
   for (int i = 0; i < current_pool.count; ++i) {
-    current_pool.states[i] = {};
+    reset_encoder_state(current_pool.states[i]);
   }
-
   current_pool.count = 0;
 }
 
@@ -211,11 +237,6 @@ KB_API void kb_buffer_destruct(kb_buffer handle) {
   kb_platform_graphics_buffer_destruct(handle);
 }
 
-KB_API void kb_graphics_get_frame_stats(kb_frame_stats* stats) {
-  KB_ASSERT_NOT_NULL(stats);
-
-  *stats = frame_stats;
-}
 
 KB_API void kb_graphics_wait_device_idle() {
   kb_platform_graphics_wait_device_idle();
@@ -454,7 +475,7 @@ KB_API Int2 kb_graphics_get_extent() {
   return kb_platform_graphics_surface_get_size();
 }
 
-KB_API float kb_graphics_surface_get_aspect() {
+KB_API float kb_graphics_get_aspect() {
   Int2 size = kb_graphics_get_extent();
   return float(size.x) / float(size.y);
 }

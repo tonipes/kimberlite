@@ -94,8 +94,8 @@ void kb_geometry_data_read(kb_geometry_data* geom, kb_rwops* rwops) {
   geom->vertex_data = KB_DEFAULT_ALLOC(geom->vertex_data_size);
   geom->index_data  = KB_DEFAULT_ALLOC(geom->index_data_size);
 
-  kb_rwops_read(rwops, geom->vertex_data,  geom->vertex_data_size);
-  kb_rwops_read(rwops, geom->index_data,   geom->index_data_size);
+  kb_rwops_read(rwops, geom->vertex_data,  1, geom->vertex_data_size);
+  kb_rwops_read(rwops, geom->index_data,   1, geom->index_data_size);
 }
 
 void kb_geometry_data_write(const kb_geometry_data* geom, kb_rwops* rwops) {
@@ -139,8 +139,8 @@ void kb_geometry_data_write(const kb_geometry_data* geom, kb_rwops* rwops) {
   }
 
   // Vertex data
-  kb_rwops_write(rwops, geom->vertex_data,  geom->vertex_data_size);
-  kb_rwops_write(rwops, geom->index_data,   geom->index_data_size);
+  kb_rwops_write(rwops, geom->vertex_data,  1, geom->vertex_data_size);
+  kb_rwops_write(rwops, geom->index_data,   1, geom->index_data_size);
 }
 
 void kb_geometry_data_destroy(kb_geometry_data* geom) {

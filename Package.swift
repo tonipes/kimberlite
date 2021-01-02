@@ -18,8 +18,23 @@ let package = Package(
       name: "Kimberlite",
       dependencies: ["fmt"],
       path: ".",
+      exclude: [
+        "LICENSE",
+        "README.md",
+        "file_header",
+        "libraries",
+        "build",
+        "assets",
+        "test",
+        "examples",
+        "source/platform",
+        "source",
+        "meson.build",
+        "meson_options.txt",
+        "**/*.build",
+      ],
       sources: [
-        "source/amalgamated.cpp",
+        "amalgamated.cpp",
       ],
       cxxSettings: [
         .headerSearchPath("include"),
@@ -30,7 +45,12 @@ let package = Package(
       name: "fmt",
       dependencies: [],
       path: "libraries/fmt",
+      exclude: [
+        "meson.build",
+        "LICENSE"
+      ],
       sources: [
+        "src/os.cc",
         "src/format.cc",
         "src/format.os",
       ],

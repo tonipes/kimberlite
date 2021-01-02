@@ -16,7 +16,7 @@
 
 // KB_HANDLE(kb_font);
 
-typedef uint16_t kb_wchar;
+typedef uint32_t kb_wchar;
 
 #define KB_UNICODE_CODEPOINT_MAX 0xFFFF
 #define KB_UNICODE_CODEPOINT_INVALID 0xFFFD
@@ -92,19 +92,15 @@ KB_API void   kb_font_data_destroy            (kb_font_data* font);
 KB_API void   kb_font_break_line              (kb_font_info* info, float* current_y);
 KB_API void   kb_font_quad_advance            (kb_font_info* info, int codepoint, float* current_x, float* current_y, FloatRect* pos, FloatRect* uv); 
 
-// KB_API float kb_font_get_string_line_width   (kb_font_info* info, const char* str, uint32_t len);
-KB_API float kb_font_get_line_height         (kb_font_info* info);
+KB_API float  kb_font_get_line_height         (kb_font_info* info);
 KB_API Float2 kb_font_get_string_dimensions   (kb_font_info* info, const char* str, uint32_t len);
-// KB_API float kb_font_get_string_width        (kb_font_info* info, const char* str);
-// KB_API float kb_font_get_string_line_width   (kb_font_info* info, const char* str);
-
-// KB_API float kb_font_get_string_line_width   (kb_font font, const char* str);
 
 KB_API void   kb_encoder_bind_font            (kb_encoder encoder, kb_font font);
 KB_API void   kb_encoder_submit_text          (kb_encoder encoder, kb_font font, const char* str, uint32_t len, Float2 origin, Float2 scale, Float2 align, Float2 offset, uint32_t instance_count);
 
 KB_API kb_font_info* kb_font_get_info         (kb_font font);
 
+  
 #ifdef __cplusplus
 }
 #endif

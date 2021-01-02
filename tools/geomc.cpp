@@ -16,6 +16,7 @@
 #include <kbextra/geometry.h>
 #include <kbextra/vertex.h>
 
+#include "kb/array.cpp"
 #include "kb/alloc.cpp"
 #include "kb/hash.cpp"
 #include "kb/log.cpp"
@@ -33,8 +34,7 @@
 #define CGLTF_IMPLEMENTATION
 #include <cgltf/cgltf.h>
 
-#include "platform/platform_rwops_sdl.cpp"
-// #include "platform/platform_rwops_stdio.cpp"
+#include "platform_rwops_stdio.cpp"
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0
@@ -203,7 +203,7 @@ int main(int argc, const char* argv[]) {
   // Load
   input_size = kb_rwops_size(rwops_in);
   input_data = KB_DEFAULT_ALLOC(input_size);
-  kb_rwops_read(rwops_in, input_data, input_size);
+  kb_rwops_read(rwops_in, input_data, 1, input_size);
 
   // Parse GLTF
 	result = cgltf_parse(&options, input_data, input_size, &gltf_data);

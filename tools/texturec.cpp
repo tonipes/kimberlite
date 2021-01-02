@@ -22,15 +22,14 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include "platform/platform_rwops_sdl.cpp"
-// #include "platform/platform_rwops_stdio.cpp"
+#include "platform_rwops_stdio.cpp"
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0
 
 int std_io_rwops_read(void* user, char* data, int size) {
   kb_rwops* io = (kb_rwops*) user;
-  int ret = kb_rwops_read(io, data, size);
+  int ret = kb_rwops_read(io, data, 1, size);
   return (int) ret * sizeof(char);
 }
 
@@ -44,7 +43,7 @@ int std_io_rwops_eof(void* user) {
 	kb_rwops* io = (kb_rwops*) user;
   
   uint32_t d;
-  uint64_t c = kb_rwops_read(io, &d, 1);
+  uint64_t c = kb_rwops_read(io, &d, 1, 1);
   
   if (c != 0) {
     kb_rwops_seek(io, -c, KB_RWOPS_SEEK_CUR);

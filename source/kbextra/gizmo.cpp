@@ -10,25 +10,6 @@
 
 static const uint8_t circle_lods[] = { 12 };
 
-typedef struct kb_gizmo_state {
-  uint16_t            line_vertex_cache_pos;
-  uint16_t            line_index_cache_pos;
-  uint32_t            mtx_stack_pos;
-  uint32_t            attrib_stack_pos;
-  Float4x4            view;
-  Float4x4            proj;
-  Float3              current_pos;
-  kb_gizmo_action     action;
-  kb_encoder          encoder;
-  kb_pipeline         pipeline;
-  kb_simple_vertex*   line_vertex_cache;
-  uint16_t*           line_index_cache;
-  Float4x4            mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
-  kb_gizmo_attribs    attribs[KB_CONFIG_GIZMO_STACK_SIZE];
-} kb_gizmo_state;
-
-KB_RESOURCE_STORAGE_DEF(gizmo, kb_gizmo_handle, kb_gizmo_state, KB_CONFIG_MAX_GIZMOS);
-
 inline uint8_t get_circle_lod(uint8_t lod) {
   lod = lod > KB_COUNTOF(circle_lods) - 1 ? KB_COUNTOF(circle_lods) - 1 : lod;
   return circle_lods[lod];
@@ -158,23 +139,23 @@ KB_API void kb_gizmo_pop(kb_gizmo* gizmo) {
   --gizmo->attrib_stack_pos;
 }
 
-KB_API void kb_gizmo_push_transform(kb_gizmo* gizmo, const Float4x4 mtx, bool flush) {
-  KB_ASSERT_NOT_NULL(gizmo);
-
-  if (flush) kb_gizmo_flush(gizmo, true);
-
-  Float4x4& stack = gizmo->mtx_stack[gizmo->mtx_stack_pos];  
-  gizmo->mtx_stack_pos++;
-
-  gizmo->mtx_stack[gizmo->mtx_stack_pos] = stack * mtx;
-}
-
-KB_API void kb_gizmo_pop_transform(kb_gizmo* gizmo, bool flush) {
-  KB_ASSERT_NOT_NULL(gizmo);
-
-  if (flush) kb_gizmo_flush(gizmo, true);
-  gizmo->mtx_stack_pos--;
-}
+//KB_API void kb_gizmo_push_transform(kb_gizmo* gizmo, const Float4x4 mtx, bool flush) {
+//  KB_ASSERT_NOT_NULL(gizmo);
+//
+//  if (flush) kb_gizmo_flush(gizmo, true);
+//
+//  Float4x4& stack = gizmo->mtx_stack[gizmo->mtx_stack_pos];
+//  gizmo->mtx_stack_pos++;
+//
+//  gizmo->mtx_stack[gizmo->mtx_stack_pos] = stack * mtx;
+//}
+//
+//KB_API void kb_gizmo_pop_transform(kb_gizmo* gizmo, bool flush) {
+//  KB_ASSERT_NOT_NULL(gizmo);
+//
+//  if (flush) kb_gizmo_flush(gizmo, true);
+//  gizmo->mtx_stack_pos--;
+//}
 
 KB_API void kb_gizmo_set_color(kb_gizmo* gizmo, Float4 color) {
   KB_ASSERT_NOT_NULL(gizmo);

@@ -34,8 +34,8 @@ auto get_level_color(kb_log_level level) -> const char* {
 }
 
 static kb_log_level log_level   = kb_log_level::KB_LOG_LEVEL_TRACE;
-static bool         log_color   = true;
-static bool         log_header  = true;
+static bool         log_color   = false;
+static bool         log_header  = false;
 static kb_mutex*    log_mutex   = NULL; //kb_mutex_create();
 
 inline void print(const char* str) {

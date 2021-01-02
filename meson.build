@@ -79,10 +79,8 @@ endforeach
 kb_cpp_args = []
 kb_objcpp_args = ['-std=c++14']
 
-dep_sdl2    = dependency('sdl2')
-dep_vulkan  = dependency('vulkan')
-
 subdir('libraries')
 subdir('source')
-subdir('examples')
+# subdir('examples')
+subdir('tools')
 subdir('test')

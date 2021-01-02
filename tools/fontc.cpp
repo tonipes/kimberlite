@@ -21,8 +21,8 @@
 #include "kbextra/cliargs.cpp"
 #include "kbextra/font.cpp"
 
-#include "platform/platform_rwops_sdl.cpp"
-// #include "platform/platform_rwops_stdio.cpp"
+#include "platform_rwops_stdio.cpp"
+
 
 #define STB_RECT_PACK_IMPLEMENTATION 
 #include "stb_rect_pack.h"
@@ -46,7 +46,7 @@ const uint32_t  channels              = 4;
 
 void write_func(void* user, void* data, int size) {
   kb_rwops* io = (kb_rwops*) user;
-  kb_rwops_write(io, data, size);
+  kb_rwops_write(io, data, 1, size);
 }
 
 void print_help(const char* error = nullptr) {
@@ -135,7 +135,7 @@ int main(int argc, const char* argv[]) {
 
     uint64_t font_data_size = kb_rwops_size(rwops_in);
     unsigned char* font_data = (unsigned char*) KB_DEFAULT_ALLOC(font_data_size);
-    uint64_t read = kb_rwops_read(rwops_in, font_data, font_data_size);
+    uint64_t read = kb_rwops_read(rwops_in, font_data, 1, font_data_size);
     kb_log_debug("Size: {}, Read: {}", font_data_size, read);
 
     stbtt_fontinfo font_info;

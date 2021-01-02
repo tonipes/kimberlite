@@ -54,8 +54,8 @@ KB_API void     kb_gizmo_begin                (kb_gizmo* gizmo, kb_encoder encod
 KB_API void     kb_gizmo_end                  (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_push                 (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_pop                  (kb_gizmo* gizmo);
-KB_API void     kb_gizmo_push_transform       (kb_gizmo* gizmo, const Float4x4 mtx, bool flush);
-KB_API void     kb_gizmo_pop_transform        (kb_gizmo* gizmo, bool flush);
+//KB_API void     kb_gizmo_push_transform       (kb_gizmo* gizmo, const Float4x4 mtx, bool flush);
+//KB_API void     kb_gizmo_pop_transform        (kb_gizmo* gizmo, bool flush);
 KB_API void     kb_gizmo_set_color            (kb_gizmo* gizmo, Float4 color);
 KB_API void     kb_gizmo_set_lod              (kb_gizmo* gizmo, uint8_t lod);
 KB_API void     kb_gizmo_set_wireframe        (kb_gizmo* gizmo, bool wireframe);

@@ -80,3 +80,5 @@ sourcetrail
 
 .vscode
 *.sublime-*
+
+.swiftpm

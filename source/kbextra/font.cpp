@@ -11,6 +11,7 @@
 #include <kb/alloc.h>
 #include <kb/graphics.h>
 #include <kb/rwops.h>
+#include <kb/log.h>
 
 #include <kbextra/vertex.h>
 
@@ -152,7 +153,7 @@ KB_API void kb_font_data_read(kb_font_data* font, kb_rwops* rwops) {
   kb_read(rwops, font->atlas_bitmap_size);
 
   font->atlas_bitmap = KB_DEFAULT_ALLOC(font->atlas_bitmap_size);
-  kb_rwops_read(rwops, font->atlas_bitmap, font->atlas_bitmap_size);
+  kb_rwops_read(rwops, font->atlas_bitmap, 1,  font->atlas_bitmap_size);
 
   // Build char table
   kb_table_create(&font->info.char_table, font->info.char_count);
@@ -185,7 +186,7 @@ KB_API void kb_font_data_write(const kb_font_data* font, kb_rwops* rwops) {
   kb_write(rwops, font->atlas_bitmap_height);
   kb_write(rwops, font->atlas_bitmap_size);
 
-  kb_rwops_write(rwops, font->atlas_bitmap, font->atlas_bitmap_size);
+  kb_rwops_write(rwops, font->atlas_bitmap, 1, font->atlas_bitmap_size);
 }
 
 KB_API void kb_font_data_dump_info(const kb_font_data* font) {
