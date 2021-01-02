@@ -33,7 +33,7 @@ typedef struct kb_rwops {
   uint64_t  (*write)  (struct kb_rwops* rwops, const void *ptr, uint64_t size);
   void*     impl; 
   uint64_t  mem_pos;  // Used with memory rwops
-  uint64_t  mem_size;  // Used with memory rwops
+  uint64_t  mem_size; // Used with memory rwops
 
 } kb_rwops;
 

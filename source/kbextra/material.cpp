@@ -51,7 +51,7 @@ KB_API void kb_encoder_bind_material(kb_encoder encoder, kb_material material) {
 
     if (uniform.slot_hash > 0) {
       kb_uniform_slot uniform_slot = kb_pipeline_get_uniform_slot(
-        material_ref(material)->pipeline, uniform.slot_hash, KB_SHADER_BINDING_TYPE_UNIFORM_BUFFER, 
+        material_ref(material)->pipeline, uniform.slot_hash, KB_BINDING_TYPE_UNIFORM_BUFFER, 
         KB_SHADER_STAGE_VERTEX | KB_SHADER_STAGE_FRAGMENT
       );
       kb_encoder_bind_uniform(encoder, uniform_slot, uniform.data, sizeof(uniform.data));
@@ -59,7 +59,7 @@ KB_API void kb_encoder_bind_material(kb_encoder encoder, kb_material material) {
     
     if (texture.slot_hash) {
       kb_uniform_slot texture_slot = kb_pipeline_get_uniform_slot(
-        material_ref(material)->pipeline, texture.slot_hash, KB_SHADER_BINDING_TYPE_TEXTURE, 
+        material_ref(material)->pipeline, texture.slot_hash, KB_BINDING_TYPE_TEXTURE, 
         KB_SHADER_STAGE_VERTEX | KB_SHADER_STAGE_FRAGMENT
       );
       kb_encoder_bind_texture(encoder, texture_slot, texture.texture);

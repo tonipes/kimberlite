@@ -381,11 +381,11 @@ KB_INTERNAL bool acquire_frame_resources() {
   return true;
 }
 
-KB_INTERNAL kb_shader_binding_type get_binding_type(MTLArgumentType type) {
+KB_INTERNAL kb_binding_type get_binding_type(MTLArgumentType type) {
   switch (type) {
-    case MTLArgumentTypeBuffer:   return KB_SHADER_BINDING_TYPE_UNIFORM_BUFFER;
-    case MTLArgumentTypeTexture:  return KB_SHADER_BINDING_TYPE_TEXTURE;
-    default:                      return KB_SHADER_BINDING_TYPE_UNSUPPORTED;
+    case MTLArgumentTypeBuffer:   return KB_BINDING_TYPE_UNIFORM_BUFFER;
+    case MTLArgumentTypeTexture:  return KB_BINDING_TYPE_TEXTURE;
+    default:                      return KB_BINDING_TYPE_UNSUPPORTED;
   }
 }
 

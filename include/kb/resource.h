@@ -48,7 +48,7 @@ struct kb_resource_slot_allocator {
   kb_resource_slot_allocator() {
     kb_table_create     (&table, cap);
     kb_freelist_create  (&freelist, cap);
-    kb_memset(&refcount, 0, sizeof(refcount));
+    // kb_memset(&refcount, 0, sizeof(refcount));
   }
 
   ~kb_resource_slot_allocator() {
@@ -63,7 +63,7 @@ struct kb_resource_slot_allocator {
     }
   }
 
-  uint16_t      refcount  [cap];
+  // uint16_t      refcount  [cap];
   kb_freelist   freelist;
   kb_table      table;
 };

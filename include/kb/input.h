@@ -294,8 +294,8 @@ KB_API_INLINE   bool          kb_input_gamepad_button_up            (uint32_t ga
 KB_API_INLINE   bool          kb_input_gamepad_button_released      (uint32_t gamepad, kb_gamepad_button button)      { return kb_deactivated(state_curr.gamepad[gamepad].button, state_prev.gamepad[gamepad].button, button); }
 KB_API_INLINE   bool          kb_input_gamepad_button_pressed       (uint32_t gamepad, kb_gamepad_button button)      { return kb_activated(state_curr.gamepad[gamepad].button, state_prev.gamepad[gamepad].button, button); }
 
-KB_API_INLINE   float        kb_input_gamepad_axis_value           (uint32_t gamepad, kb_gamepad_axis axis)          { return uint16_to_float(state_curr.gamepad[gamepad].axis[axis]); }
-KB_API_INLINE   float        kb_input_gamepad_axis_delta           (uint32_t gamepad, kb_gamepad_axis axis)          { return uint16_to_float(state_curr.gamepad[gamepad].axis[axis] - state_prev.gamepad[gamepad].axis[axis]); }
+KB_API_INLINE   float         kb_input_gamepad_axis_value           (uint32_t gamepad, kb_gamepad_axis axis)          { return uint16_to_float(state_curr.gamepad[gamepad].axis[axis]); }
+KB_API_INLINE   float         kb_input_gamepad_axis_delta           (uint32_t gamepad, kb_gamepad_axis axis)          { return uint16_to_float(state_curr.gamepad[gamepad].axis[axis] - state_prev.gamepad[gamepad].axis[axis]); }
 KB_API_INLINE   Float2        kb_input_gamepad_joystick_axis_value  (uint32_t gamepad, kb_gamepad_joystick_axis axis) { return (Float2) { kb_input_gamepad_axis_value(gamepad, axis.x), kb_input_gamepad_axis_value(gamepad, axis.y) }; }
 KB_API_INLINE   Float2        kb_input_gamepad_joystick_axis_delta  (uint32_t gamepad, kb_gamepad_joystick_axis axis) { return (Float2) { kb_input_gamepad_axis_delta(gamepad, axis.x), kb_input_gamepad_axis_delta(gamepad, axis.y) }; }
 KB_API_INLINE   Float2        kb_input_gamepad_joystick_value       (uint32_t gamepad, kb_gamepad_joystick joystick)  { return kb_input_gamepad_joystick_axis_value(gamepad, joystick_axis[joystick]); }

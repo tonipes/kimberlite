@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
-#include <signal.h>
 
 KB_API void kb_memset(void* dst, uint8_t ch, size_t count) {
   memset(dst, ch, count);
@@ -101,18 +100,6 @@ KB_API void* kb_memdup(void* src, uint64_t size) {
   void* p = KB_DEFAULT_ALLOC(size);
   kb_memcpy(p, src, size);
   return p;
-}
-
-KB_API void kb_raise(kb_signal signal) {
-  raise(signal);
-}
-
-KB_API void kb_set_signal_handler(kb_signal_handler handler, kb_signal sig) {
-  signal(sig, handler);
-}
-
-KB_API void kb_exit(int value) {
-  exit(value);
 }
 
 KB_API void kb_sort(void* data, size_t num, size_t size, kb_compare compare) {

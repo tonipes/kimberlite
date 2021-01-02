@@ -46,6 +46,8 @@ KB_INTERNAL inline bool valid_alloc_header(void* ptr) {
   return ((kb_alloc_header*) ptr)->check == header_check;
 }
 
+#if false
+
 KB_INTERNAL inline void write_alloc_header(void* ptr, uint64_t size, uint64_t distance) {
   ((kb_alloc_header*) ptr)->check     = size == 0 ? 0 : header_check;
   ((kb_alloc_header*) ptr)->size      = size;
@@ -99,6 +101,22 @@ KB_INTERNAL void* root_realloc(void* ptr, uint32_t size, uint32_t align) {
   
   return aligned_ptr_new;
 }
+
+#else
+
+KB_INTERNAL void* root_alloc(uint64_t size, uint32_t align) {
+  return (uint8_t*) malloc(size);
+}
+
+KB_INTERNAL void root_free(void* ptr) {
+  free(ptr);
+}
+
+KB_INTERNAL void* root_realloc(void* ptr, uint32_t size, uint32_t align) {
+  return realloc(ptr, size);
+}
+
+#endif
 
 KB_INTERNAL void* default_alloc(kb_allocator* alloc, void* ptr, size_t size, size_t align) {
   if (ptr == NULL && size == 0) return NULL;

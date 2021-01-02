@@ -139,18 +139,18 @@ KB_API void kb_graphics_run_encoders() {
 }
 
 KB_API void kb_graphics_frame() {
-  // double current = kb_time();
-  // double frametime = current - last_frame_start_time;
-  // last_frame_start_time = current;
+  double current = kb_time();
+  double frametime = current - last_frame_start_time;
+  last_frame_start_time = current;
   
-  // kb_sampler_push(&frametime_sampler, frametime);
+  kb_sampler_push(&frametime_sampler, frametime);
 
-  // update_stats();
+  update_stats();
   
   kb_platform_graphics_frame();
 
   // Reset pool
-  
+
   kb_encoder_pool& current_pool = current_encoder_pool();
   for (int i = 0; i < current_pool.count; ++i) {
     current_pool.states[i] = {};
@@ -221,31 +221,31 @@ KB_API void kb_graphics_wait_device_idle() {
   kb_platform_graphics_wait_device_idle();
 }
 
-KB_API kb_uniform_slot kb_pipeline_get_uniform_slot(kb_pipeline pipeline, kb_hash hash, kb_shader_binding_type type, kb_shader_stage stage) {
+KB_API kb_uniform_slot kb_pipeline_get_uniform_slot(kb_pipeline pipeline, kb_hash hash, kb_binding_type type, kb_shader_stage stage) {
   KB_ASSERT_VALID(pipeline);
 
   kb_uniform_slot out {};
 
   if (stage & KB_SHADER_STAGE_VERTEX) {
 
-    if (type == KB_SHADER_BINDING_TYPE_UNIFORM_BUFFER) {
+    if (type == KB_BINDING_TYPE_UNIFORM_BUFFER) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
         kb_uniform_buffer_info& buffer_info = pipeline_info_ref(pipeline)->uniform_layout.vert_ubos[i];
         if (kb_hash_string(buffer_info.name) == hash) { // VBO found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
-          out.type = KB_SHADER_BINDING_TYPE_UNIFORM_BUFFER;
+          out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
           out.vert_index = buffer_info.slot;
           break;
         }
       }
     }
 
-    else if (type == KB_SHADER_BINDING_TYPE_TEXTURE) {
+    else if (type == KB_BINDING_TYPE_TEXTURE) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
         kb_uniform_texture_info& texture_info = pipeline_info_ref(pipeline)->uniform_layout.vert_textures[i];
         if (kb_hash_string(texture_info.name) == hash) { // Texture found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
-          out.type = KB_SHADER_BINDING_TYPE_TEXTURE;
+          out.type = KB_BINDING_TYPE_TEXTURE;
           out.vert_index = texture_info.slot;
           break;
         }
@@ -256,24 +256,24 @@ KB_API kb_uniform_slot kb_pipeline_get_uniform_slot(kb_pipeline pipeline, kb_has
 
   if (stage & KB_SHADER_STAGE_FRAGMENT) {
 
-    if (type == KB_SHADER_BINDING_TYPE_UNIFORM_BUFFER) {
+    if (type == KB_BINDING_TYPE_UNIFORM_BUFFER) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
         kb_uniform_buffer_info& buffer_info = pipeline_info_ref(pipeline)->uniform_layout.frag_ubos[i];
         if (kb_hash_string(buffer_info.name) == hash) { // VBO found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
-          out.type = KB_SHADER_BINDING_TYPE_UNIFORM_BUFFER;
+          out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
           out.frag_index = buffer_info.slot;
           break;
         }
       }
     }
 
-    else if (type == KB_SHADER_BINDING_TYPE_TEXTURE) {
+    else if (type == KB_BINDING_TYPE_TEXTURE) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
         kb_uniform_texture_info& texture_info = pipeline_info_ref(pipeline)->uniform_layout.frag_textures[i];
         if (kb_hash_string(texture_info.name) == hash) { // Texture found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
-          out.type = KB_SHADER_BINDING_TYPE_TEXTURE;
+          out.type = KB_BINDING_TYPE_TEXTURE;
           out.frag_index = texture_info.slot;
           break;
         }

@@ -33,9 +33,10 @@ auto get_level_color(kb_log_level level) -> const char* {
   }
 }
 
-static kb_log_level log_level = kb_log_level::KB_LOG_LEVEL_TRACE;
-static bool         log_color = true;
-static kb_mutex*    log_mutex = NULL; //kb_mutex_create();
+static kb_log_level log_level   = kb_log_level::KB_LOG_LEVEL_TRACE;
+static bool         log_color   = true;
+static bool         log_header  = true;
+static kb_mutex*    log_mutex   = NULL; //kb_mutex_create();
 
 inline void print(const char* str) {
   kb_printf("%s", str);
@@ -45,6 +46,10 @@ void kb_log_set_color(bool enabled) {
   log_color = enabled;
 }
 
+void kb_log_set_header(bool enabled) {
+  log_header = enabled;
+}
+
 void kb_log_set_level(kb_log_level level) {
   log_level = level;
 };
@@ -52,23 +57,27 @@ void kb_log_set_level(kb_log_level level) {
 void kb_log_line(kb_log_level level, const char* msg) {
   if (level >= log_level) {
     if (log_mutex) kb_mutex_lock(log_mutex);
+    
     {
-      if (log_color) {
-        print("\e[");
-        print(get_level_color(level));
-        print("m");
+      if (log_header) {
+        if (log_color) {
+          print("\e[");
+          print(get_level_color(level));
+          print("m");
+        }
+        
+        print("[");
+        print(get_level_str(level));
+        print("] ");
+        
+        if (log_color) print("\e[0;37m");
+        if (log_color) print("\e[0;39m");
       }
-      
-      print("[");
-      print(get_level_str(level));
-      print("] ");
-      
-      if (log_color) print("\e[0;37m");
-      if (log_color) print("\e[0;39m");
 
       print(msg);
       print("\n");
     }
+    
     if (log_mutex) kb_mutex_unlock(log_mutex);
   }
 }

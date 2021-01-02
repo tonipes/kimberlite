@@ -23,6 +23,7 @@ typedef enum kb_log_level {
 void kb_log_line        (kb_log_level level, const char* msg);
 void kb_log_set_level   (kb_log_level level);
 void kb_log_set_color   (bool enabled);
+void kb_log_set_header  (bool enabled);
 
 #ifdef __cplusplus
 }

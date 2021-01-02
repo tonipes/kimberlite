@@ -352,7 +352,7 @@ KB_API void kb_encoder_bind_font(kb_encoder encoder, kb_font font) {
   kb_encoder_bind_pipeline(encoder, font_ref(font)->pipeline);
   
   kb_uniform_slot atlas_slot = kb_pipeline_get_uniform_slot(
-    font_ref(font)->pipeline, "color_map"_h, KB_SHADER_BINDING_TYPE_TEXTURE, KB_SHADER_STAGE_FRAGMENT
+    font_ref(font)->pipeline, "color_map"_h, KB_BINDING_TYPE_TEXTURE, KB_SHADER_STAGE_FRAGMENT
   );
   
   kb_encoder_bind_texture(encoder, atlas_slot, font_ref(font)->atlas);

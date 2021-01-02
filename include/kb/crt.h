@@ -39,9 +39,6 @@ KB_API bool   kb_fromstr_int        (int32_t* dst, const char* str);
 KB_API bool   kb_fromstr_float      (float*   dst, const char* str);
 KB_API char*  kb_strdup             (const char* src);
 KB_API void*  kb_memdup             (void* src, uint64_t size);
-KB_API void   kb_raise              (kb_signal signal);
-KB_API void   kb_set_signal_handler (kb_signal_handler handler, kb_signal signal);
-KB_API void   kb_exit               (int value);
 KB_API void   kb_sort               (void* data, size_t num, size_t size, kb_compare compare);
 
 #ifdef __cplusplus
