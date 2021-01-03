@@ -6,7 +6,7 @@
 
 #define KB_TOOL_ONLY
 
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kbextra/cliargs.h>
 
 #include "kb/alloc.cpp"
@@ -61,15 +61,15 @@ int main(int argc, const char* argv[]) {
     return EXIT_FAIL;
   }
 
-  kb_rwops* rwops_in = kb_rwops_open_file(in_filepath, KB_FILE_MODE_READ);
+  kb_stream* rwops_in = kb_stream_open_file(in_filepath, KB_FILE_MODE_READ);
   if (!rwops_in) {
     print_help("Unable to open input file");
     return EXIT_FAIL;
   }
   
-  kb_rwops* rwops_out = kb_rwops_open_file(out_filepath, KB_FILE_MODE_WRITE);
+  kb_stream* rwops_out = kb_stream_open_file(out_filepath, KB_FILE_MODE_WRITE);
   if (!rwops_out) {
-    kb_rwops_close(rwops_in);
+    kb_stream_close(rwops_in);
     print_help("Unable to open output file");
     return EXIT_FAIL;
   }
@@ -79,30 +79,30 @@ int main(int argc, const char* argv[]) {
 
   // Write header
   count = kb_snprintf(buf, BUF_SIZE, "static const uint8_t %s[] = {\n  ", arr_name);
-  kb_rwops_write(rwops_out, buf, 1, count);
+  kb_stream_write(rwops_out, buf, 1, count);
 
   // Dump file
   unsigned char c;
   uint32_t col = 0;
-  while (kb_rwops_read(rwops_in, &c, 1, 1) == 1) {
+  while (kb_stream_read(rwops_in, &c, 1, 1) == 1) {
     count = kb_snprintf(buf, BUF_SIZE, "0x%.2X, ", (int) c);
 
-    kb_rwops_write(rwops_out, buf, 1, count);
+    kb_stream_write(rwops_out, buf, 1, count);
 
     col += count;
     if (col >= MAX_COL) {
       col = 0;
-      kb_rwops_write(rwops_out, "\n  ", 1, 3);
+      kb_stream_write(rwops_out, "\n  ", 1, 3);
     }
   }
 
   // Ending
-  if (col != 0) kb_rwops_write(rwops_out, "\n", 1, 1);
-  kb_rwops_write(rwops_out, "};\n", 1, 3);
+  if (col != 0) kb_stream_write(rwops_out, "\n", 1, 1);
+  kb_stream_write(rwops_out, "};\n", 1, 3);
 
   // Cleanup
-  kb_rwops_close(rwops_in);
-  kb_rwops_close(rwops_out);
+  kb_stream_close(rwops_in);
+  kb_stream_close(rwops_out);
 
 	return EXIT_SUCCESS;
 }

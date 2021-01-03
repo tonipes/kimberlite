@@ -8,7 +8,7 @@
 #include <kb/platform.h>
 
 #include <kb/core.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kb/rand.h>
 
 KB_RESOURCE_ALLOC_FUNC_DEF  (sound,       kb_sound, kb_sound_create_info, KB_CONFIG_MAX_SOUNDS);

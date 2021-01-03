@@ -48,13 +48,13 @@ KB_INTERNAL inline bool valid_alloc_header(void* ptr) {
 
 #if false
 
-KB_INTERNAL inline void write_alloc_header(void* ptr, uint64_t size, uint64_t distance) {
+KB_INTERNAL inline void write_alloc_header(void* ptr, size_t size, size_t distance) {
   ((kb_alloc_header*) ptr)->check     = size == 0 ? 0 : header_check;
   ((kb_alloc_header*) ptr)->size      = size;
   ((kb_alloc_header*) ptr)->distance  = distance;
 }
 
-KB_INTERNAL void* root_alloc(uint64_t size, uint32_t align) {
+KB_INTERNAL void* root_alloc(size_t size, size_t align) {
   uint64_t total_size     = total_alloc_size(size, align);
   uint8_t* real_ptr       = (uint8_t*) malloc(total_size);
   uint8_t* aligned_ptr    = (uint8_t*) real_to_aligned(real_ptr, sizeof(kb_alloc_header), align);
@@ -80,7 +80,7 @@ KB_INTERNAL void root_free(void* aligned_ptr) {
   free(real_ptr);
 }
 
-KB_INTERNAL void* root_realloc(void* ptr, uint32_t size, uint32_t align) {
+KB_INTERNAL void* root_realloc(void* ptr, size_t size, size_t align) {
   uint8_t* aligned_ptr_old    = (uint8_t*) ptr;
   uint64_t total_size         = total_alloc_size(size, align);
   kb_alloc_header* header_old = (kb_alloc_header*) (aligned_ptr_old - sizeof(kb_alloc_header));
@@ -104,7 +104,7 @@ KB_INTERNAL void* root_realloc(void* ptr, uint32_t size, uint32_t align) {
 
 #else
 
-KB_INTERNAL void* root_alloc(uint64_t size, uint32_t align) {
+KB_INTERNAL void* root_alloc(size_t size, size_t align) {
   return (uint8_t*) malloc(size);
 }
 
@@ -112,7 +112,7 @@ KB_INTERNAL void root_free(void* ptr) {
   free(ptr);
 }
 
-KB_INTERNAL void* root_realloc(void* ptr, uint32_t size, uint32_t align) {
+KB_INTERNAL void* root_realloc(void* ptr, size_t size, size_t align) {
   return realloc(ptr, size);
 }
 

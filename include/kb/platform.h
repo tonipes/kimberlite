@@ -8,7 +8,7 @@
 
 #include <kb/core.h>
 #include <kb/alloc.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kb/math.h>
 #include <kb/graphics.h>
 #include <kb/input.h>
@@ -21,8 +21,8 @@ extern "C" {
 KB_API void           kb_platform_pump_events                         ();
 KB_API bool           kb_platform_should_close                        ();
 
-KB_API kb_rwops*      kb_platform_rwops_file_open                     (const char* path);
-KB_API void           kb_platform_rwops_file_close                    (kb_rwops* rwops);
+KB_API kb_stream*      kb_platform_rwops_file_open                     (const char* path);
+KB_API void           kb_platform_rwops_file_close                    (kb_stream* rwops);
 
 KB_API void           kb_platform_graphics_init                       (const kb_graphics_init_info info);
 KB_API void           kb_platform_graphics_deinit                     ();

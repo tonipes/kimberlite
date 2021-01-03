@@ -7,10 +7,10 @@
 #include <kbextra/font.h>
 
 #include <kb/core.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kb/alloc.h>
 #include <kb/graphics.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kb/log.h>
 
 #include <kbextra/vertex.h>
@@ -126,11 +126,11 @@ KB_API uint32_t kb_from_utf8(kb_wchar* dst, const char* src, uint32_t len) {
   return 0;
 }
 
-KB_API void kb_font_data_read(kb_font_data* font, kb_rwops* rwops) {
+KB_API void kb_font_data_read(kb_font_data* font, kb_stream* rwops) {
   KB_ASSERT_NOT_NULL(font);
   KB_ASSERT_NOT_NULL(rwops);
 
-  if (!kb_rwops_check_magic(rwops, KB_CONFIG_FILE_MAGIC_FONT)) {
+  if (!kb_stream_check_magic(rwops, KB_CONFIG_FILE_MAGIC_FONT)) {
     kb_printf("Did not find correct magic number!\n");
     return;
   }
@@ -153,7 +153,7 @@ KB_API void kb_font_data_read(kb_font_data* font, kb_rwops* rwops) {
   kb_read(rwops, font->atlas_bitmap_size);
 
   font->atlas_bitmap = KB_DEFAULT_ALLOC(font->atlas_bitmap_size);
-  kb_rwops_read(rwops, font->atlas_bitmap, 1,  font->atlas_bitmap_size);
+  kb_stream_read(rwops, font->atlas_bitmap, 1,  font->atlas_bitmap_size);
 
   // Build char table
   kb_table_create(&font->info.char_table, font->info.char_count);
@@ -163,7 +163,7 @@ KB_API void kb_font_data_read(kb_font_data* font, kb_rwops* rwops) {
   }
 }
 
-KB_API void kb_font_data_write(const kb_font_data* font, kb_rwops* rwops) {
+KB_API void kb_font_data_write(const kb_font_data* font, kb_stream* rwops) {
   KB_ASSERT_NOT_NULL(font);
   KB_ASSERT_NOT_NULL(rwops);
 
@@ -186,7 +186,7 @@ KB_API void kb_font_data_write(const kb_font_data* font, kb_rwops* rwops) {
   kb_write(rwops, font->atlas_bitmap_height);
   kb_write(rwops, font->atlas_bitmap_size);
 
-  kb_rwops_write(rwops, font->atlas_bitmap, 1, font->atlas_bitmap_size);
+  kb_stream_write(rwops, font->atlas_bitmap, 1, font->atlas_bitmap_size);
 }
 
 KB_API void kb_font_data_dump_info(const kb_font_data* font) {
@@ -320,10 +320,6 @@ KB_API Float2 kb_font_get_string_dimensions(kb_font_info* info, const char* str,
 
 struct kb_font_ref {
   kb_font_info  info;
-  kb_texture    atlas;
-  kb_pipeline   pipeline;
-  uint32_t      atlas_width;
-  uint32_t      atlas_height;
 };
 
 KB_RESOURCE_STORAGE_DEF       (font, kb_font, kb_font_ref, KB_CONFIG_MAX_FONTS);
@@ -331,32 +327,14 @@ KB_RESOURCE_ALLOC_FUNC_DEF    (font, kb_font, kb_font_create_info, KB_CONFIG_MAX
 KB_RESOURCE_DATA_HASHED_DEF   (font, kb_font);
 
 void kb_font_construct(kb_font handle, const kb_font_create_info info) {
-  // kb_font_ref& ref = font_ref(handle);
-
   font_ref(handle)->info            = info.info;
   font_ref(handle)->info.chars      = (kb_font_char*) kb_memdup(info.info.chars, sizeof(kb_font_char) * info.info.char_count);
   kb_table_copy(&font_ref(handle)->info.char_table, &info.info.char_table);
-
-  font_ref(handle)->atlas_height  = info.atlas_height;
-  font_ref(handle)->atlas_width   = info.atlas_width;
-  font_ref(handle)->atlas         = info.atlas;
-  font_ref(handle)->pipeline      = info.pipeline;
 }
 
 void kb_font_destruct(kb_font handle) { 
   KB_DEFAULT_FREE(font_ref(handle)->info.chars);
   kb_table_destroy(&font_ref(handle)->info.char_table);
-  kb_texture_destruct(font_ref(handle)->atlas);
-}
-
-KB_API void kb_encoder_bind_font(kb_encoder encoder, kb_font font) {
-  kb_encoder_bind_pipeline(encoder, font_ref(font)->pipeline);
-  
-  kb_uniform_slot atlas_slot = kb_pipeline_get_uniform_slot(
-    font_ref(font)->pipeline, "color_map"_h, KB_BINDING_TYPE_TEXTURE, KB_SHADER_STAGE_FRAGMENT
-  );
-  
-  kb_encoder_bind_texture(encoder, atlas_slot, font_ref(font)->atlas);
 }
 
 void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, uint32_t len, Float2 origin, Float2 scale, Float2 align, Float2 offset, uint32_t instance_count) {

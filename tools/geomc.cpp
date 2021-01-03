@@ -147,8 +147,8 @@ int main(int argc, const char* argv[]) {
   uint32_t        input_size        = 0;
   void*           input_data        = nullptr;
 
-  kb_rwops*       rwops_in          = nullptr;
-  kb_rwops*       rwops_out         = nullptr;
+  kb_stream*       rwops_in          = nullptr;
+  kb_stream*       rwops_out         = nullptr;
   const char*     in_filepath       = nullptr;
   const char*     out_filepath      = nullptr;
 
@@ -188,22 +188,22 @@ int main(int argc, const char* argv[]) {
     goto end;
   }
 
-  rwops_in = kb_rwops_open_file(in_filepath, KB_FILE_MODE_READ);
+  rwops_in = kb_stream_open_file(in_filepath, KB_FILE_MODE_READ);
   if (!rwops_in) {
     print_help("Unable to open input file");
     goto end;
   }
 
-  rwops_out = kb_rwops_open_file(out_filepath, KB_FILE_MODE_WRITE);
+  rwops_out = kb_stream_open_file(out_filepath, KB_FILE_MODE_WRITE);
   if (!rwops_out) {
     print_help("Unable to open output file");
     goto end;
   }
 
   // Load
-  input_size = kb_rwops_size(rwops_in);
+  input_size = kb_stream_size(rwops_in);
   input_data = KB_DEFAULT_ALLOC(input_size);
-  kb_rwops_read(rwops_in, input_data, 1, input_size);
+  kb_stream_read(rwops_in, input_data, 1, input_size);
 
   // Parse GLTF
 	result = cgltf_parse(&options, input_data, input_size, &gltf_data);
@@ -670,8 +670,8 @@ int main(int argc, const char* argv[]) {
   exit_val = EXIT_SUCCESS;
 
 end:
-  kb_rwops_close(rwops_in);
-  kb_rwops_close(rwops_out);
+  kb_stream_close(rwops_in);
+  kb_stream_close(rwops_out);
   
   kb_geometry_data_destroy(&geom);
 

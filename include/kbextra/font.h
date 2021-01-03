@@ -9,12 +9,10 @@
 #include <kb/core.h>
 #include <kb/handle.h>
 #include <kb/math.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kb/table.h>
 #include <kb/resource.h>
 #include <kb/graphics.h>
-
-// KB_HANDLE(kb_font);
 
 typedef uint32_t kb_wchar;
 
@@ -25,7 +23,7 @@ typedef uint32_t kb_wchar;
 extern "C" {
 #endif
 
-typedef struct kb_font  { kb_handle_idx idx; } kb_font;
+KB_HANDLE(kb_font);
 
 typedef struct kb_font_char {
   uint32_t      codepoint;
@@ -66,10 +64,6 @@ typedef struct kb_font_render_info {
 
 typedef struct kb_font_create_info {
   kb_font_info  info;
-  kb_pipeline   pipeline;
-  kb_texture    atlas;
-  uint32_t      atlas_height;
-  uint32_t      atlas_width;
 } kb_font_create_info;
 
 KB_RESOURCE_HASHED_FUNC_DECLS (font, kb_font, kb_font_create_info);
@@ -84,8 +78,8 @@ KB_API uint32_t kb_to_utf8    (char* dst, int dst_size, kb_wchar* c);
 // Count codepoints in string
 KB_API uint32_t kb_count_utf8 (const char* str, uint32_t n);
 
-KB_API void   kb_font_data_read               (kb_font_data* font, kb_rwops* rwops);
-KB_API void   kb_font_data_write              (const kb_font_data* font, kb_rwops* rwops);
+KB_API void   kb_font_data_read               (kb_font_data* font, kb_stream* rwops);
+KB_API void   kb_font_data_write              (const kb_font_data* font, kb_stream* rwops);
 KB_API void   kb_font_data_dump_info          (const kb_font_data* font);
 KB_API void   kb_font_data_destroy            (kb_font_data* font);
 
@@ -95,7 +89,6 @@ KB_API void   kb_font_quad_advance            (kb_font_info* info, int codepoint
 KB_API float  kb_font_get_line_height         (kb_font_info* info);
 KB_API Float2 kb_font_get_string_dimensions   (kb_font_info* info, const char* str, uint32_t len);
 
-KB_API void   kb_encoder_bind_font            (kb_encoder encoder, kb_font font);
 KB_API void   kb_encoder_submit_text          (kb_encoder encoder, kb_font font, const char* str, uint32_t len, Float2 origin, Float2 scale, Float2 align, Float2 offset, uint32_t instance_count);
 
 KB_API kb_font_info* kb_font_get_info         (kb_font font);

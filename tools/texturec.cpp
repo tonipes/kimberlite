@@ -28,25 +28,25 @@
 #define EXIT_SUCCESS  0
 
 int std_io_rwops_read(void* user, char* data, int size) {
-  kb_rwops* io = (kb_rwops*) user;
-  int ret = kb_rwops_read(io, data, 1, size);
+  kb_stream* io = (kb_stream*) user;
+  int ret = kb_stream_read(io, data, 1, size);
   return (int) ret * sizeof(char);
 }
 
 void std_io_rwops_skip(void* user, int n) {
-	kb_rwops* io = (kb_rwops*) user;
+	kb_stream* io = (kb_stream*) user;
 
-	kb_rwops_seek(io, n, KB_RWOPS_SEEK_CUR);
+	kb_stream_seek(io, n, KB_RWOPS_SEEK_CUR);
 }
 
 int std_io_rwops_eof(void* user) {
-	kb_rwops* io = (kb_rwops*) user;
+	kb_stream* io = (kb_stream*) user;
   
   uint32_t d;
-  uint64_t c = kb_rwops_read(io, &d, 1, 1);
+  uint64_t c = kb_stream_read(io, &d, 1, 1);
   
   if (c != 0) {
-    kb_rwops_seek(io, -c, KB_RWOPS_SEEK_CUR);
+    kb_stream_seek(io, -c, KB_RWOPS_SEEK_CUR);
     return 0;
   }
 
@@ -70,8 +70,8 @@ void print_help(const char* error = nullptr) {
 
 int main(int argc, const char* argv[]) {
   int             exit_val      = EXIT_FAIL;
-  kb_rwops*       rwops_in      = nullptr;
-  kb_rwops*       rwops_out     = nullptr;
+  kb_stream*       rwops_in      = nullptr;
+  kb_stream*       rwops_out     = nullptr;
   const char*     in_filepath   = nullptr;
   const char*     out_filepath  = nullptr;
   int             tex_width     = 0;
@@ -101,13 +101,13 @@ int main(int argc, const char* argv[]) {
     goto end;
   }
 
-  rwops_in = kb_rwops_open_file(in_filepath, KB_FILE_MODE_READ);
+  rwops_in = kb_stream_open_file(in_filepath, KB_FILE_MODE_READ);
   if (!rwops_in) {
     print_help("Unable to open input file");
     goto end;
   }
 
-  rwops_out = kb_rwops_open_file(out_filepath, KB_FILE_MODE_WRITE);
+  rwops_out = kb_stream_open_file(out_filepath, KB_FILE_MODE_WRITE);
   if (!rwops_out) {
     print_help("Unable to open output file");
     goto end;
@@ -136,8 +136,8 @@ int main(int argc, const char* argv[]) {
 end:
   stbi_image_free(pixel_data);
 
-  kb_rwops_close(rwops_in);
-  kb_rwops_close(rwops_out);
+  kb_stream_close(rwops_in);
+  kb_stream_close(rwops_out);
 
   return exit_val;
 }

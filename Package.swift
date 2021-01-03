@@ -27,11 +27,10 @@ let package = Package(
         "assets",
         "test",
         "examples",
-        "source/platform",
+        "tools",
         "source",
         "meson.build",
         "meson_options.txt",
-        "**/*.build",
       ],
       sources: [
         "amalgamated.cpp",

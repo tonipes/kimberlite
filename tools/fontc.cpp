@@ -45,8 +45,8 @@ const float     font_size             = 64.0f;
 const uint32_t  channels              = 4;
 
 void write_func(void* user, void* data, int size) {
-  kb_rwops* io = (kb_rwops*) user;
-  kb_rwops_write(io, data, 1, size);
+  kb_stream* io = (kb_stream*) user;
+  kb_stream_write(io, data, 1, size);
 }
 
 void print_help(const char* error = nullptr) {
@@ -66,8 +66,8 @@ struct Range {
 int main(int argc, const char* argv[]) {
   int exit_val = EXIT_FAIL;
   
-  kb_rwops*       rwops_in            = nullptr;
-  kb_rwops*       rwops_out           = nullptr;
+  kb_stream*       rwops_in            = nullptr;
+  kb_stream*       rwops_out           = nullptr;
   const char*     in_filepath         = nullptr;
   const char*     out_filepath        = nullptr;
   int32_t         range_count         = 0;
@@ -95,13 +95,13 @@ int main(int argc, const char* argv[]) {
     goto end;
   }
 
-  rwops_in = kb_rwops_open_file(in_filepath, KB_FILE_MODE_READ);
+  rwops_in = kb_stream_open_file(in_filepath, KB_FILE_MODE_READ);
   if (!rwops_in) {
     print_help("Unable to open input file");
     goto end;
   }
 
-  rwops_out = kb_rwops_open_file(out_filepath, KB_FILE_MODE_WRITE);
+  rwops_out = kb_stream_open_file(out_filepath, KB_FILE_MODE_WRITE);
   if (!rwops_out) {
     print_help("Unable to open output file");
     goto end;
@@ -133,9 +133,9 @@ int main(int argc, const char* argv[]) {
 
     unsigned char** fontchar_data = KB_DEFAULT_ALLOC_TYPE(unsigned char*, total_char_count);
 
-    uint64_t font_data_size = kb_rwops_size(rwops_in);
+    uint64_t font_data_size = kb_stream_size(rwops_in);
     unsigned char* font_data = (unsigned char*) KB_DEFAULT_ALLOC(font_data_size);
-    uint64_t read = kb_rwops_read(rwops_in, font_data, 1, font_data_size);
+    uint64_t read = kb_stream_read(rwops_in, font_data, 1, font_data_size);
     kb_log_debug("Size: {}, Read: {}", font_data_size, read);
 
     stbtt_fontinfo font_info;
@@ -275,8 +275,8 @@ int main(int argc, const char* argv[]) {
 
   exit_val = EXIT_SUCCESS;
 end:
-  kb_rwops_close(rwops_in);
-  kb_rwops_close(rwops_out);
+  kb_stream_close(rwops_in);
+  kb_stream_close(rwops_out);
 
   return exit_val;
 }

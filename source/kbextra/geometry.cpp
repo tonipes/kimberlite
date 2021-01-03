@@ -10,7 +10,7 @@
 #include <kb/alloc.h>
 #include <kb/graphics.h>
 #include <kb/log.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 
 void kb_geometry_data_dump_info(const kb_geometry_data* geom) {
   KB_ASSERT_NOT_NULL(geom);
@@ -41,11 +41,11 @@ void kb_geometry_data_dump_info(const kb_geometry_data* geom) {
   kb_log_debug("\tVertex data: {} bytes", geom->vertex_data_size);
 }
 
-void kb_geometry_data_read(kb_geometry_data* geom, kb_rwops* rwops) {
+void kb_geometry_data_read(kb_geometry_data* geom, kb_stream* rwops) {
   KB_ASSERT_NOT_NULL(geom);
   KB_ASSERT_NOT_NULL(rwops);
 
-  if (!kb_rwops_check_magic(rwops, KB_CONFIG_FILE_MAGIC_GEOM)) {
+  if (!kb_stream_check_magic(rwops, KB_CONFIG_FILE_MAGIC_GEOM)) {
     kb_log_debug("Did not find correct magic number!");
     return;
   }
@@ -94,11 +94,11 @@ void kb_geometry_data_read(kb_geometry_data* geom, kb_rwops* rwops) {
   geom->vertex_data = KB_DEFAULT_ALLOC(geom->vertex_data_size);
   geom->index_data  = KB_DEFAULT_ALLOC(geom->index_data_size);
 
-  kb_rwops_read(rwops, geom->vertex_data,  1, geom->vertex_data_size);
-  kb_rwops_read(rwops, geom->index_data,   1, geom->index_data_size);
+  kb_stream_read(rwops, geom->vertex_data,  1, geom->vertex_data_size);
+  kb_stream_read(rwops, geom->index_data,   1, geom->index_data_size);
 }
 
-void kb_geometry_data_write(const kb_geometry_data* geom, kb_rwops* rwops) {
+void kb_geometry_data_write(const kb_geometry_data* geom, kb_stream* rwops) {
   KB_ASSERT_NOT_NULL(geom);
   KB_ASSERT_NOT_NULL(rwops);
 
@@ -139,8 +139,8 @@ void kb_geometry_data_write(const kb_geometry_data* geom, kb_rwops* rwops) {
   }
 
   // Vertex data
-  kb_rwops_write(rwops, geom->vertex_data,  1, geom->vertex_data_size);
-  kb_rwops_write(rwops, geom->index_data,   1, geom->index_data_size);
+  kb_stream_write(rwops, geom->vertex_data,  1, geom->vertex_data_size);
+  kb_stream_write(rwops, geom->index_data,   1, geom->index_data_size);
 }
 
 void kb_geometry_data_destroy(kb_geometry_data* geom) {

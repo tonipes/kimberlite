@@ -10,7 +10,7 @@
 #include <kb/handle.h>
 #include <kb/resource.h>
 #include <kb/math.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,7 +31,7 @@ typedef struct kb_audio_init_info {
 } kb_audio_init_info;
 
 typedef struct kb_sound_create_info {
-  kb_rwops*               rwops;
+  kb_stream*               rwops;
   kb_sound_playback_info  playback;
 } kb_sound_create_info;
 

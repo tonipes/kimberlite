@@ -11,7 +11,7 @@
 #include <kb/resource.h>
 #include <kb/handle.h>
 #include <kb/math.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -143,35 +143,41 @@ typedef enum kb_filter {
   KB_FILTER_LINEAR                = 1,
 } kb_filter;
 
+typedef enum kb_buffer_mode {
+  KB_BUFFER_MODE_UNKNOWN          = 0,
+  KB_BUFFER_MODE_PRIVATE          = 1,
+  KB_BUFFER_MODE_SHARED           = 2,
+} kb_buffer_mode;
+
 typedef struct kb_texture_info {
-  uint32_t                width;
-  uint32_t                height;
-  kb_format               format;
-  bool                    render_target;
+  uint32_t                  width;
+  uint32_t                  height;
+  kb_format                 format;
+  bool                      render_target;
 } kb_texture_info;
 
 typedef struct kb_texture_data {
-  kb_texture_info         header;
-  uint64_t                data_size;
-  void*                   data;
+  kb_texture_info           header;
+  uint64_t                  data_size;
+  void*                     data;
 } kb_texture_data;
 
 typedef struct kb_shader_binding_slot {
-  kb_binding_type  type;
-  uint32_t                index;
-  uint64_t                size;
-  kb_shader_stage         stages;
+  kb_binding_type           type;
+  uint32_t                  index;
+  uint64_t                  size;
+  kb_shader_stage           stages;
 } kb_shader_binding_slot;
 
 typedef struct kb_uniform_buffer_info {
-  uint32_t                slot;
-  const char*             name;
-  uint32_t                size;
+  uint32_t                  slot;
+  const char*               name;
+  uint32_t                  size;
 } kb_uniform_buffer_info;
 
 typedef struct kb_uniform_texture_info {
-  uint32_t                slot;
-  const char*             name;
+  uint32_t                  slot;
+  const char*               name;
 } kb_uniform_texture_info;
 
 typedef struct kb_uniform_layout {
@@ -182,7 +188,7 @@ typedef struct kb_uniform_layout {
 } kb_uniform_layout;
 
 typedef struct kb_texture_create_info {
-  kb_rwops*                 rwops;
+  kb_stream*                 rwops;
   kb_texture_info           texture;
   bool                      mipmaps;
   kb_filter                 filter;
@@ -195,9 +201,9 @@ typedef struct kb_renderpass_create_info {
 } kb_renderpass_create_info;
 
 typedef struct kb_buffer_create_info {
-  kb_rwops*                 rwops;
+  kb_stream*                rwops;
   uint32_t                  size;
-  bool                      host_mapped;
+  kb_buffer_mode            mode;
 } kb_buffer_create_info;
 
 typedef struct kb_vertex_attrib_info {
@@ -218,7 +224,7 @@ typedef struct kb_vertex_layout_info {
 } kb_vertex_layout_info;
 
 typedef struct kb_shader_info {
-  kb_rwops*                 rwops;
+  kb_stream*                rwops;
   const char*               entry;
 } kb_shader_info;
 
@@ -313,7 +319,7 @@ typedef struct kb_uniform_slot {
   uint32_t                  vert_index;
   uint32_t                  frag_index;
   kb_shader_stage           stage;
-  kb_binding_type    type;
+  kb_binding_type           type;
 } kb_uniform_slot;
 
 KB_RESOURCE_HASHED_FUNC_DECLS (buffer         , kb_buffer         , kb_buffer_create_info         )
@@ -336,12 +342,13 @@ KB_API void                       kb_graphics_wait_device_idle          ();
 KB_API uint32_t                   kb_graphics_get_current_resource_slot ();
 KB_API void*                      kb_graphics_get_buffer_mapped         (kb_buffer buffer);
 KB_API void                       kb_graphics_set_renderpass_order      (uint32_t order, kb_renderpass pass);
+KB_API kb_buffer                  kb_graphics_transient_buffer          ();
 
 KB_API void*                      kb_graphics_transient_at              (uint64_t offset);
 KB_API uint64_t                   kb_graphics_transient_offset          (void* ptr);
 KB_API void*                      kb_graphics_transient_alloc           (uint64_t size, uint64_t align);
 
-KB_API kb_uniform_slot            kb_pipeline_get_uniform_slot          (kb_pipeline pipeline, kb_hash hash, kb_binding_type type, kb_shader_stage stage);
+KB_API kb_uniform_slot            kb_uniform_get_slot                   (const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type, kb_shader_stage stage);
 
 KB_API kb_encoder                 kb_encoder_begin                      ();
 KB_API void                       kb_encoder_end                        (kb_encoder encoder);
@@ -356,8 +363,8 @@ KB_API void                       kb_encoder_bind_uniform               (kb_enco
 KB_API void                       kb_encoder_submit                     (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count, uint32_t instance_count);
 KB_API void                       kb_encoder_reset_frame                (kb_encoder encoder);
 
-KB_API void                       kb_texture_read                       (kb_texture_data* dst, kb_rwops* src);
-KB_API void                       kb_texture_write                      (const kb_texture_data* src, kb_rwops* dst);
+KB_API void                       kb_texture_read                       (kb_texture_data* dst, kb_stream* src);
+KB_API void                       kb_texture_write                      (const kb_texture_data* src, kb_stream* dst);
 
 #ifdef __cplusplus
 }

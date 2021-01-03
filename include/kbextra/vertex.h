@@ -28,8 +28,6 @@ typedef struct kb_simple_vertex {
   Float4                    texcoord;
 } kb_simple_vertex;
 
-extern const kb_vertex_layout_info kb_simple_vertex_layout_info;
-
 typedef struct kb_vertex_attribute {
   uint32_t                  location;
   uint32_t                  count;

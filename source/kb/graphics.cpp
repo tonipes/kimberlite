@@ -39,6 +39,11 @@ typedef struct kb_encoder_pool {
   kb_encoder_state          states[KB_CONFIG_MAX_ENCODERS];
 } kb_encoder_pool;
 
+typedef struct kb_transient_buffer {
+  kb_buffer buffer;
+  uint64_t  position;
+} kb_transient_buffer;
+
 kb_encoder_pool*  encoder_pools;
 
 void reset_encoder_state(kb_encoder_state& state) {
@@ -66,10 +71,14 @@ void destruct_encoder_pools() {
   KB_DEFAULT_FREE(encoder_pools);
 }
 
-kb_graphics_call* draw_call_cache     [KB_CONFIG_MAX_RENDERPASSES];
-uint32_t          draw_call_cache_pos [KB_CONFIG_MAX_RENDERPASSES];
+uint64_t            resource_slot;
 
-kb_renderpass     renderpass_order[KB_CONFIG_MAX_RENDERPASSES];
+kb_graphics_call*   draw_call_cache[KB_CONFIG_MAX_RENDERPASSES];
+uint32_t            draw_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
+
+kb_renderpass       renderpass_order[KB_CONFIG_MAX_RENDERPASSES];
+
+kb_transient_buffer transient_buffers[KB_CONFIG_MAX_FRAMES_IN_FLIGHT];
 
 kb_encoder_pool& current_encoder_pool() {
   return encoder_pools[kb_graphics_get_current_resource_slot()];
@@ -111,9 +120,20 @@ static int draw_call_compare(const void* a, const void* b) {
   return 0;
 }
 
+//KB_INTERNAL kb_transient_buffer& get_current_transient_buffer() {
+//  return &transient_buffers[resource_slot];
+//}
+
+KB_INTERNAL void acquire_frame_resources() {
+//  resource_slot = (resource_slot + 1) % KB_CONFIG_MAX_FRAMES_IN_FLIGHT;
+//  get_current_transient_buffer().position = 0;
+}
+
 KB_API void kb_graphics_set_renderpass_order(uint32_t order, kb_renderpass pass) {
   renderpass_order[order] = pass;
 }
+
+#if true
 
 KB_API void* kb_graphics_transient_alloc(uint64_t size, uint64_t align) {
   return kb_platform_graphics_transient_alloc(size, align);
@@ -127,6 +147,38 @@ KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
   return kb_platform_graphics_transient_offset(ptr);
 }
 
+#else
+
+KB_API kb_buffer kb_graphics_transient_buffer() {
+  return get_current_transient_buffer().buffer;
+}
+  
+KB_API void* kb_graphics_transient_alloc(uint64_t size, uint64_t align) {
+  kb_transient_buffer& buffer = get_current_transient_buffer();
+  uint8_t* mapped = (uint8_t*) kb_graphics_get_buffer_mapped(buffer.buffer);
+  
+  size_t pos = align_up(buffer.position, align);
+  buffer.position = pos + size;
+  
+  return mapped + p;
+}
+
+KB_API void* kb_graphics_transient_at(uint64_t offset) {
+  kb_transient_buffer& buffer = get_current_transient_buffer();
+  uint8_t* mapped = (uint8_t*) kb_graphics_get_buffer_mapped(buffer.buffer);
+
+  if (offset > buffer.position) return NULL;
+
+  return mapped + offset;
+}
+
+KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
+  uint8_t* zero = (uint8_t*) kb_graphics_get_buffer_mapped(buffer.buffer);
+  return ((uint8_t*) ptr) - zero;
+}
+
+#endif
+
 KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   kb_platform_graphics_init(info);
 
@@ -136,7 +188,18 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
     draw_call_cache[pass_i]     = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
   }
   
+  for (uint32_t frame_i = 0; frame_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; frame_i++) {
+    transient_buffers[frame_i].position = 0;
+    transient_buffers[frame_i].buffer = kb_buffer_create({
+      .rwops  = NULL,
+      .size   = KB_CONFIG_TRANSIENT_BUFFER_SIZE,
+      .mode   = KB_BUFFER_MODE_SHARED,
+    });
+  }
+  
   construct_encoder_pools();
+  
+  acquire_frame_resources();
 }
 
 KB_API void kb_graphics_deinit() {
@@ -183,6 +246,8 @@ KB_API void kb_graphics_frame() {
     reset_encoder_state(current_pool.states[i]);
   }
   current_pool.count = 0;
+  
+  acquire_frame_resources();
 }
 
 KB_API void kb_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
@@ -237,21 +302,20 @@ KB_API void kb_buffer_destruct(kb_buffer handle) {
   kb_platform_graphics_buffer_destruct(handle);
 }
 
-
 KB_API void kb_graphics_wait_device_idle() {
   kb_platform_graphics_wait_device_idle();
 }
 
-KB_API kb_uniform_slot kb_pipeline_get_uniform_slot(kb_pipeline pipeline, kb_hash hash, kb_binding_type type, kb_shader_stage stage) {
-  KB_ASSERT_VALID(pipeline);
-
+KB_API kb_uniform_slot kb_uniform_get_slot(const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type, kb_shader_stage stage) {
+  KB_ASSERT_NOT_NULL(layout);
+  
   kb_uniform_slot out {};
-
+  
   if (stage & KB_SHADER_STAGE_VERTEX) {
-
+    
     if (type == KB_BINDING_TYPE_UNIFORM_BUFFER) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        kb_uniform_buffer_info& buffer_info = pipeline_info_ref(pipeline)->uniform_layout.vert_ubos[i];
+        const kb_uniform_buffer_info& buffer_info = layout->vert_ubos[i];
         if (kb_hash_string(buffer_info.name) == hash) { // VBO found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
           out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
@@ -263,7 +327,7 @@ KB_API kb_uniform_slot kb_pipeline_get_uniform_slot(kb_pipeline pipeline, kb_has
 
     else if (type == KB_BINDING_TYPE_TEXTURE) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        kb_uniform_texture_info& texture_info = pipeline_info_ref(pipeline)->uniform_layout.vert_textures[i];
+        const kb_uniform_texture_info& texture_info = layout->vert_textures[i];
         if (kb_hash_string(texture_info.name) == hash) { // Texture found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
           out.type = KB_BINDING_TYPE_TEXTURE;
@@ -279,7 +343,7 @@ KB_API kb_uniform_slot kb_pipeline_get_uniform_slot(kb_pipeline pipeline, kb_has
 
     if (type == KB_BINDING_TYPE_UNIFORM_BUFFER) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        kb_uniform_buffer_info& buffer_info = pipeline_info_ref(pipeline)->uniform_layout.frag_ubos[i];
+        const kb_uniform_buffer_info& buffer_info = layout->frag_ubos[i];
         if (kb_hash_string(buffer_info.name) == hash) { // VBO found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
           out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
@@ -291,7 +355,7 @@ KB_API kb_uniform_slot kb_pipeline_get_uniform_slot(kb_pipeline pipeline, kb_has
 
     else if (type == KB_BINDING_TYPE_TEXTURE) {
       for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        kb_uniform_texture_info& texture_info = pipeline_info_ref(pipeline)->uniform_layout.frag_textures[i];
+        const kb_uniform_texture_info& texture_info = layout->frag_textures[i];
         if (kb_hash_string(texture_info.name) == hash) { // Texture found
           out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
           out.type = KB_BINDING_TYPE_TEXTURE;

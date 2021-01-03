@@ -17,18 +17,18 @@ KB_INTERNAL const char* cv_rwops_mode(kb_file_mode mode) {
   }
 }
 
-KB_INTERNAL int64_t size_impl_file(kb_rwops* rwops) {
+KB_INTERNAL int64_t size_impl_file(kb_stream* rwops) {
   int64_t pos, size;
   
-  pos = kb_rwops_tell(rwops);
+  pos = kb_stream_tell(rwops);
   if (pos < 0) return -1;
-  size = kb_rwops_seek(rwops, 0, KB_RWOPS_SEEK_END);
-  kb_rwops_seek(rwops, pos, KB_RWOPS_SEEK_BEG);
+  size = kb_stream_seek(rwops, 0, KB_RWOPS_SEEK_END);
+  kb_stream_seek(rwops, pos, KB_RWOPS_SEEK_BEG);
 
   return size;
 }
 
-KB_INTERNAL int64_t seek_impl_file(kb_rwops* rwops, int64_t offset, kb_whence whence) {
+KB_INTERNAL int64_t seek_impl_file(kb_stream* rwops, int64_t offset, kb_whence whence) {
   if (fseek((FILE*) rwops->impl, offset, whence) == 0) {
     int64_t pos = ftell((FILE*) rwops->impl);
     return pos;
@@ -36,31 +36,31 @@ KB_INTERNAL int64_t seek_impl_file(kb_rwops* rwops, int64_t offset, kb_whence wh
   return -1;
 }
 
-KB_INTERNAL int64_t read_impl_file(kb_rwops* rwops, void *ptr, int64_t size, int64_t count) {
+KB_INTERNAL int64_t read_impl_file(kb_stream* rwops, void *ptr, int64_t size, int64_t count) {
   int64_t read = fread(ptr, size, count, (FILE*) rwops->impl);
   return read * size;
 }
 
-KB_INTERNAL int64_t write_impl_file(kb_rwops* rwops, const void* ptr, int64_t size, int64_t count) {
+KB_INTERNAL int64_t write_impl_file(kb_stream* rwops, const void* ptr, int64_t size, int64_t count) {
   int64_t wrote = fwrite(ptr, size, count, (FILE*) rwops->impl);
   return wrote * size;
 }
 
-KB_INTERNAL int64_t tell_impl_file(kb_rwops* rwops) {
+KB_INTERNAL int64_t tell_impl_file(kb_stream* rwops) {
   return ftell((FILE*) rwops->impl);
 }
 
-KB_INTERNAL int close_impl_file(kb_rwops* rwops) {
+KB_INTERNAL int close_impl_file(kb_stream* rwops) {
   int res = fclose((FILE*) rwops->impl);
   KB_DEFAULT_FREE(rwops);
   return res;
 }
 
-KB_INTERNAL int64_t size_impl_mem(kb_rwops* rwops) {
+KB_INTERNAL int64_t size_impl_mem(kb_stream* rwops) {
   return rwops->mem_size;
 }
 
-KB_INTERNAL int64_t seek_impl_mem(kb_rwops* rwops, int64_t offset, kb_whence whence) {
+KB_INTERNAL int64_t seek_impl_mem(kb_stream* rwops, int64_t offset, kb_whence whence) {
   uint64_t pos = 0;
   
   switch (whence) {
@@ -82,7 +82,7 @@ KB_INTERNAL int64_t seek_impl_mem(kb_rwops* rwops, int64_t offset, kb_whence whe
   return pos;
 }
 
-KB_INTERNAL int64_t read_impl_mem(kb_rwops* rwops, void *dst, int64_t size, int64_t count) {
+KB_INTERNAL int64_t read_impl_mem(kb_stream* rwops, void *dst, int64_t size, int64_t count) {
   if ((count <= 0) || (size <= 0)) return 0;
   
   size_t avail = rwops->mem_size - rwops->mem_pos;
@@ -96,7 +96,7 @@ KB_INTERNAL int64_t read_impl_mem(kb_rwops* rwops, void *dst, int64_t size, int6
   return byte_count;
 }
 
-KB_INTERNAL int64_t write_impl_mem(kb_rwops* rwops, const void* src, int64_t size, int64_t count) {
+KB_INTERNAL int64_t write_impl_mem(kb_stream* rwops, const void* src, int64_t size, int64_t count) {
   if ((rwops->mem_pos + (count * size)) > rwops->mem_size) {
     count = (rwops->mem_size - rwops->mem_pos) / size;
   }
@@ -108,17 +108,17 @@ KB_INTERNAL int64_t write_impl_mem(kb_rwops* rwops, const void* src, int64_t siz
   return size * count;
 }
 
-KB_INTERNAL int64_t tell_impl_mem(kb_rwops* rwops) {
+KB_INTERNAL int64_t tell_impl_mem(kb_stream* rwops) {
   return rwops->mem_pos;
 }
 
-KB_INTERNAL int close_impl_mem(kb_rwops* rwops) {
+KB_INTERNAL int close_impl_mem(kb_stream* rwops) {
   KB_DEFAULT_FREE(rwops);
   return 0;
 }
 
-KB_INTERNAL kb_rwops* create_rwops_mem(char* ptr, uint64_t size) {
-  kb_rwops* rwops = KB_DEFAULT_ALLOC_TYPE(kb_rwops, 1);
+KB_INTERNAL kb_stream* create_rwops_mem(char* ptr, uint64_t size) {
+  kb_stream* rwops = KB_DEFAULT_ALLOC_TYPE(kb_stream, 1);
   rwops->size     = size_impl_mem;
   rwops->seek     = seek_impl_mem;
   rwops->read     = read_impl_mem;
@@ -132,8 +132,8 @@ KB_INTERNAL kb_rwops* create_rwops_mem(char* ptr, uint64_t size) {
   
   return rwops;
 }
-KB_INTERNAL kb_rwops* create_rwops_file(FILE* impl) {
-  kb_rwops* rwops = KB_DEFAULT_ALLOC_TYPE(kb_rwops, 1);
+KB_INTERNAL kb_stream* create_rwops_file(FILE* impl) {
+  kb_stream* rwops = KB_DEFAULT_ALLOC_TYPE(kb_stream, 1);
   rwops->size     = size_impl_file;
   rwops->seek     = seek_impl_file;
   rwops->read     = read_impl_file;
@@ -148,7 +148,7 @@ KB_INTERNAL kb_rwops* create_rwops_file(FILE* impl) {
   return rwops;
 }
 
-KB_API kb_rwops* kb_rwops_open_file(const char* path, kb_file_mode mode) {
+KB_API kb_stream* kb_stream_open_file(const char* path, kb_file_mode mode) {
   FILE *impl = fopen(path, cv_rwops_mode(mode));
 
   if (!impl) return NULL;
@@ -157,7 +157,7 @@ KB_API kb_rwops* kb_rwops_open_file(const char* path, kb_file_mode mode) {
 }
 
 
-KB_API kb_rwops* kb_rwops_open_mem(void* ptr, int64_t size) {
+KB_API kb_stream* kb_stream_open_mem(void* ptr, int64_t size) {
   if (!ptr) return nullptr;
   return create_rwops_mem((char*) ptr, size);
 }

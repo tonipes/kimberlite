@@ -7,10 +7,10 @@
 #include <kbextra/material.h>
 
 #include <kb/core.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kb/alloc.h>
 #include <kb/graphics.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 
 #ifndef KB_TOOL_ONLY
 
@@ -45,26 +45,26 @@ KB_API void kb_encoder_bind_material(kb_encoder encoder, kb_material material) {
   
   kb_shader_binding_slot bind_slot;
 
-  for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-    kb_material_uniform& uniform = material_ref(material)->uniforms[i];
-    kb_material_texture& texture = material_ref(material)->textures[i];
-
-    if (uniform.slot_hash > 0) {
-      kb_uniform_slot uniform_slot = kb_pipeline_get_uniform_slot(
-        material_ref(material)->pipeline, uniform.slot_hash, KB_BINDING_TYPE_UNIFORM_BUFFER, 
-        KB_SHADER_STAGE_VERTEX | KB_SHADER_STAGE_FRAGMENT
-      );
-      kb_encoder_bind_uniform(encoder, uniform_slot, uniform.data, sizeof(uniform.data));
-    }
-    
-    if (texture.slot_hash) {
-      kb_uniform_slot texture_slot = kb_pipeline_get_uniform_slot(
-        material_ref(material)->pipeline, texture.slot_hash, KB_BINDING_TYPE_TEXTURE, 
-        KB_SHADER_STAGE_VERTEX | KB_SHADER_STAGE_FRAGMENT
-      );
-      kb_encoder_bind_texture(encoder, texture_slot, texture.texture);
-    }
-    
-  }
+//  for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
+//    kb_material_uniform& uniform = material_ref(material)->uniforms[i];
+//    kb_material_texture& texture = material_ref(material)->textures[i];
+//
+//    if (uniform.slot_hash > 0) {
+//      kb_uniform_slot uniform_slot = kb_pipeline_get_uniform_slot(
+//        material_ref(material)->pipeline, uniform.slot_hash, KB_BINDING_TYPE_UNIFORM_BUFFER,
+//        KB_SHADER_STAGE_VERTEX | KB_SHADER_STAGE_FRAGMENT
+//      );
+//      kb_encoder_bind_uniform(encoder, uniform_slot, uniform.data, sizeof(uniform.data));
+//    }
+//
+//    if (texture.slot_hash) {
+//      kb_uniform_slot texture_slot = kb_pipeline_get_uniform_slot(
+//        material_ref(material)->pipeline, texture.slot_hash, KB_BINDING_TYPE_TEXTURE,
+//        KB_SHADER_STAGE_VERTEX | KB_SHADER_STAGE_FRAGMENT
+//      );
+//      kb_encoder_bind_texture(encoder, texture_slot, texture.texture);
+//    }
+//  }
+  
 }
 #endif

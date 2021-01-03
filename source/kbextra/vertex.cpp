@@ -9,17 +9,6 @@
 #include <kb/crt.h>
 #include <kb/log.h>
 
-const kb_vertex_layout_info kb_simple_vertex_layout_info = {
-  .attribs = {
-    { .buffer = 0, .format = KB_VERTEX_FORMAT_FLOAT4 }, // Position
-    { .buffer = 0, .format = KB_VERTEX_FORMAT_FLOAT4 }, // Color
-    { .buffer = 0, .format = KB_VERTEX_FORMAT_FLOAT4 }, // Texcord
-  },
-  .buffers = {
-    { .step_rate = 1, .step_func = KB_STEP_FUNC_VERTEX, .stride = sizeof(kb_simple_vertex) },
-  }
-};
-
 KB_INTERNAL uint64_t cv_attrib_sizes(kb_vertex_attribute_type type) {
   switch (type) {
     case KB_ATTRIB_FLOAT:   return 4;

@@ -9,7 +9,7 @@
 #include <kb/core.h>
 #include <kb/handle.h>
 #include <kb/math.h>
-#include <kb/rwops.h>
+#include <kb/stream.h>
 #include <kb/table.h>
 #include <kb/resource.h>
 #include <kb/graphics.h>
