@@ -19,24 +19,19 @@ typedef struct pipeline_info {
 typedef struct attachment {
   kb_format   format;
   kb_texture  texture;
-  bool        drawable_proxy;
+  bool        surface_proxy;
+  bool        resize_with_surface;
 } attachment;
 
-typedef struct graphics_pipe_pass_info {
-  attachment color_attachments[KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS];
-  attachment depth_attachment;
-  attachment stencil_attachment;
-} graphics_pipe_pass_info;
-
 typedef struct graphics_pipe_info {
-  attachment              attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
-  graphics_pipe_pass_info passes[KB_CONFIG_MAX_PASSES];
-  int32_t                 attachment_count;
-  int32_t                 pass_count;
+  attachment                      attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
+  int32_t                         attachment_count;
+  int32_t                         pass_count;
+  kb_graphics_pipeline_pass_info  passes[KB_CONFIG_MAX_PASSES];
 } graphics_pipe_info;
 
 typedef struct kb_encoder_frame {
-  kb_renderpass             renderpass;
+  uint32_t                  renderpass;
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer_bindings[KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS];
   kb_index_buffer_binding   index_buffer;
@@ -67,11 +62,9 @@ kb_encoder_pool*    encoder_pools;
 graphics_pipe_info* graphics_pipe;
 
 uint32_t            resource_slot;
-
+Int2                current_extent;
 kb_graphics_call*   draw_call_cache[KB_CONFIG_MAX_RENDERPASSES];
 uint32_t            draw_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
-
-kb_renderpass       renderpass_order[KB_CONFIG_MAX_RENDERPASSES];
 
 kb_transient_buffer transient_buffers[KB_CONFIG_MAX_FRAMES_IN_FLIGHT];
 
@@ -94,12 +87,10 @@ kb_encoder_frame& current_encoder_frame(kb_encoder encoder) {
 KB_RESOURCE_ALLOC_FUNC_DEF  (buffer,        kb_buffer,        kb_buffer_create_info,        KB_CONFIG_MAX_BUFFERS);
 KB_RESOURCE_ALLOC_FUNC_DEF  (texture,       kb_texture,       kb_texture_create_info,       KB_CONFIG_MAX_TEXTURES);
 KB_RESOURCE_ALLOC_FUNC_DEF  (pipeline,      kb_pipeline,      kb_pipeline_create_info,      KB_CONFIG_MAX_PROGRAMS);
-KB_RESOURCE_ALLOC_FUNC_DEF  (renderpass,    kb_renderpass,    kb_renderpass_create_info,    KB_CONFIG_MAX_RENDERPASSES);
 
 KB_RESOURCE_DATA_HASHED_DEF (buffer,        kb_buffer);
 KB_RESOURCE_DATA_HASHED_DEF (texture,       kb_texture);
 KB_RESOURCE_DATA_HASHED_DEF (pipeline,      kb_pipeline);
-KB_RESOURCE_DATA_HASHED_DEF (renderpass,    kb_renderpass);
 
 KB_RESOURCE_STORAGE_DEF     (pipeline_info,         kb_pipeline,      pipeline_info,      KB_CONFIG_MAX_PROGRAMS);
 
@@ -153,10 +144,6 @@ KB_API uint32_t kb_graphics_get_current_resource_slot() {
   return resource_slot;
 }
 
-KB_API void kb_graphics_set_renderpass_order(uint32_t order, kb_renderpass pass) {
-  renderpass_order[order] = pass;
-}
-
 KB_API kb_buffer kb_graphics_transient_buffer() {
   return get_current_transient_buffer().buffer;
 }
@@ -190,7 +177,6 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   kb_platform_graphics_init(info);
 
   for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
-    renderpass_order[pass_i]    = { pass_i };
     draw_call_cache_pos[pass_i] = 0;
     draw_call_cache[pass_i]     = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
   }
@@ -203,55 +189,46 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
       .mode   = KB_BUFFER_MODE_SHARED,
     });
   }
+
+  graphics_pipe = KB_DEFAULT_ALLOC_TYPE(graphics_pipe_info, 1);
   
-  { // Pass
-    graphics_pipe = KB_DEFAULT_ALLOC_TYPE(graphics_pipe_info, 1);
-    
-    Int2 surface_extent = kb_graphics_get_extent();
-    
-    kb_log_debug("Extent {} {}", surface_extent.x, surface_extent.y);
-        
-    graphics_pipe->attachment_count = info.pipe.attachment_count;
-    graphics_pipe->pass_count = info.pipe.pass_count;
-    
-    for (uint32_t attachment_i = 0; attachment_i < info.pipe.attachment_count; ++attachment_i) {
-      const kb_attachment_info& attachment_info = info.pipe.attachments[attachment_i];
+  current_extent = kb_platform_graphics_get_surface_extent();
+  
+  kb_log_debug("Extent {} {}", current_extent.x, current_extent.y);
       
-      if (attachment_info.drawable_proxy) {
-        // Drawable proxy. Mark as such and do not create a texture
-        graphics_pipe->attachments[attachment_i].drawable_proxy = true;
-      } else {
-        // Regular attachment. Create a texture
-        KB_ASSERT(attachment_info.texture.render_target, "Graphics pipeline attachments must be render targets");
-          
-        graphics_pipe->attachments[attachment_i].format = attachment_info.texture.format;
-        graphics_pipe->attachments[attachment_i].texture = kb_texture_create({
-          .rwops = NULL,
-          .texture = {
-            .format = attachment_info.texture.format,
-            .width = attachment_info.use_surface_size ? surface_extent.x : attachment_info.texture.width,
-            .height = attachment_info.use_surface_size ? surface_extent.y : attachment_info.texture.height,
-            .render_target = true,
-          },
-          .mipmaps = false,
-          .filter = KB_FILTER_LINEAR
-        });
-        
-        kb_log_debug("pipe texture {}", graphics_pipe->attachments[attachment_i].texture.idx);
-      }
-
-    }
+  graphics_pipe->attachment_count = info.pipe.attachment_count;
+  graphics_pipe->pass_count = info.pipe.pass_count;
+  
+  for (uint32_t attachment_i = 0; attachment_i < info.pipe.attachment_count; ++attachment_i) {
+    const kb_attachment_info& attachment_info = info.pipe.attachments[attachment_i];
     
-    for (uint32_t pass_i = 0; pass_i < info.pipe.pass_count; ++pass_i) {
-      const kb_pipe_pass_create_info& pass_info = info.pipe.passes[pass_i];
+    if (attachment_info.surface_proxy) {
+      // Drawable proxy. Mark as such and do not create a texture
+      graphics_pipe->attachments[attachment_i].surface_proxy = true;
+    } else {
+      // Regular attachment. Create a texture
+      KB_ASSERT(attachment_info.texture.render_target, "Graphics pipeline attachments must be render targets");
 
-      graphics_pipe->passes[pass_i].depth_attachment = graphics_pipe->attachments[pass_info.depth_attachment];
-      graphics_pipe->passes[pass_i].stencil_attachment = graphics_pipe->attachments[pass_info.stencil_attachment];
-
-      for (uint32_t attachment_i = 0; attachment_i < KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS; ++attachment_i) {
-        graphics_pipe->passes[pass_i].color_attachments[attachment_i] = graphics_pipe->attachments[pass_info.color_attachments[attachment_i]];
-      }
+      graphics_pipe->attachments[attachment_i].resize_with_surface = attachment_info.use_surface_size;
+      graphics_pipe->attachments[attachment_i].format = attachment_info.texture.format;
+      graphics_pipe->attachments[attachment_i].texture = kb_texture_create({
+        .rwops = NULL,
+        .texture = {
+          .format = attachment_info.texture.format,
+          .width = attachment_info.use_surface_size ? current_extent.x : attachment_info.texture.width,
+          .height = attachment_info.use_surface_size ? current_extent.y : attachment_info.texture.height,
+          .render_target = true,
+        },
+        .mipmaps = false,
+        .filter = KB_FILTER_LINEAR
+      });
+      
+      kb_log_debug("pipe texture {}", graphics_pipe->attachments[attachment_i].texture.idx);
     }
+  }
+  
+  for (uint32_t pass_i = 0; pass_i < info.pipe.pass_count; ++pass_i) {
+    graphics_pipe->passes[pass_i] = info.pipe.passes[pass_i];
   }
 
   construct_encoder_pools();
@@ -279,22 +256,43 @@ KB_API void kb_graphics_run_encoders() {
     kb_encoder_state& state = current_encoder_pool().states[encoder_i];
     for (uint32_t call_i = 0; call_i < state.draw_call_count; ++call_i) {
       kb_graphics_call& call = state.draw_calls[call_i];
-      draw_call_cache[call.renderpass.idx][draw_call_cache_pos[call.renderpass.idx]++] = call;
+      draw_call_cache[call.renderpass][draw_call_cache_pos[call.renderpass]++] = call;
     }
   }
 
-  for (uint32_t p = 0; p < KB_CONFIG_MAX_RENDERPASSES; ++p) {
-    kb_renderpass pass = renderpass_order[p];
-    uint32_t pass_i = pass.idx;
-
+  for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
     if (draw_call_cache_pos[pass_i] <= 0) continue;
 
-    kb_platform_graphics_submit_calls({pass_i}, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
+    kb_platform_graphics_submit_calls(pass_i, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
     draw_call_cache_pos[pass_i] = 0;
   }
 }
 
 KB_API void kb_graphics_frame() {
+  Int2 extent = kb_platform_graphics_get_surface_extent();
+
+  if (extent.x != current_extent.x || extent.y != current_extent.y) {
+    current_extent = extent;
+    kb_log_debug("Surface resized ({} {})", current_extent.x, current_extent.y);
+
+    // Resize attachments
+    for (uint32_t attachment_i = 0; attachment_i < graphics_pipe->attachment_count; ++attachment_i) {
+      kb_texture texture = graphics_pipe->attachments[attachment_i].texture;
+      if (!KB_IS_VALID(graphics_pipe->attachments[attachment_i].texture)) continue;
+      if (!graphics_pipe->attachments[attachment_i].resize_with_surface) continue;
+      
+      kb_platform_graphics_texture_destruct(texture);
+      
+      kb_texture_create_info info = {};
+      info.texture.width = current_extent.x;
+      info.texture.height = current_extent.y;
+      info.texture.format = graphics_pipe->attachments[attachment_i].format;
+      info.texture.render_target = true;
+
+      kb_platform_graphics_texture_construct(texture, info);
+    }
+  }
+  
   kb_platform_graphics_frame();
   
   // Reset pools
@@ -315,16 +313,12 @@ KB_API kb_format kb_graphics_pipe_attachment_format(uint32_t attachment) {
   return graphics_pipe->attachments[attachment].format;
 }
 
-KB_API kb_texture kb_graphics_pipe_pass_color_attachment_texture(uint32_t pass, uint32_t attachment) {
-  return graphics_pipe->passes[pass].color_attachments[attachment].texture;
+KB_API kb_graphics_pipeline_pass_info* kb_graphics_get_pipeline_pass_info(uint32_t pass) {
+  return &graphics_pipe->passes[pass];
 }
 
-KB_API kb_texture kb_graphics_pipe_pass_depth_attachment_texture(uint32_t pass) {
-  return graphics_pipe->passes[pass].depth_attachment.texture;
-}
-
-KB_API kb_texture kb_graphics_pipe_pass_stencil_attachment_texture(uint32_t pass) {
-  return graphics_pipe->passes[pass].stencil_attachment.texture;
+KB_API bool kb_graphics_pipe_attachment_surface_proxy(uint32_t attachment) {
+  return graphics_pipe->attachments[attachment].surface_proxy;
 }
 
 KB_API void kb_graphics_pipe_destruct(kb_graphics_pipe handle) {
@@ -336,7 +330,6 @@ KB_API void kb_graphics_pipe_destruct(kb_graphics_pipe handle) {
 KB_API void kb_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
   KB_ASSERT_VALID(handle);
   
-  // TODO: Make a proper copy
   pipeline_info_ref(handle)->uniform_layout  = info.uniform_layout;
   pipeline_info_ref(handle)->vertex_layout   = info.vertex_layout;
 
@@ -359,18 +352,6 @@ KB_API void kb_texture_destruct(kb_texture handle) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_graphics_texture_destruct(handle);
-}
-
-KB_API void kb_renderpass_construct(kb_renderpass handle, const kb_renderpass_create_info info) {
-  KB_ASSERT_VALID(handle);
-
-  kb_platform_graphics_renderpass_construct(handle, info);
-}
-
-KB_API void kb_renderpass_destruct(kb_renderpass handle) {
-  KB_ASSERT_VALID(handle);
-
-  kb_platform_graphics_renderpass_destruct(handle);
 }
 
 KB_API void kb_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
@@ -494,9 +475,8 @@ KB_API void kb_encoder_pop(kb_encoder encoder) {
   --state.stack_pos;
 }
 
-KB_API void kb_encoder_bind_renderpass(kb_encoder encoder, kb_renderpass renderpass) {
+KB_API void kb_encoder_bind_renderpass(kb_encoder encoder, uint32_t renderpass) {
   KB_ASSERT_VALID(encoder);
-  // KB_ASSERT_VALID(renderpass);
 
   current_encoder_frame(encoder).renderpass = renderpass;
 }
@@ -620,7 +600,7 @@ KB_API void* kb_graphics_get_buffer_mapped(kb_buffer buffer) {
 }
 
 KB_API Int2 kb_graphics_get_extent() {    
-  return kb_platform_graphics_surface_get_size();
+  return current_extent;
 }
 
 KB_API float kb_graphics_get_aspect() {
