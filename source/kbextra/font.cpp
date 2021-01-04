@@ -369,7 +369,7 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   float origin_x = pos_offset * offset.x;
   float origin_y = pos_offset * offset.y;
 
-  Float2 current_pos {
+  Float2 current_pos = {
     origin_x,
     pos_offset + origin_y
   };
@@ -440,8 +440,8 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   
   kb_encoder_push(encoder);
   
-  kb_encoder_bind_buffer(encoder, 0, {}, vertex_data_buffer_offset);
-  kb_encoder_bind_index_buffer(encoder, {}, index_data_buffer_offset, KB_INDEX_TYPE_16); 
+  kb_encoder_bind_buffer(encoder, 0, kb_graphics_transient_buffer(), vertex_data_buffer_offset);
+  kb_encoder_bind_index_buffer(encoder, kb_graphics_transient_buffer(), index_data_buffer_offset, KB_INDEX_TYPE_16); 
   kb_encoder_submit(encoder, 0, 0, indices, instance_count);
 
   kb_encoder_pop(encoder);

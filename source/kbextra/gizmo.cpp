@@ -78,8 +78,8 @@ KB_API void kb_gizmo_flush(kb_gizmo* gizmo, bool force) {
 
     kb_encoder_push(gizmo->encoder);
       kb_encoder_bind_pipeline      (gizmo->encoder, gizmo->pipeline);
-      kb_encoder_bind_buffer        (gizmo->encoder, 0, {}, vertex_data_buffer_offset);
-      kb_encoder_bind_index_buffer  (gizmo->encoder, {}, index_data_buffer_offset, KB_INDEX_TYPE_16);
+      kb_encoder_bind_buffer        (gizmo->encoder, 0, kb_graphics_transient_buffer(), vertex_data_buffer_offset);
+      kb_encoder_bind_index_buffer  (gizmo->encoder, kb_graphics_transient_buffer(), index_data_buffer_offset, KB_INDEX_TYPE_16);
       kb_encoder_submit             (gizmo->encoder, 0, 0, gizmo->line_index_cache_pos, 1);
     kb_encoder_pop(gizmo->encoder);
   }
@@ -347,3 +347,5 @@ KB_API void kb_gizmo_shape_draw_ray(kb_gizmo* gizmo, const Ray ray) {
 
   kb_gizmo_pop(gizmo);
 }
+
+

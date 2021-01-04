@@ -22,6 +22,7 @@ KB_HANDLE(kb_pipeline);
 KB_HANDLE(kb_encoder);
 KB_HANDLE(kb_renderpass);
 KB_HANDLE(kb_texture);
+KB_HANDLE(kb_graphics_pipe);
 
 typedef enum kb_compare_func {
   KB_COMPARE_UNKNOWN              = 0,
@@ -149,6 +150,17 @@ typedef enum kb_buffer_mode {
   KB_BUFFER_MODE_SHARED           = 2,
 } kb_buffer_mode;
 
+typedef enum kb_load_action {
+  KB_LOAD_ACTION_DONT_CARE        = 0,
+  KB_LOAD_ACTION_LOAD             = 1,
+  KB_LOAD_ACTION_CLEAR            = 2,
+} kb_load_action;
+  
+typedef enum kb_store_action {
+  KB_STORE_ACTION_DONT_CARE       = 0,
+  KB_STORE_ACTION_STORE           = 1,
+} kb_store_action;
+
 typedef struct kb_texture_info {
   uint32_t                  width;
   uint32_t                  height;
@@ -188,7 +200,7 @@ typedef struct kb_uniform_layout {
 } kb_uniform_layout;
 
 typedef struct kb_texture_create_info {
-  kb_stream*                 rwops;
+  kb_stream*                rwops;
   kb_texture_info           texture;
   bool                      mipmaps;
   kb_filter                 filter;
@@ -199,6 +211,41 @@ typedef struct kb_renderpass_create_info {
   kb_texture                depth_attachment;
   kb_texture                stencil_attachment;
 } kb_renderpass_create_info;
+
+// #########################
+
+typedef struct kb_attachment_info {
+  kb_texture_info           texture;
+  Float4                    clear_color;
+  float                     clear_depth;
+  uint32_t                  clear_stencil;
+  bool                      use_surface_size;
+  bool                      drawable_proxy;
+} kb_attachment_info;
+
+typedef struct kb_attachment_binding {
+  uint32_t                  attachment;
+  Float4                    clear_color;
+  float                     clear_depth;
+  uint32_t                  clear_stencil;
+  kb_load_action            load_action;
+  kb_store_action           store_action;
+} kb_attachment_binding;
+  
+typedef struct kb_pipe_pass_create_info {
+  uint32_t                  color_attachments[KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS];
+  uint32_t                  depth_attachment;
+  uint32_t                  stencil_attachment;
+} kb_pass_create_info;
+
+typedef struct kb_graphics_pipe_info {
+  kb_attachment_info        attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
+  kb_pass_create_info       passes[KB_CONFIG_MAX_PASSES];
+  int32_t                   attachment_count;
+  int32_t                   pass_count;
+} kb_graphics_pipe_info;
+
+// #########################
 
 typedef struct kb_buffer_create_info {
   kb_stream*                rwops;
@@ -261,6 +308,7 @@ typedef struct kb_graphics_init_info {
   Int2                      resolution;
   bool                      hide_cursor;
   void*                     backend_ptr;
+  kb_graphics_pipe_info     pipe;
 } kb_graphics_init_info;
 
 typedef struct kb_primitive_info {
@@ -272,7 +320,6 @@ typedef struct kb_primitive_info {
 typedef struct kb_vertex_buffer_binding {
   kb_buffer                 buffer;
   uint64_t                  offset;
-  bool                      is_set;
 } kb_vertex_buffer_binding;
 
 typedef struct kb_index_buffer_binding {
@@ -287,6 +334,7 @@ typedef struct kb_texture_binding {
 } kb_texture_binding;
 
 typedef struct kb_uniform_binding {
+  kb_buffer                 buffer;
   uint32_t                  index;
   uint64_t                  size;
   uint64_t                  offset;
@@ -302,18 +350,14 @@ typedef struct kb_graphics_call_info {
 typedef struct kb_graphics_call {
   kb_renderpass             renderpass;
   kb_pipeline               pipeline;
-  kb_vertex_buffer_binding  vertex_buffer_bindings[KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS];
   kb_index_buffer_binding   index_buffer;
+  kb_vertex_buffer_binding  vertex_buffer_bindings[KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS];
   kb_texture_binding        vert_texture_bindings[KB_CONFIG_MAX_UNIFORM_BINDINGS];
   kb_uniform_binding        vert_uniform_bindings[KB_CONFIG_MAX_UNIFORM_BINDINGS];
   kb_texture_binding        frag_texture_bindings[KB_CONFIG_MAX_UNIFORM_BINDINGS];
   kb_uniform_binding        frag_uniform_bindings[KB_CONFIG_MAX_UNIFORM_BINDINGS];
   kb_graphics_call_info     info;
 } kb_graphics_call;
-
-typedef struct kb_graphics_pass_info {
-  int                       unused;
-} kb_graphics_pass_info;
 
 typedef struct kb_uniform_slot {
   uint32_t                  vert_index;
@@ -331,6 +375,7 @@ KB_RESOURCE_ALLOC_FUNC_DECLS  (buffer         , kb_buffer         , kb_buffer_cr
 KB_RESOURCE_ALLOC_FUNC_DECLS  (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_ALLOC_FUNC_DECLS  (texture        , kb_texture        , kb_texture_create_info        )
 KB_RESOURCE_ALLOC_FUNC_DECLS  (renderpass     , kb_renderpass     , kb_renderpass_create_info     )
+//KB_RESOURCE_ALLOC_FUNC_DECLS  (graphics_pipe  , kb_graphics_pipe  , kb_graphics_pipe_create_info  )
 
 KB_API void                       kb_graphics_init                      (const kb_graphics_init_info info);
 KB_API void                       kb_graphics_deinit                    ();

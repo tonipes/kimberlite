@@ -344,6 +344,9 @@
 
 #define KB_CONFIG_MAX_DRAW_CALLS                128
 #define KB_CONFIG_MAX_ENCODERS                  8
+#define KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS    8
+#define KB_CONFIG_MAX_PIPE_ATTACHMENTS          16
+#define KB_CONFIG_MAX_PASSES                    8
 #define KB_CONFIG_TRANSIENT_BUFFER_SIZE         16 * 1024 * KB_CONFIG_MAX_DRAW_CALLS
 #define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
 #define KB_CONFIG_STATS_SAMPLE_COUNT            120

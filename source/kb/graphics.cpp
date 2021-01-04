@@ -16,6 +16,25 @@ typedef struct pipeline_info {
   kb_vertex_layout_info vertex_layout;
 } pipeline_info;
 
+typedef struct attachment {
+  kb_format   format;
+  kb_texture  texture;
+  bool        drawable_proxy;
+} attachment;
+
+typedef struct graphics_pipe_pass_info {
+  attachment color_attachments[KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS];
+  attachment depth_attachment;
+  attachment stencil_attachment;
+} graphics_pipe_pass_info;
+
+typedef struct graphics_pipe_info {
+  attachment              attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
+  graphics_pipe_pass_info passes[KB_CONFIG_MAX_PASSES];
+  int32_t                 attachment_count;
+  int32_t                 pass_count;
+} graphics_pipe_info;
+
 typedef struct kb_encoder_frame {
   kb_renderpass             renderpass;
   kb_pipeline               pipeline;
@@ -44,34 +63,10 @@ typedef struct kb_transient_buffer {
   uint64_t  position;
 } kb_transient_buffer;
 
-kb_encoder_pool*  encoder_pools;
+kb_encoder_pool*    encoder_pools;
+graphics_pipe_info* graphics_pipe;
 
-void reset_encoder_state(kb_encoder_state& state) {
-  state.stack_pos = 0;
-  state.draw_call_count = 0;
-}
-
-void construct_encoder_pools() {
-  encoder_pools = KB_DEFAULT_ALLOC_TYPE(kb_encoder_pool, KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
-
-  for (int pool_i = 0; pool_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; ++pool_i) {
-    for (int state_i = 0; state_i < KB_CONFIG_MAX_ENCODERS; ++state_i) {
-      encoder_pools[pool_i].states[state_i].draw_calls = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
-    }
-  }
-}
-
-void destruct_encoder_pools() {
-  for (int pool_i = 0; pool_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; ++pool_i) {
-    for (int state_i = 0; state_i < KB_CONFIG_MAX_ENCODERS; ++state_i) {
-      KB_DEFAULT_FREE(encoder_pools[pool_i].states[state_i].draw_calls);
-    }
-  }
-
-  KB_DEFAULT_FREE(encoder_pools);
-}
-
-uint64_t            resource_slot;
+uint32_t            resource_slot;
 
 kb_graphics_call*   draw_call_cache[KB_CONFIG_MAX_RENDERPASSES];
 uint32_t            draw_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
@@ -106,9 +101,34 @@ KB_RESOURCE_DATA_HASHED_DEF (texture,       kb_texture);
 KB_RESOURCE_DATA_HASHED_DEF (pipeline,      kb_pipeline);
 KB_RESOURCE_DATA_HASHED_DEF (renderpass,    kb_renderpass);
 
-KB_RESOURCE_STORAGE_DEF     (pipeline_info,         kb_pipeline,      pipeline_info,    KB_CONFIG_MAX_PROGRAMS);
+KB_RESOURCE_STORAGE_DEF     (pipeline_info,         kb_pipeline,      pipeline_info,      KB_CONFIG_MAX_PROGRAMS);
 
 #define COMPARE_VALUE(_a, _b) if (_a < _b) return -1; if (_b < _a) return 1;
+
+void reset_encoder_state(kb_encoder_state& state) {
+  state.stack_pos = 0;
+  state.draw_call_count = 0;
+}
+
+void construct_encoder_pools() {
+  encoder_pools = KB_DEFAULT_ALLOC_TYPE(kb_encoder_pool, KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
+
+  for (int pool_i = 0; pool_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; ++pool_i) {
+    for (int state_i = 0; state_i < KB_CONFIG_MAX_ENCODERS; ++state_i) {
+      encoder_pools[pool_i].states[state_i].draw_calls = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
+    }
+  }
+}
+
+void destruct_encoder_pools() {
+  for (int pool_i = 0; pool_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; ++pool_i) {
+    for (int state_i = 0; state_i < KB_CONFIG_MAX_ENCODERS; ++state_i) {
+      KB_DEFAULT_FREE(encoder_pools[pool_i].states[state_i].draw_calls);
+    }
+  }
+
+  KB_DEFAULT_FREE(encoder_pools);
+}
 
 static int draw_call_compare(const void* a, const void* b) {
   const kb_graphics_call* aa = (kb_graphics_call*) a;
@@ -120,34 +140,22 @@ static int draw_call_compare(const void* a, const void* b) {
   return 0;
 }
 
-//KB_INTERNAL kb_transient_buffer& get_current_transient_buffer() {
-//  return &transient_buffers[resource_slot];
-//}
+KB_INTERNAL kb_transient_buffer& get_current_transient_buffer() {
+  return transient_buffers[resource_slot];
+}
 
 KB_INTERNAL void acquire_frame_resources() {
-//  resource_slot = (resource_slot + 1) % KB_CONFIG_MAX_FRAMES_IN_FLIGHT;
-//  get_current_transient_buffer().position = 0;
+  resource_slot = (resource_slot + 1) % KB_CONFIG_MAX_FRAMES_IN_FLIGHT;
+  get_current_transient_buffer().position = 0;
+}
+
+KB_API uint32_t kb_graphics_get_current_resource_slot() {
+  return resource_slot;
 }
 
 KB_API void kb_graphics_set_renderpass_order(uint32_t order, kb_renderpass pass) {
   renderpass_order[order] = pass;
 }
-
-#if true
-
-KB_API void* kb_graphics_transient_alloc(uint64_t size, uint64_t align) {
-  return kb_platform_graphics_transient_alloc(size, align);
-}
-
-KB_API void* kb_graphics_transient_at(uint64_t offset) {
-  return kb_platform_graphics_transient_at(offset);
-}
-
-KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
-  return kb_platform_graphics_transient_offset(ptr);
-}
-
-#else
 
 KB_API kb_buffer kb_graphics_transient_buffer() {
   return get_current_transient_buffer().buffer;
@@ -160,7 +168,7 @@ KB_API void* kb_graphics_transient_alloc(uint64_t size, uint64_t align) {
   size_t pos = align_up(buffer.position, align);
   buffer.position = pos + size;
   
-  return mapped + p;
+  return mapped + pos;
 }
 
 KB_API void* kb_graphics_transient_at(uint64_t offset) {
@@ -173,11 +181,10 @@ KB_API void* kb_graphics_transient_at(uint64_t offset) {
 }
 
 KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
+  kb_transient_buffer& buffer = get_current_transient_buffer();
   uint8_t* zero = (uint8_t*) kb_graphics_get_buffer_mapped(buffer.buffer);
   return ((uint8_t*) ptr) - zero;
 }
-
-#endif
 
 KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   kb_platform_graphics_init(info);
@@ -197,6 +204,56 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
     });
   }
   
+  { // Pass
+    graphics_pipe = KB_DEFAULT_ALLOC_TYPE(graphics_pipe_info, 1);
+    
+    Int2 surface_extent = kb_graphics_get_extent();
+    
+    kb_log_debug("Extent {} {}", surface_extent.x, surface_extent.y);
+        
+    graphics_pipe->attachment_count = info.pipe.attachment_count;
+    graphics_pipe->pass_count = info.pipe.pass_count;
+    
+    for (uint32_t attachment_i = 0; attachment_i < info.pipe.attachment_count; ++attachment_i) {
+      const kb_attachment_info& attachment_info = info.pipe.attachments[attachment_i];
+      
+      if (attachment_info.drawable_proxy) {
+        // Drawable proxy. Mark as such and do not create a texture
+        graphics_pipe->attachments[attachment_i].drawable_proxy = true;
+      } else {
+        // Regular attachment. Create a texture
+        KB_ASSERT(attachment_info.texture.render_target, "Graphics pipeline attachments must be render targets");
+          
+        graphics_pipe->attachments[attachment_i].format = attachment_info.texture.format;
+        graphics_pipe->attachments[attachment_i].texture = kb_texture_create({
+          .rwops = NULL,
+          .texture = {
+            .format = attachment_info.texture.format,
+            .width = attachment_info.use_surface_size ? surface_extent.x : attachment_info.texture.width,
+            .height = attachment_info.use_surface_size ? surface_extent.y : attachment_info.texture.height,
+            .render_target = true,
+          },
+          .mipmaps = false,
+          .filter = KB_FILTER_LINEAR
+        });
+        
+        kb_log_debug("pipe texture {}", graphics_pipe->attachments[attachment_i].texture.idx);
+      }
+
+    }
+    
+    for (uint32_t pass_i = 0; pass_i < info.pipe.pass_count; ++pass_i) {
+      const kb_pipe_pass_create_info& pass_info = info.pipe.passes[pass_i];
+
+      graphics_pipe->passes[pass_i].depth_attachment = graphics_pipe->attachments[pass_info.depth_attachment];
+      graphics_pipe->passes[pass_i].stencil_attachment = graphics_pipe->attachments[pass_info.stencil_attachment];
+
+      for (uint32_t attachment_i = 0; attachment_i < KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS; ++attachment_i) {
+        graphics_pipe->passes[pass_i].color_attachments[attachment_i] = graphics_pipe->attachments[pass_info.color_attachments[attachment_i]];
+      }
+    }
+  }
+
   construct_encoder_pools();
   
   acquire_frame_resources();
@@ -248,6 +305,32 @@ KB_API void kb_graphics_frame() {
   current_pool.count = 0;
   
   acquire_frame_resources();
+}
+
+KB_API kb_texture kb_graphics_pipe_attachment_texture(uint32_t attachment) {
+  return graphics_pipe->attachments[attachment].texture;
+}
+
+KB_API kb_format kb_graphics_pipe_attachment_format(uint32_t attachment) {
+  return graphics_pipe->attachments[attachment].format;
+}
+
+KB_API kb_texture kb_graphics_pipe_pass_color_attachment_texture(uint32_t pass, uint32_t attachment) {
+  return graphics_pipe->passes[pass].color_attachments[attachment].texture;
+}
+
+KB_API kb_texture kb_graphics_pipe_pass_depth_attachment_texture(uint32_t pass) {
+  return graphics_pipe->passes[pass].depth_attachment.texture;
+}
+
+KB_API kb_texture kb_graphics_pipe_pass_stencil_attachment_texture(uint32_t pass) {
+  return graphics_pipe->passes[pass].stencil_attachment.texture;
+}
+
+KB_API void kb_graphics_pipe_destruct(kb_graphics_pipe handle) {
+  KB_ASSERT_VALID(handle);
+
+  kb_log_debug("kb_graphics_pipe_destruct");
 }
 
 KB_API void kb_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {
@@ -426,17 +509,16 @@ KB_API void kb_encoder_bind_pipeline(kb_encoder encoder, kb_pipeline pipeline) {
 }
 
 KB_API void kb_encoder_bind_buffer(kb_encoder encoder, uint32_t slot, kb_buffer buffer, uint64_t offset) {
-  // NOTE: Buffer can be invalid (transient)
   KB_ASSERT_VALID(encoder);
+  KB_ASSERT_VALID(buffer);
 
-  current_encoder_frame(encoder).vertex_buffer_bindings[slot].is_set = true;;
   current_encoder_frame(encoder).vertex_buffer_bindings[slot].buffer = buffer;
   current_encoder_frame(encoder).vertex_buffer_bindings[slot].offset = offset;
 }
 
 KB_API void kb_encoder_bind_index_buffer(kb_encoder encoder, kb_buffer buffer, uint64_t offset, kb_index_type type) {
-  // NOTE: Buffer can be invalid (transient)
   KB_ASSERT_VALID(encoder);
+  KB_ASSERT_VALID(buffer);
 
   current_encoder_frame(encoder).index_buffer.buffer      = buffer;
   current_encoder_frame(encoder).index_buffer.offset      = offset;
@@ -489,6 +571,7 @@ KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot sl
     binding->index  = slot.vert_index;
     binding->size   = data_size;
     binding->offset = kb_graphics_transient_offset(ptr);
+    binding->buffer = kb_graphics_transient_buffer();
   }
   
   if (slot.stage & KB_SHADER_STAGE_FRAGMENT) {
@@ -496,6 +579,7 @@ KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot sl
     binding->index  = slot.frag_index;
     binding->size   = data_size;
     binding->offset = kb_graphics_transient_offset(ptr);
+    binding->buffer = kb_graphics_transient_buffer();
   }
 }
 
