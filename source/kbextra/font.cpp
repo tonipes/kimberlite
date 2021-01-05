@@ -349,9 +349,13 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   
   uint32_t vertex_alloc_size = max_vertices  * sizeof(kb_simple_vertex);
   uint32_t index_alloc_size  = max_indices   * sizeof(uint16_t);
+  
+  kb_buffer buffer = kb_graphics_transient_buffer();
+  int64_t vertex_data_offset  = kb_graphics_transient_alloc(vertex_alloc_size, KB_BUFFER_USAGE_VERTEX_BUFFER);
+  int64_t index_data_offset   = kb_graphics_transient_alloc(index_alloc_size, KB_BUFFER_USAGE_INDEX_BUFFER);
 
-  kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_transient_alloc(vertex_alloc_size,  256);
-  uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_transient_alloc(index_alloc_size,   256);
+  kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_get_buffer_mapped(buffer, vertex_data_offset);
+  uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_get_buffer_mapped(buffer, index_data_offset);
 
   kb_simple_vertex* vertex_data = vertex_data_buffer;
   uint16_t*         index_data  = index_data_buffer;
@@ -435,13 +439,13 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
     indices     += 6;
   }
 
-  uint32_t vertex_data_buffer_offset  = kb_graphics_transient_offset(vertex_data_buffer);
-  uint32_t index_data_buffer_offset   = kb_graphics_transient_offset(index_data_buffer);
+//  uint32_t vertex_data_buffer_offset  = kb_graphics_transient_offset(vertex_data_buffer);
+//  uint32_t index_data_buffer_offset   = kb_graphics_transient_offset(index_data_buffer);
   
   kb_encoder_push(encoder);
   
-  kb_encoder_bind_buffer(encoder, 0, kb_graphics_transient_buffer(), vertex_data_buffer_offset);
-  kb_encoder_bind_index_buffer(encoder, kb_graphics_transient_buffer(), index_data_buffer_offset, KB_INDEX_TYPE_16); 
+  kb_encoder_bind_buffer(encoder, 0, buffer, vertex_data_offset);
+  kb_encoder_bind_index_buffer(encoder, buffer, index_data_offset, KB_INDEX_TYPE_16);
   kb_encoder_submit(encoder, 0, 0, indices, instance_count);
 
   kb_encoder_pop(encoder);

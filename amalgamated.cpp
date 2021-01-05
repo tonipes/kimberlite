@@ -12,6 +12,7 @@
 #include "source/kb/table.cpp"
 #include "source/kb/thread.cpp"
 #include "source/kb/time.cpp"
+#include "source/kb/stream.cpp"
 
 // Graphics
 #include "source/kb/graphics.cpp"

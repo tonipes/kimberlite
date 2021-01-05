@@ -17,9 +17,7 @@ extern "C" {
 #endif
 
 KB_HANDLE(kb_sound);
-
-// typedef struct kb_sound       { kb_handle_idx idx; } kb_sound;
-typedef struct kb_sound_inst  { kb_handle_idx idx; } kb_sound_inst;
+KB_HANDLE(kb_sound_inst);
 
 typedef struct kb_sound_playback_info {
   Float2                  pitch_range;
@@ -27,11 +25,12 @@ typedef struct kb_sound_playback_info {
 } kb_sound_playback_info;
 
 typedef struct kb_audio_init_info {
-  int                     unused;
+  int                     bgm_channels;
+  int                     sfx_channels;
 } kb_audio_init_info;
 
 typedef struct kb_sound_create_info {
-  kb_stream*               rwops;
+  kb_stream*              rwops;
   kb_sound_playback_info  playback;
 } kb_sound_create_info;
 

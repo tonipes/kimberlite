@@ -36,11 +36,7 @@ typedef struct kb_stream {
   char*     mem_ptr;  // Used with memory rwops
   uint64_t  mem_pos;  // Used with memory rwops
   uint64_t  mem_size; // Used with memory rwops
-
 } kb_stream;
-
-KB_API kb_stream*  kb_stream_open_file  (const char* path, kb_file_mode mode);
-KB_API kb_stream*  kb_stream_open_mem   (void* ptr, int64_t size);
 
 KB_API_INLINE int64_t kb_stream_seek(kb_stream* rwops, int64_t offset, kb_whence whence) {
   if (rwops == NULL) return -1;
@@ -59,7 +55,9 @@ KB_API_INLINE int64_t kb_stream_write(kb_stream* rwops, const void* src, int64_t
 
 KB_API_INLINE int kb_stream_close(kb_stream* rwops) {
   if (rwops == NULL) return -1;
-  return rwops->close(rwops);
+  int res = rwops->close(rwops);
+  KB_DEFAULT_FREE(rwops);
+  return res;
 }
 
 KB_API_INLINE int64_t kb_stream_tell(kb_stream* rwops) {
@@ -77,6 +75,9 @@ KB_API_INLINE bool kb_stream_check_magic(kb_stream* rwops, uint32_t magic) {
   int64_t c = kb_stream_read(rwops, &chunk, sizeof(uint32_t), 1);
   return chunk == magic && c == sizeof(chunk);
 }
+
+KB_API kb_stream*  kb_stream_open_file  (const char* path, kb_file_mode mode);
+KB_API kb_stream*  kb_stream_open_mem   (void* ptr, int64_t size);
 
 #ifdef __cplusplus
 }

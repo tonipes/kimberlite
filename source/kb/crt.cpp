@@ -31,7 +31,7 @@ KB_API int kb_strcmp(const char* a, const char* b) {
   return strcmp(a, b);
 }
 
-KB_API int kb_strlen(const char* a) {
+KB_API uint64_t kb_strlen(const char* a) {
   return strlen(a);
 }
 

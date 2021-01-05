@@ -12,22 +12,23 @@
 #include <kb/log.h>
 
 typedef struct pipeline_info {
-  kb_uniform_layout     uniform_layout;
-  kb_vertex_layout_info vertex_layout;
+  kb_uniform_layout         uniform_layout;
+  kb_vertex_layout_info     vertex_layout;
 } pipeline_info;
 
 typedef struct attachment {
-  kb_format   format;
-  kb_texture  texture;
-  bool        surface_proxy;
-  bool        resize_with_surface;
+  kb_format                 format;
+  kb_texture                texture;
+  kb_texture_usage          usage;
+  bool                      surface_proxy;
+  bool                      resize_with_surface;
 } attachment;
 
 typedef struct graphics_pipe_info {
-  attachment                      attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
-  int32_t                         attachment_count;
-  int32_t                         pass_count;
-  kb_graphics_pipeline_pass_info  passes[KB_CONFIG_MAX_PASSES];
+  attachment                attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
+  int32_t                   attachment_count;
+  int32_t                   pass_count;
+  kb_renderpass_info        passes[KB_CONFIG_MAX_PASSES];
 } graphics_pipe_info;
 
 typedef struct kb_encoder_frame {
@@ -54,8 +55,8 @@ typedef struct kb_encoder_pool {
 } kb_encoder_pool;
 
 typedef struct kb_transient_buffer {
-  kb_buffer buffer;
-  uint64_t  position;
+  kb_buffer                 buffer;
+  uint64_t                  position;
 } kb_transient_buffer;
 
 kb_encoder_pool*    encoder_pools;
@@ -148,29 +149,16 @@ KB_API kb_buffer kb_graphics_transient_buffer() {
   return get_current_transient_buffer().buffer;
 }
   
-KB_API void* kb_graphics_transient_alloc(uint64_t size, uint64_t align) {
+KB_API int64_t kb_graphics_transient_alloc(uint64_t size, kb_buffer_usage usage) {
   kb_transient_buffer& buffer = get_current_transient_buffer();
-  uint8_t* mapped = (uint8_t*) kb_graphics_get_buffer_mapped(buffer.buffer);
   
+  // TODO: Calculate align from usage
+  uint64_t align = 256;
+
   size_t pos = align_up(buffer.position, align);
   buffer.position = pos + size;
   
-  return mapped + pos;
-}
-
-KB_API void* kb_graphics_transient_at(uint64_t offset) {
-  kb_transient_buffer& buffer = get_current_transient_buffer();
-  uint8_t* mapped = (uint8_t*) kb_graphics_get_buffer_mapped(buffer.buffer);
-
-  if (offset > buffer.position) return NULL;
-
-  return mapped + offset;
-}
-
-KB_API uint64_t kb_graphics_transient_offset(void* ptr) {
-  kb_transient_buffer& buffer = get_current_transient_buffer();
-  uint8_t* zero = (uint8_t*) kb_graphics_get_buffer_mapped(buffer.buffer);
-  return ((uint8_t*) ptr) - zero;
+  return pos;
 }
 
 KB_API void kb_graphics_init(const kb_graphics_init_info info) {
@@ -181,24 +169,24 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
     draw_call_cache[pass_i]     = KB_DEFAULT_ALLOC_TYPE(kb_graphics_call, KB_CONFIG_MAX_DRAW_CALLS);
   }
   
+  // Transient buffers
   for (uint32_t frame_i = 0; frame_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; frame_i++) {
     transient_buffers[frame_i].position = 0;
     transient_buffers[frame_i].buffer = kb_buffer_create({
       .rwops  = NULL,
       .size   = KB_CONFIG_TRANSIENT_BUFFER_SIZE,
-      .mode   = KB_BUFFER_MODE_SHARED,
+      .usage = KB_BUFFER_USAGE_VERTEX_BUFFER | KB_BUFFER_USAGE_INDEX_BUFFER | KB_BUFFER_USAGE_UNIFORM_BUFFER | KB_BUFFER_USAGE_CPU_WRITE
     });
   }
 
   graphics_pipe = KB_DEFAULT_ALLOC_TYPE(graphics_pipe_info, 1);
   
-  current_extent = kb_platform_graphics_get_surface_extent();
-  
-  kb_log_debug("Extent {} {}", current_extent.x, current_extent.y);
-      
+  current_extent = kb_platform_graphics_surface_extent();
+        
   graphics_pipe->attachment_count = info.pipe.attachment_count;
   graphics_pipe->pass_count = info.pipe.pass_count;
-  
+
+  // Attachments
   for (uint32_t attachment_i = 0; attachment_i < info.pipe.attachment_count; ++attachment_i) {
     const kb_attachment_info& attachment_info = info.pipe.attachments[attachment_i];
     
@@ -207,23 +195,22 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
       graphics_pipe->attachments[attachment_i].surface_proxy = true;
     } else {
       // Regular attachment. Create a texture
-      KB_ASSERT(attachment_info.texture.render_target, "Graphics pipeline attachments must be render targets");
+      KB_ASSERT(attachment_info.texture.usage & KB_TEXTURE_USAGE_RENDER_TARGET, "Graphics pipeline attachments must be render targets");
 
       graphics_pipe->attachments[attachment_i].resize_with_surface = attachment_info.use_surface_size;
       graphics_pipe->attachments[attachment_i].format = attachment_info.texture.format;
+      graphics_pipe->attachments[attachment_i].usage = attachment_info.texture.usage;
       graphics_pipe->attachments[attachment_i].texture = kb_texture_create({
         .rwops = NULL,
         .texture = {
           .format = attachment_info.texture.format,
-          .width = attachment_info.use_surface_size ? current_extent.x : attachment_info.texture.width,
+          .width  = attachment_info.use_surface_size ? current_extent.x : attachment_info.texture.width,
           .height = attachment_info.use_surface_size ? current_extent.y : attachment_info.texture.height,
-          .render_target = true,
+          .usage  = attachment_info.texture.usage,
         },
         .mipmaps = false,
         .filter = KB_FILTER_LINEAR
       });
-      
-      kb_log_debug("pipe texture {}", graphics_pipe->attachments[attachment_i].texture.idx);
     }
   }
   
@@ -237,8 +224,6 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
 }
 
 KB_API void kb_graphics_deinit() {
-  kb_platform_graphics_wait_device_idle();
-  
   kb_pipeline_purge();
   kb_texture_purge();
 
@@ -269,7 +254,7 @@ KB_API void kb_graphics_run_encoders() {
 }
 
 KB_API void kb_graphics_frame() {
-  Int2 extent = kb_platform_graphics_get_surface_extent();
+  Int2 extent = kb_platform_graphics_surface_extent();
 
   if (extent.x != current_extent.x || extent.y != current_extent.y) {
     current_extent = extent;
@@ -283,11 +268,14 @@ KB_API void kb_graphics_frame() {
       
       kb_platform_graphics_texture_destruct(texture);
       
-      kb_texture_create_info info = {};
-      info.texture.width = current_extent.x;
-      info.texture.height = current_extent.y;
-      info.texture.format = graphics_pipe->attachments[attachment_i].format;
-      info.texture.render_target = true;
+      kb_texture_create_info info = {
+        .texture = {
+          .width  = (uint32_t) current_extent.x,
+          .height = (uint32_t) current_extent.y,
+          .format = graphics_pipe->attachments[attachment_i].format,
+          .usage  = graphics_pipe->attachments[attachment_i].usage,
+        }
+      };
 
       kb_platform_graphics_texture_construct(texture, info);
     }
@@ -313,7 +301,7 @@ KB_API kb_format kb_graphics_pipe_attachment_format(uint32_t attachment) {
   return graphics_pipe->attachments[attachment].format;
 }
 
-KB_API kb_graphics_pipeline_pass_info* kb_graphics_get_pipeline_pass_info(uint32_t pass) {
+KB_API kb_renderpass_info* kb_graphics_get_renderpass_info(uint32_t pass) {
   return &graphics_pipe->passes[pass];
 }
 
@@ -364,10 +352,6 @@ KB_API void kb_buffer_destruct(kb_buffer handle) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_graphics_buffer_destruct(handle);
-}
-
-KB_API void kb_graphics_wait_device_idle() {
-  kb_platform_graphics_wait_device_idle();
 }
 
 KB_API kb_uniform_slot kb_uniform_get_slot(const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type, kb_shader_stage stage) {
@@ -537,29 +521,32 @@ KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot sl
   if (data_size == 0) return;
   KB_ASSERT_NOT_NULL(data);
 
-  void* ptr = kb_graphics_transient_alloc(data_size, 256);
+  kb_buffer buffer = kb_graphics_transient_buffer();
+  int64_t buffer_offset = kb_graphics_transient_alloc(data_size, KB_BUFFER_USAGE_UNIFORM_BUFFER);
+  
+  void* ptr = kb_platform_graphics_buffer_mapped(buffer, buffer_offset);
   
   if (!ptr) {
     kb_log_error("Failed to allocate transient data for uniform buffer binding");
     return;
   }
-
+  
   kb_memcpy(ptr, data, data_size);
   
   if (slot.stage & KB_SHADER_STAGE_VERTEX) {
     kb_uniform_binding* binding = &current_encoder_frame(current_encoder_state(encoder)).vert_uniform_bindings[slot.vert_index];
     binding->index  = slot.vert_index;
     binding->size   = data_size;
-    binding->offset = kb_graphics_transient_offset(ptr);
-    binding->buffer = kb_graphics_transient_buffer();
+    binding->offset = buffer_offset,
+    binding->buffer = buffer;
   }
   
   if (slot.stage & KB_SHADER_STAGE_FRAGMENT) {
     kb_uniform_binding* binding = &current_encoder_frame(current_encoder_state(encoder)).frag_uniform_bindings[slot.frag_index]; 
     binding->index  = slot.frag_index;
     binding->size   = data_size;
-    binding->offset = kb_graphics_transient_offset(ptr);
-    binding->buffer = kb_graphics_transient_buffer();
+    binding->offset = buffer_offset,
+    binding->buffer = buffer;
   }
 }
 
@@ -593,10 +580,10 @@ KB_API void kb_encoder_submit(kb_encoder encoder, uint32_t first_index, uint32_t
   call.info.instance_count  = instance_count;
 }
 
-KB_API void* kb_graphics_get_buffer_mapped(kb_buffer buffer) {
+KB_API void* kb_graphics_get_buffer_mapped(kb_buffer buffer, uint64_t offset) {
   KB_ASSERT_VALID(buffer);
 
-  return kb_platform_graphics_buffer_mapped(buffer);
+  return kb_platform_graphics_buffer_mapped(buffer, offset);
 }
 
 KB_API Int2 kb_graphics_get_extent() {    
