@@ -14,8 +14,6 @@ extern "C" {
 
 #define KB_DEFAULT_ALIGN 8
 
-typedef void*(*kb_realloc_func)(struct kb_allocator*, void*, size_t, size_t);
-
 typedef struct kb_alloc_stats {
   uint64_t        count;
   uint64_t        mem;
@@ -23,7 +21,7 @@ typedef struct kb_alloc_stats {
 } kb_alloc_stats;
 
 typedef struct kb_allocator {
-  kb_realloc_func realloc;
+  void* (*realloc) (struct kb_allocator*, void*, size_t, size_t);
   kb_alloc_stats  stats;
   void*           impl;
 } kb_allocator;

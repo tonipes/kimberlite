@@ -41,7 +41,7 @@ KB_API void             kb_semaphore_post                 (kb_semaphore* semapho
 KB_API void             kb_semaphore_post_all             (kb_semaphore* semaphore);
 KB_API void             kb_semaphore_wait                 (kb_semaphore* semaphore);
 
-KB_API kb_mutex*        kb_mutex_create                   ();
+KB_API kb_mutex*        kb_mutex_create                   (void);
 KB_API void             kb_mutex_destroy                  (kb_mutex* mutex);
 KB_API void             kb_mutex_lock                     (kb_mutex* mutex);
 KB_API void             kb_mutex_unlock                   (kb_mutex* mutex);

@@ -23,12 +23,12 @@ extern "C" {
   handle_t  kb_##t_name##_get_or_alloc(kb_hash hash);
 
 #define KB_RESOURCE_ALLOC_FUNC_DECLS(t_name, handle_t, create_info_t)                               \
-  handle_t kb_##t_name##_allocate();                                                                \
+  handle_t kb_##t_name##_allocate(void);                                                            \
   handle_t kb_##t_name##_create(const create_info_t info);                                          \
   void     kb_##t_name##_destroy(handle_t handle);                                                  \
-  uint32_t kb_##t_name##_count();                                                                   \
-  void     kb_##t_name##_purge();                                                                   \
-  void     kb_##t_name##_construct(handle_t h, const create_info_t info);                          \
+  uint32_t kb_##t_name##_count(void);                                                               \
+  void     kb_##t_name##_purge(void);                                                               \
+  void     kb_##t_name##_construct(handle_t h, const create_info_t info);                           \
   void     kb_##t_name##_destruct(handle_t h);
   
 #define KB_RESOURCE_STORAGE_DEF(t_name, handle_t, ref_t, cap)                                     \

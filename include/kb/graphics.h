@@ -47,24 +47,33 @@ typedef enum kb_stencil_op {
   KB_STENCIL_DECR_WRAP            = 8,
 } kb_stencil_op;
 
-typedef enum kb_blend_factor {
-  KB_BLEND_ZERO                   = 0,
-  KB_BLEND_ONE                    = 1,
-  KB_BLEND_SRC_COLOR              = 2,
-  KB_BLEND_ONE_MINUS_SRC_COLOR    = 3,
-  KB_BLEND_SRC_ALPHA              = 4,
-  KB_BLEND_ONE_MINUS_SRC_ALPHA    = 5,
-  KB_BLEND_DST_COLOR              = 6,
-  KB_BLEND_ONE_MINUS_DST_COLOR    = 7,
-  KB_BLEND_DST_ALPHA              = 8,
-  KB_BLEND_ONE_MINUS_DST_ALPHA    = 9,
-  KB_BLEND_SRC_ALPHA_SATURATED    = 10,
-  KB_BLEND_BLEND_COLOR            = 11,
-  KB_BLEND_ONE_MINUS_BLEND_COLOR  = 12,
-  KB_BLEND_BLEND_ALPHA            = 13,
-  KB_BLEND_ONE_MINUS_BLEND_ALPHA  = 14,
-} kb_blend_factor;
+typedef enum kb_blend_op {
+  KB_BLEND_OP_UNKNOWN             = 0,
+  KB_BLEND_OP_ADD                 = 1,
+  KB_BLEND_OP_SUBTRACT            = 2,
+  KB_BLEND_OP_REVERSE_SUBTRACT    = 3,
+  KB_BLEND_OP_MIN                 = 4,
+  KB_BLEND_OP_MAX                 = 5,
+} kb_blend_op;
 
+typedef enum kb_blend_factor {
+  KB_BLEND_UNKNOWN                = 0,
+  KB_BLEND_ZERO                   = 1,
+  KB_BLEND_ONE                    = 2,
+  KB_BLEND_SRC_COLOR              = 3,
+  KB_BLEND_ONE_MINUS_SRC_COLOR    = 4,
+  KB_BLEND_SRC_ALPHA              = 5,
+  KB_BLEND_ONE_MINUS_SRC_ALPHA    = 6,
+  KB_BLEND_DST_COLOR              = 7,
+  KB_BLEND_ONE_MINUS_DST_COLOR    = 8,
+  KB_BLEND_DST_ALPHA              = 9,
+  KB_BLEND_ONE_MINUS_DST_ALPHA    = 10,
+  KB_BLEND_SRC_ALPHA_SATURATED    = 11,
+  KB_BLEND_BLEND_COLOR            = 12,
+  KB_BLEND_ONE_MINUS_BLEND_COLOR  = 13,
+  KB_BLEND_BLEND_ALPHA            = 14,
+  KB_BLEND_ONE_MINUS_BLEND_ALPHA  = 15,
+} kb_blend_factor;
 
 typedef enum kb_vertex_attrib_format {
   KB_VERTEX_FORMAT_UNKNOWN        = 0,
@@ -105,11 +114,12 @@ typedef enum kb_cull_mode {
 } kb_cull_mode;
 
 typedef enum kb_topology_type {
-  KB_TOPOLOGY_TRIANGLE_STRIP      = 0,
-  KB_TOPOLOGY_TRIANGLE_LIST       = 1,
-  KB_TOPOLOGY_LINE_STRIP          = 2,
-  KB_TOPOLOGY_LINE_LIST           = 3,
-  KB_TOPOLOGY_POINT_LIST          = 4,
+  KB_TOPOLOGY_UNKNOWN             = 0,
+  KB_TOPOLOGY_TRIANGLE_STRIP      = 1,
+  KB_TOPOLOGY_TRIANGLE_LIST       = 2,
+  KB_TOPOLOGY_LINE_STRIP          = 3,
+  KB_TOPOLOGY_LINE_LIST           = 4,
+  KB_TOPOLOGY_POINT_LIST          = 5,
 } kb_topology_type;
 
 typedef enum kb_binding_type {
@@ -170,6 +180,20 @@ typedef enum kb_store_action {
   KB_STORE_ACTION_STORE           = 1,
 } kb_store_action;
 
+typedef struct kb_blend_info {
+  bool                      enabled;
+  kb_blend_op               alpha_blend_op;
+  kb_blend_op               color_blend_op;
+  kb_blend_factor           dst_alpha_blend_factor;
+  kb_blend_factor           dst_color_blend_factor;
+  kb_blend_factor           src_alpha_blend_factor;
+  kb_blend_factor           src_color_blend_factor;
+} kb_blend_info;
+
+typedef struct kb_color_blending_info {
+  kb_blend_info             attachments[KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS];
+} kb_color_blending_info;
+  
 typedef struct kb_texture_info {
   uint32_t                  width;
   uint32_t                  height;
@@ -302,6 +326,7 @@ typedef struct kb_pipeline_create_info {
   kb_depth_stencil_info     depth_stencil;
   kb_sampling_info          sampling;
   uint32_t                  renderpass;
+  kb_color_blending_info    color_blending;
 } kb_pipeline_create_info;
 
 typedef struct kb_graphics_init_info {
@@ -373,35 +398,35 @@ KB_RESOURCE_ALLOC_FUNC_DECLS  (buffer         , kb_buffer         , kb_buffer_cr
 KB_RESOURCE_ALLOC_FUNC_DECLS  (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_ALLOC_FUNC_DECLS  (texture        , kb_texture        , kb_texture_create_info        )
 
-KB_API void                             kb_graphics_init                      (const kb_graphics_init_info info);
-KB_API void                             kb_graphics_deinit                    ();
-KB_API void                             kb_graphics_frame                     ();
-KB_API void                             kb_graphics_run_encoders              ();
-KB_API Int2                             kb_graphics_get_extent                ();
-KB_API float                            kb_graphics_get_aspect                ();
-KB_API uint32_t                         kb_graphics_get_current_resource_slot ();
-KB_API void*                            kb_graphics_get_buffer_mapped         (kb_buffer buffer, uint64_t offset);
-KB_API kb_buffer                        kb_graphics_transient_buffer          ();
-KB_API int64_t                          kb_graphics_transient_alloc           (uint64_t size, kb_buffer_usage align);
-KB_API kb_texture                       kb_graphics_pipe_attachment_texture   (uint32_t attachment);
-KB_API kb_format                        kb_graphics_pipe_attachment_format    (uint32_t attachment);
-KB_API bool                             kb_graphics_pipe_attachment_surface_proxy(uint32_t attachment);
-KB_API kb_renderpass_info*              kb_graphics_get_renderpass_info       (uint32_t pass);
-KB_API kb_uniform_slot                  kb_uniform_get_slot                   (const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type, kb_shader_stage stage);
-KB_API kb_encoder                       kb_encoder_begin                      ();
-KB_API void                             kb_encoder_end                        (kb_encoder encoder);
-KB_API void                             kb_encoder_push                       (kb_encoder encoder);
-KB_API void                             kb_encoder_pop                        (kb_encoder encoder);
-KB_API void                             kb_encoder_bind_renderpass            (kb_encoder encoder, uint32_t renderpass);
-KB_API void                             kb_encoder_bind_pipeline              (kb_encoder encoder, kb_pipeline pipeline);
-KB_API void                             kb_encoder_bind_buffer                (kb_encoder encoder, uint32_t slot, kb_buffer vertex_buffer, uint64_t offset);
-KB_API void                             kb_encoder_bind_index_buffer          (kb_encoder encoder, kb_buffer index_buffer, uint64_t offset, kb_index_type type);
-KB_API void                             kb_encoder_bind_texture               (kb_encoder encoder, const kb_uniform_slot slot, kb_texture texture);
-KB_API void                             kb_encoder_bind_uniform               (kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size);
-KB_API void                             kb_encoder_submit                     (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count, uint32_t instance_count);
-KB_API void                             kb_encoder_reset_frame                (kb_encoder encoder);
-KB_API void                             kb_texture_read                       (kb_texture_data* dst, kb_stream* src);
-KB_API void                             kb_texture_write                      (const kb_texture_data* src, kb_stream* dst);
+KB_API void                 kb_graphics_init                          (const kb_graphics_init_info info);
+KB_API void                 kb_graphics_deinit                        (void);
+KB_API void                 kb_graphics_frame                         (void);
+KB_API void                 kb_graphics_run_encoders                  (void);
+KB_API Int2                 kb_graphics_get_extent                    (void);
+KB_API float                kb_graphics_get_aspect                    (void);
+KB_API uint32_t             kb_graphics_get_current_resource_slot     (void);
+KB_API void*                kb_graphics_get_buffer_mapped             (kb_buffer buffer, uint64_t offset);
+KB_API kb_buffer            kb_graphics_transient_buffer              (void);
+KB_API int64_t              kb_graphics_transient_alloc               (uint64_t size, kb_buffer_usage align);
+KB_API kb_texture           kb_graphics_pipe_attachment_texture       (uint32_t attachment);
+KB_API kb_format            kb_graphics_pipe_attachment_format        (uint32_t attachment);
+KB_API bool                 kb_graphics_pipe_attachment_surface_proxy (uint32_t attachment);
+KB_API kb_renderpass_info*  kb_graphics_get_renderpass_info           (uint32_t pass);
+KB_API kb_uniform_slot      kb_uniform_get_slot                       (const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type, kb_shader_stage stage);
+KB_API kb_encoder           kb_encoder_begin                          (void);
+KB_API void                 kb_encoder_end                            (kb_encoder encoder);
+KB_API void                 kb_encoder_push                           (kb_encoder encoder);
+KB_API void                 kb_encoder_pop                            (kb_encoder encoder);
+KB_API void                 kb_encoder_bind_renderpass                (kb_encoder encoder, uint32_t renderpass);
+KB_API void                 kb_encoder_bind_pipeline                  (kb_encoder encoder, kb_pipeline pipeline);
+KB_API void                 kb_encoder_bind_buffer                    (kb_encoder encoder, uint32_t slot, kb_buffer vertex_buffer, uint64_t offset);
+KB_API void                 kb_encoder_bind_index_buffer              (kb_encoder encoder, kb_buffer index_buffer, uint64_t offset, kb_index_type type);
+KB_API void                 kb_encoder_bind_texture                   (kb_encoder encoder, const kb_uniform_slot slot, kb_texture texture);
+KB_API void                 kb_encoder_bind_uniform                   (kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size);
+KB_API void                 kb_encoder_submit                         (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count, uint32_t instance_count);
+KB_API void                 kb_encoder_reset_frame                    (kb_encoder encoder);
+KB_API void                 kb_texture_read                           (kb_texture_data* dst, kb_stream* src);
+KB_API void                 kb_texture_write                          (const kb_texture_data* src, kb_stream* dst);
 
 #ifdef __cplusplus
 }

@@ -171,6 +171,7 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   
   // Transient buffers
   for (uint32_t frame_i = 0; frame_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; frame_i++) {
+    transient_buffers[frame_i] = {};
     transient_buffers[frame_i].position = 0;
     transient_buffers[frame_i].buffer = kb_buffer_create({
       .rwops  = NULL,
@@ -188,6 +189,8 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
 
   // Attachments
   for (uint32_t attachment_i = 0; attachment_i < info.pipe.attachment_count; ++attachment_i) {
+    graphics_pipe->attachments[attachment_i] = {};
+    
     const kb_attachment_info& attachment_info = info.pipe.attachments[attachment_i];
     
     if (attachment_info.surface_proxy) {
@@ -215,6 +218,7 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
   }
   
   for (uint32_t pass_i = 0; pass_i < info.pipe.pass_count; ++pass_i) {
+    graphics_pipe->passes[pass_i] = {};
     graphics_pipe->passes[pass_i] = info.pipe.passes[pass_i];
   }
 

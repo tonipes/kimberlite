@@ -39,8 +39,8 @@ typedef struct kb_material_create_info {
   kb_material_texture       textures[KB_CONFIG_MAX_UNIFORM_BINDINGS];
 } kb_material_create_info;
 
-KB_RESOURCE_HASHED_FUNC_DECLS (material, kb_material, kb_material_create_info)
-KB_RESOURCE_ALLOC_FUNC_DECLS  (material, kb_material, kb_material_create_info)
+KB_RESOURCE_HASHED_FUNC_DECLS (material, kb_material, kb_material_create_info);
+KB_RESOURCE_ALLOC_FUNC_DECLS  (material, kb_material, kb_material_create_info);
 
 KB_API void kb_encoder_bind_material(kb_encoder encoder, kb_material material);
 
