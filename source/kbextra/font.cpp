@@ -319,12 +319,40 @@ KB_API Float2 kb_font_get_string_dimensions(kb_font_info* info, const char* str,
 #ifndef KB_TOOL_ONLY
 
 struct kb_font_ref {
-  kb_font_info  info;
+  kb_font_info    info;
+  kb_pipeline     pipeline;
+  kb_texture      atlas_texture;
+  kb_uniform_slot atlas_slot;
 };
 
 KB_RESOURCE_STORAGE_DEF       (font, kb_font, kb_font_ref, KB_CONFIG_MAX_FONTS);
 KB_RESOURCE_ALLOC_FUNC_DEF    (font, kb_font, kb_font_create_info, KB_CONFIG_MAX_FONTS);
 KB_RESOURCE_DATA_HASHED_DEF   (font, kb_font);
+
+void kb_font_construct(kb_font handle, const kb_font_create_info_new info) {
+  kb_font_data font_data;
+  
+  kb_font_data_read(&font_data, info.data);
+  kb_stream* texture_data = kb_stream_open_mem(font_data.atlas_bitmap, font_data.atlas_bitmap_size);
+
+  font_ref(handle)->info            = font_data.info;
+  font_ref(handle)->info.chars      = (kb_font_char*) kb_memdup(font_data.info.chars, sizeof(kb_font_char) * font_data.info.char_count);
+  kb_table_copy(&font_ref(handle)->info.char_table, &font_data.info.char_table);
+  
+  font_ref(handle)->pipeline      = info.pipeline;
+  font_ref(handle)->atlas_slot    = info.atlas_slot;
+  font_ref(handle)->atlas_texture = kb_texture_create({
+    .rwops = texture_data,
+    .texture = {
+      .width  = font_data.atlas_bitmap_width,
+      .height = font_data.atlas_bitmap_height,
+      .format = KB_FORMAT_R8G8B8A8,
+      .usage  = KB_TEXTURE_USAGE_SHADER_READ
+    },
+    .mipmaps = false,
+    .filter = KB_FILTER_LINEAR,
+  });
+}
 
 void kb_font_construct(kb_font handle, const kb_font_create_info info) {
   font_ref(handle)->info            = info.info;
@@ -438,11 +466,12 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
     index_data  += 6;
     indices     += 6;
   }
-
-//  uint32_t vertex_data_buffer_offset  = kb_graphics_transient_offset(vertex_data_buffer);
-//  uint32_t index_data_buffer_offset   = kb_graphics_transient_offset(index_data_buffer);
   
   kb_encoder_push(encoder);
+  
+  // Bind font
+//  kb_encoder_bind_pipeline(encoder, fnt->pipeline);
+//  kb_encoder_bind_texture(encoder, fnt->atlas_slot, fnt->atlas_texture)
   
   kb_encoder_bind_buffer(encoder, 0, buffer, vertex_data_offset);
   kb_encoder_bind_index_buffer(encoder, buffer, index_data_offset, KB_INDEX_TYPE_16);

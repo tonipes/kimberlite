@@ -325,7 +325,7 @@ int main(int argc, const char* argv[]) {
               kb_array_resize(&vertex_data.positions, start + accessor_count);
 
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_get(&vertex_data.positions, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.positions, start + i), accessor_elem_size);
               }
             } break;
 
@@ -336,7 +336,7 @@ int main(int argc, const char* argv[]) {
               kb_array_resize(&vertex_data.normals, start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_get(&vertex_data.normals, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.normals, start + i), accessor_elem_size);
               }
             } break;
 
@@ -347,7 +347,7 @@ int main(int argc, const char* argv[]) {
               kb_array_resize(&vertex_data.tangents, start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_get(&vertex_data.tangents, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.tangents, start + i), accessor_elem_size);
               }
             } break;
 
@@ -358,7 +358,7 @@ int main(int argc, const char* argv[]) {
               kb_array_resize(&vertex_data.texcoords, start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_get(&vertex_data.texcoords, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.texcoords, start + i), accessor_elem_size);
               }
             } break;
 
@@ -369,7 +369,7 @@ int main(int argc, const char* argv[]) {
               kb_array_resize(&vertex_data.colors, start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_get(&vertex_data.colors, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.colors, start + i), accessor_elem_size);
               }
             } break;
 
@@ -380,7 +380,7 @@ int main(int argc, const char* argv[]) {
               kb_array_resize(&vertex_data.joints, start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_get(&vertex_data.joints, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.joints, start + i), accessor_elem_size);
               }
             } break;
 
@@ -391,7 +391,7 @@ int main(int argc, const char* argv[]) {
               kb_array_resize(&vertex_data.weights, start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_get(&vertex_data.weights, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.weights, start + i), accessor_elem_size);
               }
             } break;
 
@@ -467,7 +467,7 @@ int main(int argc, const char* argv[]) {
     bool has_weights  = false;
 
     for (uint64_t tri_i = 0; tri_i < kb_array_count(&vertex_data.triangles); ++tri_i) {
-      IndexTriangle& tri = *(IndexTriangle*) kb_array_get(&vertex_data.triangles, tri_i);
+      IndexTriangle& tri = *(IndexTriangle*) kb_array_at(&vertex_data.triangles, tri_i);
 
       for (uint32_t i = 0; i < 3; ++i) {
         has_position  |= tri.vert[i].position   != UINT32_MAX;
@@ -534,7 +534,7 @@ int main(int argc, const char* argv[]) {
         uint32_t    prim_index        = 0;
 
         for (uint32_t tri_i = prim->first_triangle; tri_i < prim->first_triangle + prim->triangle_count; ++tri_i) {
-          IndexTriangle& tri = *(IndexTriangle*) kb_array_get(&vertex_data.triangles, tri_i);
+          IndexTriangle& tri = *(IndexTriangle*) kb_array_at(&vertex_data.triangles, tri_i);
 
           for (uint32_t v = 0; v < 3; ++v) {
             const VertexIndices& vert = tri.vert[v];
@@ -544,7 +544,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_position);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_position);
               
-              kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.positions, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.positions, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             if (has_normal) {
@@ -552,7 +552,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_normal);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_normal);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.normals, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.normals, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_tangent) {
@@ -560,7 +560,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_tangent);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_tangent);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.tangents, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.tangents, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             if (has_texcoord) {
@@ -568,7 +568,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_texcoord);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_texcoord);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.texcoords, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.texcoords, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_color) {
@@ -576,7 +576,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_color);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_color);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.colors, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.colors, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_weights) {
@@ -584,7 +584,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_weights);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_weights);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.weights, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.weights, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_joints) {
@@ -592,7 +592,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_joints);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_joints);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_get(&vertex_data.joints, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.joints, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             prim_ind_data[prim_index++] = prim_vert;

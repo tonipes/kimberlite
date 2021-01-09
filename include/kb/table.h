@@ -35,3 +35,57 @@ KB_API bool       kb_table_remove       (kb_table* table, kb_hash key);
 #ifdef __cplusplus
 }
 #endif
+
+#ifdef __cplusplus
+
+//namespace kb {
+//  class table: public kb_table {
+//  public:
+//    table(uint32_t capacity = 0) { kb_table_create(this, capacity); }
+//
+//    ~table() {
+//      kb_table_destroy(this);
+//    }
+//
+//    table(const table& other) {
+//      kb_table_copy(this, &other);
+//    }
+//
+//    table& operator=(const table& other) {
+//      return *this = table(other);
+//    }
+//
+//    table(table&& other) {
+//      *this = other;
+//      other.data  = nullptr;
+//      other.pos   = 0;
+//      other.cap   = 0;
+//    }
+//
+//    table& operator=(table&& other) noexcept {
+//      *this = other;
+//      other.data  = nullptr;
+//      other.pos   = 0;
+//      other.cap   = 0;
+//      return *this;
+//    }
+//
+//    uint32_t capacity() const {
+//      return kb_table_capacity(this);
+//    }
+//
+//    uint32_t count() const {
+//      return kb_table_count(this);
+//    }
+//
+//    uint32_t take() {
+//      return kb_table_take(this);
+//    }
+//
+//    bool free(uint32_t handle) {
+//      return kb_table_free(this, handle);
+//    }
+//  };
+//};
+
+#endif

@@ -7,6 +7,7 @@
 #pragma once
 
 #include <kb/core.h>
+#include <kb/log.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,8 +32,7 @@ KB_API uint64_t kb_array_count      (kb_array* array);
 KB_API uint64_t kb_array_capacity   (kb_array* array);
 KB_API void     kb_array_reserve    (kb_array* array, uint64_t size);
 KB_API void     kb_array_resize     (kb_array* array, uint64_t size);
-KB_API void*    kb_array_get        (kb_array* array, uint64_t index);
-KB_API void     kb_array_set        (kb_array* array, uint64_t index);
+KB_API void*    kb_array_at         (const kb_array* array, uint64_t index);
 KB_API void     kb_array_push_back  (kb_array* array, void* data);
 KB_API void     kb_array_pop_back   (kb_array* array);
 
@@ -46,32 +46,73 @@ namespace kb {
   template <typename T>
   class array: public kb_array {
   public:
-    array(uint64_t capacity = 0) { kb_array_create(this, sizeof(T), capacity); }
+    array(uint64_t capacity = 0) {
+      kb_array_create(this, sizeof(T), capacity);
+    }
 
-    ~array() { kb_array_destroy(this); }
+    ~array() {
+      for (uint32_t i = 0; i < this->pos; ++i) {
+        ((T*)kb_array_at(this, i))->~T();
+      }
+      
+      kb_array_destroy(this);
+    }
     
-    array(const array& other) { kb_array_copy(this, &other); }
-    array& operator=(const array& other) { return *this = array(other); }
+    array(const array& other) {
+      kb_array_copy(this, &other);
+    }
+    
+    array& operator=(const array& other) {
+      kb_array_copy(this, &other);
+      return *this;
+    }
  
     array(array&& other) {
-      *this = other;
-      other.data = nullptr;
-      other.pos  = 0;
-      other.cap  = 0;
+      this->data  = other.data;
+      this->pos   = other.pos;
+      this->cap   = other.cap;
+      
+      other.data  = nullptr;
+      other.pos   = 0;
+      other.cap   = 0;
     } 
     
     array& operator=(array&& other) noexcept {
-      *this = other;
-      other.data = nullptr;
-      other.pos  = 0;
-      other.cap  = 0;
+      this->data  = other.data;
+      this->pos   = other.pos;
+      this->cap   = other.cap;
+      
+      other.data  = nullptr;
+      other.pos   = 0;
+      other.cap   = 0;
+      
       return *this;
     }
     
-    uint64_t capacity ()              const   { return kb_array_capacity(this);       }
-    uint64_t count    ()              const   { return kb_array_count(this);          }
-    void     reserve  (uint64_t size)         { return kb_array_reserve(this, size);  }
-    void     resize   (uint64_t size)         { return kb_array_resize(this, size);   }
+    uint64_t capacity() const {
+      return kb_array_capacity(this);
+    }
+    
+    uint64_t count() const {
+      return kb_array_count(this);
+    }
+    
+    void reserve(uint64_t size) {
+      return kb_array_reserve(this, size);
+    }
+    
+    void resize(uint64_t size) {
+      return kb_array_resize(this, size);
+    }
+    
+    T& operator[](uint64_t idx) {
+      return *(T*) kb_array_at(this, idx);
+    }
+    
+    const T& operator[](uint64_t idx) const {
+      return *(const T*) kb_array_at(this, idx);
+    }
+
   };
 };
 

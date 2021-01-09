@@ -78,7 +78,7 @@ struct kb_resource_slot_allocator {
     return (handle_t){ kb_freelist_take(&(t_name##_data.freelist)) + 1 };                         \
   }                                                                                               \
   void kb_##t_name##_free(handle_t handle) {                                                      \
-    kb_freelist_return(&(t_name##_data.freelist), kb_to_arr(handle));                             \
+    kb_freelist_free(&(t_name##_data.freelist), kb_to_arr(handle));                             \
   }                                                                                               \
   void kb_##t_name##_destroy(handle_t handle) {                                                   \
     kb_##t_name##_free(handle);                                                                   \

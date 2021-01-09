@@ -7,7 +7,7 @@ TEST_CASE("zero initialized array should be empty and not freak out", "[array]")
   
   REQUIRE(kb_array_count    (&arr)    == 0);
   REQUIRE(kb_array_capacity (&arr)    == 0);
-  REQUIRE(kb_array_get      (&arr, 5) == nullptr);
+  REQUIRE(kb_array_at      (&arr, 5) == nullptr);
 }
 
 TEST_CASE("initialized array should have correct capacity and count", "[array]") {

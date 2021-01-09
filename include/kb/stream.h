@@ -7,6 +7,7 @@
 #pragma once
 
 #include <kb/core.h>
+#include <kb/alloc.h>
 
 #ifdef __cplusplus
 extern "C" {

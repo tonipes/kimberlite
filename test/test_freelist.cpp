@@ -52,11 +52,11 @@ TEST_CASE("freelist should not allow same handle to be retuned more than once", 
   kb_freelist_take(&freelist);
   kb_freelist_take(&freelist);
 
-  REQUIRE(kb_freelist_return(&freelist, h) == true);
-  REQUIRE(kb_freelist_return(&freelist, h) == false);
-  REQUIRE(kb_freelist_return(&freelist, h) == false);
-  REQUIRE(kb_freelist_return(&freelist, h) == false);
-  REQUIRE(kb_freelist_return(&freelist, h) == false);
+  REQUIRE(kb_freelist_free(&freelist, h) == true);
+  REQUIRE(kb_freelist_free(&freelist, h) == false);
+  REQUIRE(kb_freelist_free(&freelist, h) == false);
+  REQUIRE(kb_freelist_free(&freelist, h) == false);
+  REQUIRE(kb_freelist_free(&freelist, h) == false);
 };
 
 TEST_CASE("freelist return should decrease count", "[freelist]") {
@@ -71,16 +71,16 @@ TEST_CASE("freelist return should decrease count", "[freelist]") {
 
   REQUIRE(kb_freelist_count(&freelist) == 4);
 
-  REQUIRE(kb_freelist_return(&freelist, a1));
+  REQUIRE(kb_freelist_free(&freelist, a1));
   REQUIRE(kb_freelist_count(&freelist) == 3);
 
-  REQUIRE(kb_freelist_return(&freelist, a2));
+  REQUIRE(kb_freelist_free(&freelist, a2));
   REQUIRE(kb_freelist_count(&freelist) == 2);
 
-  REQUIRE(kb_freelist_return(&freelist, a3));
+  REQUIRE(kb_freelist_free(&freelist, a3));
   REQUIRE(kb_freelist_count(&freelist) == 1);
 
-  REQUIRE(kb_freelist_return(&freelist, a4));
+  REQUIRE(kb_freelist_free(&freelist, a4));
   REQUIRE(kb_freelist_count(&freelist) == 0);
 }
 

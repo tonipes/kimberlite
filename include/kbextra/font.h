@@ -66,6 +66,12 @@ typedef struct kb_font_create_info {
   kb_font_info  info;
 } kb_font_create_info;
 
+typedef struct kb_font_create_info_new {
+  kb_pipeline     pipeline;
+  kb_stream*      data;
+  kb_uniform_slot atlas_slot;
+} kb_font_create_info_new;
+  
 KB_RESOURCE_HASHED_FUNC_DECLS (font, kb_font, kb_font_create_info);
 KB_RESOURCE_ALLOC_FUNC_DECLS  (font, kb_font, kb_font_create_info);
 
