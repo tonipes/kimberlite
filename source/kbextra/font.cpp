@@ -329,7 +329,7 @@ KB_RESOURCE_STORAGE_DEF       (font, kb_font, kb_font_ref, KB_CONFIG_MAX_FONTS);
 KB_RESOURCE_ALLOC_FUNC_DEF    (font, kb_font, kb_font_create_info, KB_CONFIG_MAX_FONTS);
 KB_RESOURCE_DATA_HASHED_DEF   (font, kb_font);
 
-void kb_font_construct(kb_font handle, const kb_font_create_info_new info) {
+void kb_font_construct(kb_font handle, const kb_font_create_info info) {
   kb_font_data font_data;
   
   kb_font_data_read(&font_data, info.data);
@@ -354,11 +354,11 @@ void kb_font_construct(kb_font handle, const kb_font_create_info_new info) {
   });
 }
 
-void kb_font_construct(kb_font handle, const kb_font_create_info info) {
-  font_ref(handle)->info            = info.info;
-  font_ref(handle)->info.chars      = (kb_font_char*) kb_memdup(info.info.chars, sizeof(kb_font_char) * info.info.char_count);
-  kb_table_copy(&font_ref(handle)->info.char_table, &info.info.char_table);
-}
+//void kb_font_construct(kb_font handle, const kb_font_create_info info) {
+//  font_ref(handle)->info            = info.info;
+//  font_ref(handle)->info.chars      = (kb_font_char*) kb_memdup(info.info.chars, sizeof(kb_font_char) * info.info.char_count);
+//  kb_table_copy(&font_ref(handle)->info.char_table, &info.info.char_table);
+//}
 
 void kb_font_destruct(kb_font handle) { 
   KB_DEFAULT_FREE(font_ref(handle)->info.chars);
@@ -366,6 +366,10 @@ void kb_font_destruct(kb_font handle) {
 }
 
 void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, uint32_t len, Float2 origin, Float2 scale, Float2 align, Float2 offset, uint32_t instance_count) {
+  
+  KB_ASSERT_VALID(encoder);
+  KB_ASSERT_VALID(font);
+  
   uint32_t codepoints = kb_count_utf8(str, len);
 
   if (codepoints == 0) return;
@@ -470,8 +474,8 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   kb_encoder_push(encoder);
   
   // Bind font
-//  kb_encoder_bind_pipeline(encoder, fnt->pipeline);
-//  kb_encoder_bind_texture(encoder, fnt->atlas_slot, fnt->atlas_texture)
+  kb_encoder_bind_pipeline(encoder, fnt->pipeline);
+  kb_encoder_bind_texture(encoder, fnt->atlas_slot, fnt->atlas_texture);
   
   kb_encoder_bind_buffer(encoder, 0, buffer, vertex_data_offset);
   kb_encoder_bind_index_buffer(encoder, buffer, index_data_offset, KB_INDEX_TYPE_16);

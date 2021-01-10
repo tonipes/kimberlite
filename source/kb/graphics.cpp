@@ -298,18 +298,28 @@ KB_API void kb_graphics_frame() {
 }
 
 KB_API kb_texture kb_graphics_pipe_attachment_texture(uint32_t attachment) {
+  KB_ASSERT_NOT_NULL(graphics_pipe);
+
   return graphics_pipe->attachments[attachment].texture;
 }
 
 KB_API kb_format kb_graphics_pipe_attachment_format(uint32_t attachment) {
+  KB_ASSERT_NOT_NULL(graphics_pipe);
+
   return graphics_pipe->attachments[attachment].format;
 }
 
 KB_API kb_renderpass_info* kb_graphics_get_renderpass_info(uint32_t pass) {
+  KB_ASSERT_NOT_NULL(graphics_pipe);
+  KB_ASSERT(graphics_pipe->pass_count > pass, "Invalid Pass");
+
   return &graphics_pipe->passes[pass];
 }
 
 KB_API bool kb_graphics_pipe_attachment_surface_proxy(uint32_t attachment) {
+  KB_ASSERT_NOT_NULL(graphics_pipe);
+  KB_ASSERT(graphics_pipe->attachment_count > attachment, "Invalid Attachment");
+
   return graphics_pipe->attachments[attachment].surface_proxy;
 }
 

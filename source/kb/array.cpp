@@ -63,13 +63,13 @@ KB_API void kb_array_copy(kb_array* dst, const kb_array* src) {
   dst->pos = src->pos;
 }
 
-KB_API uint64_t kb_array_count(kb_array* array) {
+KB_API uint64_t kb_array_count(const kb_array* array) {
   KB_ASSERT_NOT_NULL(array);
 
   return array->pos;
 }
 
-KB_API uint64_t kb_array_capacity(kb_array* array) {
+KB_API uint64_t kb_array_capacity(const kb_array* array) {
   KB_ASSERT_NOT_NULL(array);
 
   return array->cap;

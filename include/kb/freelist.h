@@ -26,8 +26,8 @@ KB_API void       kb_freelist_copy          (kb_freelist* dst, const kb_freelist
 KB_API void       kb_freelist_reset         (kb_freelist* freelist);
 KB_API uint32_t   kb_freelist_take          (kb_freelist* freelist);
 KB_API bool       kb_freelist_free          (kb_freelist* freelist, uint32_t handle);
-KB_API uint32_t*  kb_freelist_get_sparse    (kb_freelist* freelist);
-KB_API uint32_t*  kb_freelist_get_dense     (kb_freelist* freelist);
+KB_API uint32_t*  kb_freelist_get_sparse    (const kb_freelist* freelist);
+KB_API uint32_t*  kb_freelist_get_dense     (const kb_freelist* freelist);
 KB_API uint32_t   kb_freelist_count         (const kb_freelist* freelist);
 KB_API uint32_t   kb_freelist_capacity      (const kb_freelist* freelist);
 
@@ -83,6 +83,14 @@ namespace kb {
 
     bool free(uint32_t handle) {
       return kb_freelist_free(this, handle);
+    }
+    
+    uint32_t* get_dense() const {
+      return kb_freelist_get_dense(this);
+    }
+    
+    uint32_t* get_sparse() const {
+      return kb_freelist_get_sparse(this);
     }
   };
 };

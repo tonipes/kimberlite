@@ -108,13 +108,13 @@ KB_API uint32_t kb_freelist_capacity(const kb_freelist* freelist) {
   return freelist->cap;
 }
 
-KB_API uint32_t* kb_freelist_get_sparse(kb_freelist* freelist) {
+KB_API uint32_t* kb_freelist_get_sparse(const kb_freelist* freelist) {
   KB_ASSERT_NOT_NULL(freelist);
 
   return &kb_freelist_get_dense(freelist)[freelist->cap];
 }
 
-KB_API uint32_t* kb_freelist_get_dense(kb_freelist* freelist) {
+KB_API uint32_t* kb_freelist_get_dense(const kb_freelist* freelist) {
   KB_ASSERT_NOT_NULL(freelist);
 
   return freelist->data;

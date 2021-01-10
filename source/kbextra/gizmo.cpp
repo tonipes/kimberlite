@@ -21,6 +21,16 @@ inline kb_gizmo_attribs& current_attribs(kb_gizmo* gizmo) {
   return gizmo->attribs[gizmo->attrib_stack_pos];
 }
 
+KB_API void kb_gizmo_create(kb_gizmo* gizmo) {
+  gizmo->line_vertex_cache      = KB_DEFAULT_ALLOC_TYPE(kb_simple_vertex, (KB_CONFIG_GIZMO_CACHE_SIZE + 1));
+  gizmo->line_index_cache       = KB_DEFAULT_ALLOC_TYPE(uint16_t,         (KB_CONFIG_GIZMO_CACHE_SIZE * 2)); // Line has 2 indices
+}
+
+KB_API void kb_gizmo_destroy(kb_gizmo* gizmo) {
+  KB_DEFAULT_FREE(gizmo->line_vertex_cache);
+  KB_DEFAULT_FREE(gizmo->line_index_cache);
+}
+
 KB_API void kb_gizmo_begin(kb_gizmo* gizmo, kb_encoder encoder, kb_pipeline pipeline) {
   KB_ASSERT_NOT_NULL(gizmo);
 
@@ -33,20 +43,15 @@ KB_API void kb_gizmo_begin(kb_gizmo* gizmo, kb_encoder encoder, kb_pipeline pipe
   gizmo->line_index_cache_pos   = 0;
   gizmo->mtx_stack_pos          = 0;
   gizmo->mtx_stack[0]           = IdentityFloat4x4;
-  gizmo->line_vertex_cache      = KB_DEFAULT_ALLOC_TYPE(kb_simple_vertex, (KB_CONFIG_GIZMO_CACHE_SIZE + 1));
-  gizmo->line_index_cache       = KB_DEFAULT_ALLOC_TYPE(uint16_t,         (KB_CONFIG_GIZMO_CACHE_SIZE * 2)); // Line has 2 indices
-
-  *gizmo->attribs               = {};
-  gizmo->attribs[0].color       = { 1.0f , 1.0f, 1.0f, 1.0f };
+  
+  gizmo->attribs[0]             = {};
+  gizmo->attribs[0].color       = { 1.0f, 1.0f, 1.0f, 1.0f };
 }
 
 KB_API void kb_gizmo_end(kb_gizmo* gizmo) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_flush(gizmo, true);
-
-  KB_DEFAULT_FREE(gizmo->line_vertex_cache);
-  KB_DEFAULT_FREE(gizmo->line_index_cache);
 }
 
 KB_API void kb_gizmo_flush(kb_gizmo* gizmo, bool force) {    

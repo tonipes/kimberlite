@@ -28,8 +28,8 @@ KB_API void     kb_array_copy       (kb_array* dst, const kb_array* src);
 KB_API void*    kb_array_begin      (kb_array* array);
 KB_API void*    kb_array_back       (kb_array* array);
 KB_API void*    kb_array_end        (kb_array* array);
-KB_API uint64_t kb_array_count      (kb_array* array);
-KB_API uint64_t kb_array_capacity   (kb_array* array);
+KB_API uint64_t kb_array_count      (const kb_array* array);
+KB_API uint64_t kb_array_capacity   (const kb_array* array);
 KB_API void     kb_array_reserve    (kb_array* array, uint64_t size);
 KB_API void     kb_array_resize     (kb_array* array, uint64_t size);
 KB_API void*    kb_array_at         (const kb_array* array, uint64_t index);
@@ -91,6 +91,11 @@ namespace kb {
     
     uint64_t capacity() const {
       return kb_array_capacity(this);
+    }
+    
+    void push_back(const T& value) {
+      resize(count() + 1);
+      (*this)[count() - 1] = value;
     }
     
     uint64_t count() const {

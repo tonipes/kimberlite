@@ -20,7 +20,7 @@ extern "C" {
   void      kb_##t_name##_unmark(handle_t handle);                                                  \
   bool      kb_##t_name##_has(kb_hash hash);                                                        \
   handle_t  kb_##t_name##_get(kb_hash hash);                                                        \
-  handle_t  kb_##t_name##_get_or_alloc(kb_hash hash);
+  handle_t  kb_##t_name##_get_existing(kb_hash hash);
 
 #define KB_RESOURCE_ALLOC_FUNC_DECLS(t_name, handle_t, create_info_t)                               \
   handle_t kb_##t_name##_allocate(void);                                                            \
@@ -78,7 +78,7 @@ struct kb_resource_slot_allocator {
     return (handle_t){ kb_freelist_take(&(t_name##_data.freelist)) + 1 };                         \
   }                                                                                               \
   void kb_##t_name##_free(handle_t handle) {                                                      \
-    kb_freelist_free(&(t_name##_data.freelist), kb_to_arr(handle));                             \
+    kb_freelist_free(&(t_name##_data.freelist), kb_to_arr(handle));                               \
   }                                                                                               \
   void kb_##t_name##_destroy(handle_t handle) {                                                   \
     kb_##t_name##_free(handle);                                                                   \
@@ -106,16 +106,16 @@ struct kb_resource_slot_allocator {
     kb_table_insert(&(t_name##_data.table), _hash, kb_to_arr(handle));                            \
   }                                                                                               \
   bool kb_##t_name##_has(kb_hash _hash) {                                                         \
-    return kb_is_valid_idx(kb_##t_name##_get(_hash).idx);                                         \
+    return kb_is_valid_idx(kb_##t_name##_get_existing(_hash).idx);                                \
   }                                                                                               \
-  handle_t kb_##t_name##_get(kb_hash _hash) {                                                     \
+  handle_t kb_##t_name##_get_existing(kb_hash _hash) {                                            \
     return KB_HANDLE_FROM_ARRAY(kb_table_get(&(t_name##_data.table), _hash));                     \
   }                                                                                               \
-  handle_t kb_##t_name##_get_or_alloc(kb_hash hash) {                                             \
-    if (kb_##t_name##_has(hash)) return kb_##t_name##_get(hash);                                  \
+  handle_t kb_##t_name##_get(kb_hash hash) {                                                      \
+    if (kb_##t_name##_has(hash)) return kb_##t_name##_get_existing(hash);                         \
     handle_t handle = kb_##t_name##_allocate();                                                   \
     kb_##t_name##_mark(handle, hash);                                                             \
     return handle;                                                                                \
-  }                                                                                               \
+  }                                                                                               
 
 #endif
