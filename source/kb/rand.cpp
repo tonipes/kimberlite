@@ -43,5 +43,5 @@ KB_API kb_float3 kb_rand_unit_sphere(kb_rng* rng) {
 }
 
 KB_API float kb_rand_range(kb_rng* rng, float from, float to) {
-  return remap_scalar(kb_rand(rng), 0.0f, 1.0f, from, to);
+  return kb_float_remap(kb_rand(rng), 0.0f, 1.0f, from, to);
 }

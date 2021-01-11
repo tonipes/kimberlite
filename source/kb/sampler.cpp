@@ -49,8 +49,8 @@ KB_API void kb_sampler_push(kb_sampler* sampler, float value) {
     
   for (uint32_t i = 0; i < sampler->count; ++i) {
     const float val = sampler->values[i];
-    n_min = min_scalar(n_min, val);
-    n_max = max_scalar(n_max, val);
+    n_min = kb_float_min(n_min, val);
+    n_max = kb_float_max(n_max, val);
     sum += val;
   }
 

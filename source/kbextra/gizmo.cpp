@@ -185,10 +185,10 @@ KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const kb_float3 normal, const 
   kb_float2 xy0 = circle_point(0.0f);
   kb_float2 xy1 = squircle_point(0.0f);
 
-  kb_float3 pos  = scale_float3(udir, lerp_scalar(xy0.x, xy1.x, weight) * radius);
-  kb_float3 tmp0 = scale_float3(vdir, lerp_scalar(xy0.y, xy1.y, weight) * radius);
-  kb_float3 tmp1 = add_float3(pos, tmp0);
-  kb_float3 tmp2 = add_float3(tmp1, center);
+  kb_float3 pos  = kb_float3_scale(udir, kb_float_lerp(xy0.x, xy1.x, weight) * radius);
+  kb_float3 tmp0 = kb_float3_scale(vdir, kb_float_lerp(xy0.y, xy1.y, weight) * radius);
+  kb_float3 tmp1 = kb_float3_add(pos, tmp0);
+  kb_float3 tmp2 = kb_float3_add(tmp1, center);
 
   kb_float3 start = tmp2;
   
@@ -201,10 +201,10 @@ KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const kb_float3 normal, const 
     xy0 = circle_point(angle);
     xy1 = squircle_point(angle);
 
-    pos  = scale_float3(udir, lerp_scalar(xy0.x, xy1.x, weight) * radius);
-    tmp0 = scale_float3(vdir, lerp_scalar(xy0.y, xy1.y, weight) * radius);
-    tmp1 = add_float3(pos, tmp0);
-    tmp2 = add_float3(tmp1, center);
+    pos  = kb_float3_scale(udir, kb_float_lerp(xy0.x, xy1.x, weight) * radius);
+    tmp0 = kb_float3_scale(vdir, kb_float_lerp(xy0.y, xy1.y, weight) * radius);
+    tmp1 = kb_float3_add(pos, tmp0);
+    tmp2 = kb_float3_add(tmp1, center);
 
     kb_gizmo_shape_line_to(gizmo, tmp2);
   }
@@ -221,28 +221,28 @@ KB_API void kb_gizmo_draw_arc(kb_gizmo* gizmo, kb_axis axis, const kb_float3 pos
   
   const uint32_t num = get_circle_lod(attrib.lod);
 
-  auto deg = wrap_scalar(degrees, 360.0f);
+  auto deg = kb_float_wrap(degrees, 360.0f);
   
-  kb_float3 cpos = get_point(axis, sin_scalar(0) * radius, cos_scalar(0) * radius);
+  kb_float3 cpos = get_point(axis, kb_float_sin(0) * radius, kb_float_cos(0) * radius);
 
-  kb_gizmo_shape_move_to(gizmo, add_float3(pos, cpos));
+  kb_gizmo_shape_move_to(gizmo, kb_float3_add(pos, cpos));
   
   uint32_t n = uint32_t(num * (deg / 360.0f));
 
   const float step = (2.0f * PI) * (deg / 360.0f) / n;
 
   for (uint32_t i = 1; i < n + 1; ++i) {
-    cpos = get_point(axis, sin_scalar(step * i) * radius, cos_scalar(step * i) * radius);
-    kb_gizmo_shape_line_to(gizmo, add_float3(pos, cpos));
+    cpos = get_point(axis, kb_float_sin(step * i) * radius, kb_float_cos(step * i) * radius);
+    kb_gizmo_shape_line_to(gizmo, kb_float3_add(pos, cpos));
   }
 
   kb_gizmo_shape_move_to(gizmo, pos);
   
-  cpos = get_point(axis, sin_scalar(0) * radius, cos_scalar(0) * radius);
-  kb_gizmo_shape_line_to(gizmo, add_float3(pos, cpos));
+  cpos = get_point(axis, kb_float_sin(0) * radius, kb_float_cos(0) * radius);
+  kb_gizmo_shape_line_to(gizmo, kb_float3_add(pos, cpos));
 
-  cpos = get_point(axis, sin_scalar(step * n) * radius, cos_scalar(step * n) * radius);
-  kb_gizmo_shape_move_to(gizmo, add_float3(pos, cpos));
+  cpos = get_point(axis, kb_float_sin(step * n) * radius, kb_float_cos(step * n) * radius);
+  kb_gizmo_shape_move_to(gizmo, kb_float3_add(pos, cpos));
 
   kb_gizmo_shape_line_to(gizmo, pos);
 }

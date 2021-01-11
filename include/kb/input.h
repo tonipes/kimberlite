@@ -292,7 +292,7 @@ KB_API_INLINE   bool          kb_input_mouse_button_up                (kb_mouse_
 KB_API_INLINE   bool          kb_input_mouse_button_released          (kb_mouse_button button)                            { return kb_deactivated(state_curr.mouse, state_prev.mouse, button); }
 KB_API_INLINE   bool          kb_input_mouse_button_pressed           (kb_mouse_button button)                            { return kb_activated(state_curr.mouse, state_prev.mouse, button); }
 KB_API_INLINE   kb_float2        kb_input_mouse_pos                      (void)                                              { return state_curr.mouse_pos; }
-KB_API_INLINE   kb_float2        kb_input_mouse_delta                    (void)                                              { return sub_float2(state_curr.mouse_pos, state_prev.mouse_pos); }
+KB_API_INLINE   kb_float2        kb_input_mouse_delta                    (void)                                              { return kb_float2_sub(state_curr.mouse_pos, state_prev.mouse_pos); }
 
 KB_API_INLINE   bool          kb_input_gamepad_button_down            (uint32_t gamepad, kb_gamepad_button button)        { return state_curr.gamepad[gamepad].button[button]; }
 KB_API_INLINE   bool          kb_input_gamepad_button_up              (uint32_t gamepad, kb_gamepad_button button)        { return !kb_input_gamepad_button_down(gamepad, button); }
@@ -303,11 +303,11 @@ KB_API          const char*   kb_input_gamepad_name                   (uint32_t 
   
 KB_API_INLINE   float         kb_input_gamepad_axis_value             (uint32_t gamepad, kb_gamepad_axis axis)            { return state_curr.gamepad[gamepad].axis[axis]; }
 KB_API_INLINE   float         kb_input_gamepad_axis_delta             (uint32_t gamepad, kb_gamepad_axis axis)            { return state_curr.gamepad[gamepad].axis[axis] - state_prev.gamepad[gamepad].axis[axis]; }
-KB_API_INLINE   float         kb_input_gamepad_axis_distance          (uint32_t gamepad, kb_gamepad_axis axis)            { return abs_scalar(kb_input_gamepad_axis_delta(gamepad, axis)); }
+KB_API_INLINE   float         kb_input_gamepad_axis_distance          (uint32_t gamepad, kb_gamepad_axis axis)            { return kb_float_abs(kb_input_gamepad_axis_delta(gamepad, axis)); }
 
 KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_axis_value    (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return (kb_float2) { kb_input_gamepad_axis_value(gamepad, axis.x), kb_input_gamepad_axis_value(gamepad, axis.y) }; }
 KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_axis_delta    (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return (kb_float2) { kb_input_gamepad_axis_delta(gamepad, axis.x), kb_input_gamepad_axis_delta(gamepad, axis.y) }; }
-KB_API_INLINE   float         kb_input_gamepad_joystick_axis_distance (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return len_float2(kb_input_gamepad_joystick_axis_delta(gamepad, axis)); }
+KB_API_INLINE   float         kb_input_gamepad_joystick_axis_distance (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return kb_float2_len(kb_input_gamepad_joystick_axis_delta(gamepad, axis)); }
 
 KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_value         (uint32_t gamepad, kb_gamepad_joystick joystick)    { return kb_input_gamepad_joystick_axis_value(gamepad, joystick_axis[joystick]); }
 KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_delta         (uint32_t gamepad, kb_gamepad_joystick joystick)    { return kb_input_gamepad_joystick_axis_delta(gamepad, joystick_axis[joystick]); }

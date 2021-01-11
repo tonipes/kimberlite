@@ -7,23 +7,23 @@
 #include <kb/math.h>
 
 KB_API kb_float3 act_quat(const kb_quat a, const kb_float3 b) {
-  const kb_quat tmp0 = inv_quat(a);
+  const kb_quat tmp0 = kb_quat_inv(a);
   const kb_quat qv   = { b.x, b.y, b.z, 0.0f };
-  const kb_quat tmp1 = mul_quat(tmp0, qv);
-  const kb_quat res  = mul_quat(tmp1, a);
+  const kb_quat tmp1 = kb_quat_mul(tmp0, qv);
+  const kb_quat res  = kb_quat_mul(tmp1, a);
 
   return { res.x, res.y, res.z };
 }
 
-KB_API kb_quat slerp_quat(const kb_quat a, const kb_quat b, kb_float t) {
+KB_API kb_quat kb_quat_slerp(const kb_quat a, const kb_quat b, kb_float t) {
   const kb_float tt = 1 - t;
-  kb_float dot = dot_quat(a, b);
+  kb_float dot = kb_quat_dot(a, b);
 
-	kb_float th = acos_scalar(dot);
-	kb_float sn = sin_scalar(th);
+	kb_float th = kb_float_cos(dot);
+	kb_float sn = kb_float_sin(th);
 
-	kb_float wa = sin_scalar(tt * th) / sn;
-	kb_float wb = sin_scalar(t  * th) / sn;
+	kb_float wa = kb_float_sin(tt * th) / sn;
+	kb_float wb = kb_float_sin(t  * th) / sn;
   
   kb_quat r {
 	  wa * a.x + wb * b.x,
@@ -32,7 +32,7 @@ KB_API kb_quat slerp_quat(const kb_quat a, const kb_quat b, kb_float t) {
 	  wa * a.w + wb * b.w,
   };
 
-  return norm_quat(r);
+  return kb_quat_norm(r);
 }
 
 KB_API kb_float4x4 look_at(const kb_float3 from, const kb_float3 to, const kb_float3 global_up) {
@@ -50,9 +50,9 @@ KB_API kb_float4x4 look_at(const kb_float3 from, const kb_float3 to, const kb_fl
   res.m[ 8] = right.z;
   res.m[ 9] = up.z;
   res.m[10] = forward.z;
-  res.m[12] = -dot_float3(right,   from);
-  res.m[13] = -dot_float3(up,      from);
-  res.m[14] = -dot_float3(forward, from);
+  res.m[12] = -kb_float3_dot(right,   from);
+  res.m[13] = -kb_float3_dot(up,      from);
+  res.m[14] = -kb_float3_dot(forward, from);
   res.m[15] = 1.0f;
   
   return res;  
@@ -81,7 +81,7 @@ KB_API kb_float4x4 orthographic(kb_float left, kb_float right, kb_float top, kb_
 }
 
 KB_API kb_float4x4 perspective(kb_float fov, kb_float aspect, kb_float near, kb_float far) {
-  const kb_float height = 1.0f / tan_scalar(deg_to_rad(fov) * 0.5f);
+  const kb_float height = 1.0f / kb_float_tan(kb_deg_to_rad(fov) * 0.5f);
   const kb_float width  = height / aspect;
 
   const kb_float diff = far - near;
@@ -155,18 +155,18 @@ KB_API kb_float4x4 rotation_mtx(const kb_quat v) {
 }
 
 KB_API void translate(kb_float4x4* mtx, const kb_float3 v) {
-  *mtx = mul_float4x4(*mtx, transform_mtx(v));
+  *mtx = kb_float4x4_mul(*mtx, transform_mtx(v));
 }
 
 KB_API void scale(kb_float4x4* mtx, const kb_float3 v) {
-  *mtx = mul_float4x4(*mtx, scaling_mtx(v));
+  *mtx = kb_float4x4_mul(*mtx, scaling_mtx(v));
 }
 
 KB_API void rotate(kb_float4x4* mtx, const kb_quat v) {
-  *mtx = mul_float4x4(*mtx, rotation_mtx(v));
+  *mtx = kb_float4x4_mul(*mtx, rotation_mtx(v));
 }
 
-KB_API kb_float4x4 mul_float4x4(const kb_float4x4 a, const kb_float4x4 b) {
+KB_API kb_float4x4 kb_float4x4_mul(const kb_float4x4 a, const kb_float4x4 b) {
   kb_float4x4 res = {};
 
   res.mm[0][0] = a.mm[0][0] * b.mm[0][0] + a.mm[0][1] * b.mm[1][0] + a.mm[0][2] * b.mm[2][0] + a.mm[0][3] * b.mm[3][0];
@@ -214,13 +214,13 @@ KB_API void tangent_frame(const kb_float3 n, kb_float3* t, kb_float3* b) {
   const kb_float ny = n.y;
   const kb_float nz = n.z;
 
-  if (abs_scalar(nx) > abs_scalar(nz)) {
-    kb_float inv_len = 1.0f / sqrt_scalar(nx*nx + nz*nz);
+  if (kb_float_abs(nx) > kb_float_abs(nz)) {
+    kb_float inv_len = 1.0f / kb_float_sqrt(nx*nx + nz*nz);
     t->x = -nz * inv_len;
     t->y =  0.0f;
     t->z =  nx * inv_len;
   } else {
-    kb_float inv_len = 1.0f / sqrt_scalar(ny*ny + nz*nz);
+    kb_float inv_len = 1.0f / kb_float_sqrt(ny*ny + nz*nz);
     t->x =  0.0f;
     t->y =  nz * inv_len;
     t->z = -ny * inv_len;
@@ -232,8 +232,8 @@ KB_API void tangent_frame(const kb_float3 n, kb_float3* t, kb_float3* b) {
 KB_API void tangent_frame_with_spin(const kb_float3 n, kb_float spin, kb_float3* t, kb_float3* b) {
   tangent_frame(n, t, b);
   
-  const kb_float sa = sin_scalar(spin);
-  const kb_float ca = cos_scalar(spin);
+  const kb_float sa = kb_float_sin(spin);
+  const kb_float ca = kb_float_cos(spin);
 
   t->x = -sa * b->x + ca * t->x;
   t->y = -sa * b->y + ca * t->y;
@@ -335,11 +335,11 @@ KB_API kb_float4 act_float4x4(const kb_float4x4 mtx, const kb_float4 vec) {
 }
 
 KB_API kb_float ray_plane_intersection(const kb_ray ray, const kb_plane plane) {
-  kb_float denom = dot_float3(plane.normal, ray.dir);
+  kb_float denom = kb_float3_dot(plane.normal, ray.dir);
   
   if (denom > FLT_EPSILON) {
-    kb_float3 p = sub_float3((scale_float3(plane.normal, plane.dist)), ray.pos);
-    return dot_float3(p, plane.normal) / denom;
+    kb_float3 p = kb_float3_sub((kb_float3_scale(plane.normal, plane.dist)), ray.pos);
+    return kb_float3_dot(p, plane.normal) / denom;
   }
 
   return NAN;
@@ -347,33 +347,33 @@ KB_API kb_float ray_plane_intersection(const kb_ray ray, const kb_plane plane) {
 
 KB_API kb_float3 unproject(kb_float4x4 unproj, kb_float3 point) {
   kb_float4 v = act_float4x4(unproj, kb_float4 { point.x, point.y, point.z, 1.0 });
-  return scale_float3(kb_float3 { v.x, v.y, v.z }, (1.0 / v.w));
+  return kb_float3_scale(kb_float3 { v.x, v.y, v.z }, (1.0 / v.w));
 }
 
 KB_API kb_ray unproject_view(kb_float4x4 unproj, kb_float2 p) {
   const kb_float3 orig = unproject(unproj, kb_float3 { 0, 0, -1 });
   kb_float3 pp = unproject(unproj, kb_float3 { p.x, p.y, 0.9999f });
-  kb_float3 dir = sub_float3(orig, pp);
+  kb_float3 dir = kb_float3_sub(orig, pp);
 
   return {orig, dir};
 }
 
-KB_API kb_quat inv_quat(const kb_quat a) {
+KB_API kb_quat kb_quat_inv(const kb_quat a) {
   // TODO: Check
-  const kb_quat conj = conj_quat(a);
-  return scale_quat(conj, 1.0f / len_quat(conj));
+  const kb_quat conj = kb_quat_conj(a);
+  return kb_quat_scale(conj, 1.0f / kb_quat_len(conj));
 }
 
-KB_API kb_quat  norm_quat(const kb_quat a) {
+KB_API kb_quat  kb_quat_norm(const kb_quat a) {
   // TODO: Check
-  const kb_float norm = dot_quat(a, a);
+  const kb_float norm = kb_quat_dot(a, a);
   if (0.0f < norm) {
-    return scale_quat(a, 1.0f / sqrt_scalar(norm));
+    return kb_quat_scale(a, 1.0f / kb_float_sqrt(norm));
   }
   return (kb_quat) { 0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-KB_API  kb_quat mul_quat(const kb_quat a, const kb_quat b) {
+KB_API  kb_quat kb_quat_mul(const kb_quat a, const kb_quat b) {
   return (kb_quat) {
     a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
     a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z,
@@ -382,21 +382,21 @@ KB_API  kb_quat mul_quat(const kb_quat a, const kb_quat b) {
   };
 }
 
-KB_API kb_quat euler_quat(const kb_float3 euler) {
+KB_API kb_quat kb_quat_euler(const kb_float3 euler) {
   const kb_float hx = euler.x * 0.5f;
   const kb_float hy = euler.y * 0.5f;
   const kb_float hz = euler.z * 0.5f;
   
-  const kb_quat x = { sin_scalar(hx), 0.0f, 0.0f, cos_scalar(hx) };
-  const kb_quat y = { 0.0f, sin_scalar(hy), 0.0f, cos_scalar(hy) };
-  const kb_quat z = { 0.0f, 0.0f, sin_scalar(hz), cos_scalar(hz) };
+  const kb_quat x = { kb_float_sin(hx), 0.0f, 0.0f, kb_float_cos(hx) };
+  const kb_quat y = { 0.0f, kb_float_sin(hy), 0.0f, kb_float_cos(hy) };
+  const kb_quat z = { 0.0f, 0.0f, kb_float_sin(hz), kb_float_cos(hz) };
 
-  return mul_quat(x, mul_quat(y, z));
+  return kb_quat_mul(x, kb_quat_mul(y, z));
 }
 
 KB_API kb_quat axis_angle_quat(const kb_float3 axis, kb_float angle) {
   const kb_float half = angle * 0.5f;
-  const kb_float s = sin_scalar(half);
+  const kb_float s = kb_float_sin(half);
 
   return (kb_quat) {
     axis.x * s,
@@ -425,17 +425,17 @@ KB_API uint64_t align_up(uint64_t a, uint64_t align) {
 
 KB_API kb_float2 circle_point(kb_float angle) {
   return (kb_float2) { 
-    sin_scalar(angle), 
-    cos_scalar(angle) 
+    kb_float_sin(angle), 
+    kb_float_cos(angle) 
   };
 }
 
 KB_API kb_float2 squircle_point(kb_float angle) {
-  kb_float sa = sin_scalar(angle);
-  kb_float ca = cos_scalar(angle);
+  kb_float sa = kb_float_sin(angle);
+  kb_float ca = kb_float_cos(angle);
 
   return (kb_float2) {
-    sqrt_scalar(abs_scalar(sa)) * sign_scalar(sa),
-    sqrt_scalar(abs_scalar(ca)) * sign_scalar(ca)
+    kb_float_sqrt(kb_float_abs(sa)) * kb_float_sign(sa),
+    kb_float_sqrt(kb_float_abs(ca)) * kb_float_sign(ca)
   };
 }
