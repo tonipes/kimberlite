@@ -278,8 +278,8 @@ KB_API uint32_t kb_font_advance_line(kb_font_info* info, const char* str, uint32
 
     kb_font_quad_advance(info, codep, &current_pos.x, &current_pos.y, &pos, nullptr);
 
-    pmin = min(pmin, pos.from.x);
-    pmax = max(pmax, pos.to.x);
+    pmin = kb::min(pmin, pos.from.x);
+    pmax = kb::max(pmax, pos.to.x);
     codeps++;
   }
   
@@ -304,7 +304,7 @@ KB_API Float2 kb_font_get_string_dimensions(kb_font_info* info, const char* str,
     if (c == 0) break;
 
     pos += c;
-    width = max(width, cwidth);
+    width = kb::max(width, cwidth);
     lines++;
   };
   

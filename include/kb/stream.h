@@ -85,19 +85,6 @@ KB_API kb_stream*  kb_stream_open_mem   (void* ptr, int64_t size);
 #endif
 
 #ifdef __cplusplus
-//
-//namespace kb {
-//  class stream: public kb_stream {
-//  public:
-//    stream() {
-//
-//    }
-//
-//    ~stream() {
-//
-//    }
-//  };
-//};
 
 template <typename T> 
 KB_API_INLINE uint64_t kb_write(kb_stream* rwops, const T& t) {

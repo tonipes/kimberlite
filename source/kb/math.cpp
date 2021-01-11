@@ -59,9 +59,9 @@ KB_API Quaternion slerp_quat(const Quaternion a, const Quaternion b, float t) {
 }
 
 KB_API Float4x4 look_at(const Float3 from, const Float3 to, const Float3 global_up) {
-  const Float3 forward  = norm(to - from);  
-  const Float3 right    = norm(cross(global_up, forward));
-  const Float3 up       = norm(cross(forward, right));
+  const Float3 forward  = kb::norm(to - from);
+  const Float3 right    = kb::norm(kb::cross(global_up, forward));
+  const Float3 up       = kb::norm(kb::cross(forward, right));
 
   Float4x4 res = ZeroFloat4x4;
   res.m[ 0] = right.x;
@@ -379,4 +379,52 @@ KB_API Ray unproject_view(Float4x4 unproj, Float2 p) {
   Float3 dir = sub_float3(orig, pp);
 
   return {orig, dir};
+}
+
+KB_API Quaternion inv_quat(const Quaternion a) {
+  // TODO: Check
+  const Quaternion conj = conj_quat(a);
+  return scale_quat(conj, 1.0f / len_quat(conj));
+}
+
+KB_API Quaternion  norm_quat(const Quaternion a) {
+  // TODO: Check
+  const float norm = dot_quat(a, a);
+  if (0.0f < norm) {
+    return scale_quat(a, 1.0f / sqrt_scalar(norm));
+  }
+  return (Quaternion) { 0.0f, 0.0f, 0.0f, 1.0f};
+}
+
+KB_API  Quaternion mul_quat(const Quaternion a, const Quaternion b) {
+  return (Quaternion) {
+    a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
+    a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z,
+    a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x,
+    a.w * b.w - a.x * b.x - a.y * b.y - a.z * b.z,
+  };
+}
+
+KB_API Quaternion euler_quat(const Float3 euler) {
+  const float hx = euler.x * 0.5f;
+  const float hy = euler.y * 0.5f;
+  const float hz = euler.z * 0.5f;
+  
+  const Quaternion x = { sin_scalar(hx), 0.0f, 0.0f, cos_scalar(hx) };
+  const Quaternion y = { 0.0f, sin_scalar(hy), 0.0f, cos_scalar(hy) };
+  const Quaternion z = { 0.0f, 0.0f, sin_scalar(hz), cos_scalar(hz) };
+
+  return mul_quat(x, mul_quat(y, z));
+}
+
+KB_API Quaternion axis_angle_quat(const Float3 axis, float angle) {
+  const float half = angle * 0.5f;
+  const float s = sin_scalar(half);
+
+  return (Quaternion) {
+    axis.x * s,
+    axis.y * s,
+    axis.z * s,
+    cos(half),
+  };
 }
