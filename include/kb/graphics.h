@@ -246,7 +246,7 @@ typedef struct kb_attachment_info {
 } kb_attachment_info;
 
 typedef struct kb_attachment_bind_info {
-  Float4                    clear_color;
+  kb_float4                    clear_color;
   float                     clear_depth;
   uint32_t                  clear_stencil;
   kb_load_action            load_action;
@@ -331,7 +331,7 @@ typedef struct kb_pipeline_create_info {
 
 typedef struct kb_graphics_init_info {
   bool                      vsync;
-  Int2                      resolution;
+  kb_int2                      resolution;
   kb_graphics_pipeline_info pipe;
 } kb_graphics_init_info;
 
@@ -402,7 +402,7 @@ KB_API void                 kb_graphics_init                          (const kb_
 KB_API void                 kb_graphics_deinit                        (void);
 KB_API void                 kb_graphics_frame                         (void);
 KB_API void                 kb_graphics_run_encoders                  (void);
-KB_API Int2                 kb_graphics_get_extent                    (void);
+KB_API kb_int2                 kb_graphics_get_extent                    (void);
 KB_API float                kb_graphics_get_aspect                    (void);
 KB_API uint32_t             kb_graphics_get_current_resource_slot     (void);
 KB_API void*                kb_graphics_get_buffer_mapped             (kb_buffer buffer, uint64_t offset);

@@ -42,7 +42,7 @@ KB_API void kb_gizmo_begin(kb_gizmo* gizmo, kb_encoder encoder, kb_pipeline pipe
   gizmo->line_vertex_cache_pos  = 0;
   gizmo->line_index_cache_pos   = 0;
   gizmo->mtx_stack_pos          = 0;
-  gizmo->mtx_stack[0]           = IdentityFloat4x4;
+  gizmo->mtx_stack[0]           = kb_float4x4_ident;
   
   gizmo->attribs[0]             = {};
   gizmo->attribs[0].color       = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -80,7 +80,7 @@ KB_API void kb_gizmo_flush(kb_gizmo* gizmo, bool force) {
       kb_memcpy(index_data_buffer, gizmo->line_index_cache, index_alloc_size);
     }
     
-    Float4x4 model = gizmo->mtx_stack[gizmo->mtx_stack_pos];
+    kb_float4x4 model = gizmo->mtx_stack[gizmo->mtx_stack_pos];
 
     kb_encoder_push(gizmo->encoder);
       kb_encoder_bind_pipeline      (gizmo->encoder, gizmo->pipeline);
@@ -95,13 +95,13 @@ KB_API void kb_gizmo_flush(kb_gizmo* gizmo, bool force) {
   gizmo->line_vertex_cache_pos   = 0;
 }
 
-KB_API void kb_gizmo_shape_move_to(kb_gizmo* gizmo, const Float3 pos) {
+KB_API void kb_gizmo_shape_move_to(kb_gizmo* gizmo, const kb_float3 pos) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   gizmo->current_pos = pos;
 }
 
-KB_API void kb_gizmo_shape_line_to(kb_gizmo* gizmo, const Float3 pos) {
+KB_API void kb_gizmo_shape_line_to(kb_gizmo* gizmo, const kb_float3 pos) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_attribs& attribs = current_attribs(gizmo);
@@ -145,12 +145,12 @@ KB_API void kb_gizmo_pop(kb_gizmo* gizmo) {
   --gizmo->attrib_stack_pos;
 }
 
-//KB_API void kb_gizmo_push_transform(kb_gizmo* gizmo, const Float4x4 mtx, bool flush) {
+//KB_API void kb_gizmo_push_transform(kb_gizmo* gizmo, const kb_float4x4 mtx, bool flush) {
 //  KB_ASSERT_NOT_NULL(gizmo);
 //
 //  if (flush) kb_gizmo_flush(gizmo, true);
 //
-//  Float4x4& stack = gizmo->mtx_stack[gizmo->mtx_stack_pos];
+//  kb_float4x4& stack = gizmo->mtx_stack[gizmo->mtx_stack_pos];
 //  gizmo->mtx_stack_pos++;
 //
 //  gizmo->mtx_stack[gizmo->mtx_stack_pos] = stack * mtx;
@@ -163,14 +163,14 @@ KB_API void kb_gizmo_pop(kb_gizmo* gizmo) {
 //  gizmo->mtx_stack_pos--;
 //}
 
-KB_API void kb_gizmo_set_color(kb_gizmo* gizmo, Float4 color) {
+KB_API void kb_gizmo_set_color(kb_gizmo* gizmo, kb_float4 color) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_attribs& attribs = current_attribs(gizmo);
   attribs.color = color; 
 }
 
-KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const Float3 normal, const Float3 center, float radius, float weight) {
+KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const kb_float3 normal, const kb_float3 center, float radius, float weight) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   const kb_gizmo_attribs& attrib = current_attribs(gizmo);
@@ -178,19 +178,19 @@ KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const Float3 normal, const Flo
   const uint32_t num = get_circle_lod(attrib.lod);
   const float step = PI * 2.0f / num;
   
-  Float3 udir;
-  Float3 vdir;
+  kb_float3 udir;
+  kb_float3 vdir;
   tangent_frame_with_spin(normal, 0.0f, &udir, &vdir);
 
-  Float2 xy0 = circle_point(0.0f);
-  Float2 xy1 = squircle_point(0.0f);
+  kb_float2 xy0 = circle_point(0.0f);
+  kb_float2 xy1 = squircle_point(0.0f);
 
-  Float3 pos  = scale_float3(udir, lerp_scalar(xy0.x, xy1.x, weight) * radius);
-  Float3 tmp0 = scale_float3(vdir, lerp_scalar(xy0.y, xy1.y, weight) * radius);
-  Float3 tmp1 = add_float3(pos, tmp0);
-  Float3 tmp2 = add_float3(tmp1, center);
+  kb_float3 pos  = scale_float3(udir, lerp_scalar(xy0.x, xy1.x, weight) * radius);
+  kb_float3 tmp0 = scale_float3(vdir, lerp_scalar(xy0.y, xy1.y, weight) * radius);
+  kb_float3 tmp1 = add_float3(pos, tmp0);
+  kb_float3 tmp2 = add_float3(tmp1, center);
 
-  Float3 start = tmp2;
+  kb_float3 start = tmp2;
   
   kb_gizmo_push(gizmo);
 
@@ -214,7 +214,7 @@ KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const Float3 normal, const Flo
   kb_gizmo_pop(gizmo);
 }
 
-KB_API void kb_gizmo_draw_arc(kb_gizmo* gizmo, Axis axis, const Float3 pos, float radius, float degrees) {
+KB_API void kb_gizmo_draw_arc(kb_gizmo* gizmo, kb_axis axis, const kb_float3 pos, float radius, float degrees) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   const kb_gizmo_attribs& attrib = current_attribs(gizmo);
@@ -223,7 +223,7 @@ KB_API void kb_gizmo_draw_arc(kb_gizmo* gizmo, Axis axis, const Float3 pos, floa
 
   auto deg = wrap_scalar(degrees, 360.0f);
   
-  Float3 cpos = get_point(axis, sin_scalar(0) * radius, cos_scalar(0) * radius);
+  kb_float3 cpos = get_point(axis, sin_scalar(0) * radius, cos_scalar(0) * radius);
 
   kb_gizmo_shape_move_to(gizmo, add_float3(pos, cpos));
   
@@ -247,7 +247,7 @@ KB_API void kb_gizmo_draw_arc(kb_gizmo* gizmo, Axis axis, const Float3 pos, floa
   kb_gizmo_shape_line_to(gizmo, pos);
 }
 
-KB_API void kb_gizmo_draw_axis(kb_gizmo* gizmo, const Float3 pos, float length) {
+KB_API void kb_gizmo_draw_axis(kb_gizmo* gizmo, const kb_float3 pos, float length) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_push(gizmo);
@@ -268,7 +268,7 @@ KB_API void kb_gizmo_draw_axis(kb_gizmo* gizmo, const Float3 pos, float length) 
   kb_gizmo_pop(gizmo);
 }
 
-KB_API void kb_gizmo_draw_grid(kb_gizmo* gizmo, Axis axis, const Float3 pos, uint32_t size, float step) {
+KB_API void kb_gizmo_draw_grid(kb_gizmo* gizmo, kb_axis axis, const kb_float3 pos, uint32_t size, float step) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_push(gizmo);
@@ -298,7 +298,7 @@ KB_API void kb_gizmo_draw_grid(kb_gizmo* gizmo, Axis axis, const Float3 pos, uin
   kb_gizmo_pop(gizmo);
 }
 
-KB_API void kb_gizmo_draw_aabb(kb_gizmo* gizmo, const Aabb aabb) {
+KB_API void kb_gizmo_draw_aabb(kb_gizmo* gizmo, const kb_aabb aabb) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_push(gizmo);
@@ -330,7 +330,7 @@ KB_API void kb_gizmo_draw_aabb(kb_gizmo* gizmo, const Aabb aabb) {
   kb_gizmo_pop(gizmo);
 }
 
-KB_API void kb_gizmo_shape_draw_triangle(kb_gizmo* gizmo, const Triangle triangle) {
+KB_API void kb_gizmo_shape_draw_triangle(kb_gizmo* gizmo, const kb_triangle triangle) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_push(gizmo);
@@ -343,7 +343,7 @@ KB_API void kb_gizmo_shape_draw_triangle(kb_gizmo* gizmo, const Triangle triangl
   kb_gizmo_pop(gizmo);
 }
 
-KB_API void kb_gizmo_shape_draw_ray(kb_gizmo* gizmo, const Ray ray) {
+KB_API void kb_gizmo_shape_draw_ray(kb_gizmo* gizmo, const kb_ray ray) {
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_push(gizmo);

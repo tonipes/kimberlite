@@ -20,8 +20,8 @@ KB_HANDLE(kb_sound);
 KB_HANDLE(kb_sound_inst);
 
 typedef struct kb_sound_playback_info {
-  Float2                  pitch_range;
-  Float2                  volume_range;
+  kb_float2                  pitch_range;
+  kb_float2                  volume_range;
 } kb_sound_playback_info;
 
 typedef struct kb_audio_init_info {

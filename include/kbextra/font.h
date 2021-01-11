@@ -29,11 +29,11 @@ typedef struct kb_font_char {
   uint32_t      codepoint;
   int           advance;
   int           left_bearing;
-  IntRect       rect;
-  Int2          bbox_from;
-  Int2          bbox_to;
-  Float2        uv_rect_from;
-  Float2        uv_rect_to;
+  kb_rect_int       rect;
+  kb_int2          bbox_from;
+  kb_int2          bbox_to;
+  kb_float2        uv_rect_from;
+  kb_float2        uv_rect_to;
 } kb_font_char;
 
 typedef struct kb_font_info {
@@ -57,7 +57,7 @@ typedef struct kb_font_data {
 } kb_font_data;
 
 typedef struct kb_font_render_info {
-  Float4        color;
+  kb_float4        color;
   float         outline;
   float         smoothing;    
 } kb_font_render_info;
@@ -86,12 +86,12 @@ KB_API void   kb_font_data_dump_info          (const kb_font_data* font);
 KB_API void   kb_font_data_destroy            (kb_font_data* font);
 
 KB_API void   kb_font_break_line              (kb_font_info* info, float* current_y);
-KB_API void   kb_font_quad_advance            (kb_font_info* info, int codepoint, float* current_x, float* current_y, FloatRect* pos, FloatRect* uv); 
+KB_API void   kb_font_quad_advance            (kb_font_info* info, int codepoint, float* current_x, float* current_y, kb_rect_float* pos, kb_rect_float* uv); 
 
 KB_API float  kb_font_get_line_height         (kb_font_info* info);
-KB_API Float2 kb_font_get_string_dimensions   (kb_font_info* info, const char* str, uint32_t len);
+KB_API kb_float2 kb_font_get_string_dimensions   (kb_font_info* info, const char* str, uint32_t len);
 
-KB_API void   kb_encoder_submit_text          (kb_encoder encoder, kb_font font, const char* str, uint32_t len, Float2 origin, Float2 scale, Float2 align, Float2 offset, uint32_t instance_count);
+KB_API void   kb_encoder_submit_text          (kb_encoder encoder, kb_font font, const char* str, uint32_t len, kb_float2 origin, kb_float2 scale, kb_float2 align, kb_float2 offset, uint32_t instance_count);
 
 KB_API kb_font_info* kb_font_get_info         (kb_font font);
 

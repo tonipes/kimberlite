@@ -63,7 +63,7 @@ kb_encoder_pool*    encoder_pools;
 graphics_pipe_info* graphics_pipe;
 
 uint32_t            resource_slot;
-Int2                current_extent;
+kb_int2                current_extent;
 kb_graphics_call*   draw_call_cache[KB_CONFIG_MAX_RENDERPASSES];
 uint32_t            draw_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
 
@@ -258,7 +258,7 @@ KB_API void kb_graphics_run_encoders() {
 }
 
 KB_API void kb_graphics_frame() {
-  Int2 extent = kb_platform_graphics_surface_extent();
+  kb_int2 extent = kb_platform_graphics_surface_extent();
 
   if (extent.x != current_extent.x || extent.y != current_extent.y) {
     current_extent = extent;
@@ -600,11 +600,11 @@ KB_API void* kb_graphics_get_buffer_mapped(kb_buffer buffer, uint64_t offset) {
   return kb_platform_graphics_buffer_mapped(buffer, offset);
 }
 
-KB_API Int2 kb_graphics_get_extent() {    
+KB_API kb_int2 kb_graphics_get_extent() {    
   return current_extent;
 }
 
 KB_API float kb_graphics_get_aspect() {
-  Int2 size = kb_graphics_get_extent();
+  kb_int2 size = kb_graphics_get_extent();
   return float(size.x) / float(size.y);
 }

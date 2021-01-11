@@ -27,7 +27,7 @@ typedef enum kb_gizmo_action {
 typedef struct kb_gizmo_attribs {
   float               offset;
   float               scale;
-  Float4              color;
+  kb_float4              color;
   bool                wireframe;
   uint8_t             lod;
 } kb_gizmo_attribs;
@@ -37,15 +37,15 @@ typedef struct kb_gizmo {
   uint16_t            line_index_cache_pos;
   uint32_t            mtx_stack_pos;
   uint32_t            attrib_stack_pos;
-  Float4x4            view;
-  Float4x4            proj;
-  Float3              current_pos;
+  kb_float4x4            view;
+  kb_float4x4            proj;
+  kb_float3              current_pos;
   kb_gizmo_action     action;
   kb_encoder          encoder;
   kb_pipeline         pipeline;
   kb_simple_vertex*   line_vertex_cache;
   uint16_t*           line_index_cache;
-  Float4x4            mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
+  kb_float4x4            mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
   kb_gizmo_attribs    attribs[KB_CONFIG_GIZMO_STACK_SIZE];
 } kb_gizmo;
 
@@ -57,19 +57,19 @@ KB_API void     kb_gizmo_begin                (kb_gizmo* gizmo, kb_encoder encod
 KB_API void     kb_gizmo_end                  (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_push                 (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_pop                  (kb_gizmo* gizmo);
-KB_API void     kb_gizmo_set_color            (kb_gizmo* gizmo, Float4 color);
+KB_API void     kb_gizmo_set_color            (kb_gizmo* gizmo, kb_float4 color);
 KB_API void     kb_gizmo_set_lod              (kb_gizmo* gizmo, uint8_t lod);
 KB_API void     kb_gizmo_set_wireframe        (kb_gizmo* gizmo, bool wireframe);
 KB_API void     kb_gizmo_shape_close          (kb_gizmo* gizmo);
-KB_API void     kb_gizmo_shape_move_to        (kb_gizmo* gizmo, const Float3 pos);
-KB_API void     kb_gizmo_shape_line_to        (kb_gizmo* gizmo, const Float3 pos);
-KB_API void     kb_gizmo_draw_arc             (kb_gizmo* gizmo, Axis axis, const Float3 pos, float radius, float degrees);
-KB_API void     kb_gizmo_draw_circle          (kb_gizmo* gizmo, const Float3 normal, const Float3 center, float radius, float weight);
-KB_API void     kb_gizmo_draw_cone            (kb_gizmo* gizmo, const Float3 from, const Float3 to, float radius);
-KB_API void     kb_gizmo_draw_cylinder        (kb_gizmo* gizmo, const Float3 from, const Float3 to, float radius);
-KB_API void     kb_gizmo_draw_axis            (kb_gizmo* gizmo, const Float3 pos, float length);
-KB_API void     kb_gizmo_draw_grid            (kb_gizmo* gizmo, Axis axis, const Float3 center, uint32_t size, float step);
-KB_API void     kb_gizmo_draw_aabb            (kb_gizmo* gizmo, const Aabb aabb);
+KB_API void     kb_gizmo_shape_move_to        (kb_gizmo* gizmo, const kb_float3 pos);
+KB_API void     kb_gizmo_shape_line_to        (kb_gizmo* gizmo, const kb_float3 pos);
+KB_API void     kb_gizmo_draw_arc             (kb_gizmo* gizmo, kb_axis axis, const kb_float3 pos, float radius, float degrees);
+KB_API void     kb_gizmo_draw_circle          (kb_gizmo* gizmo, const kb_float3 normal, const kb_float3 center, float radius, float weight);
+KB_API void     kb_gizmo_draw_cone            (kb_gizmo* gizmo, const kb_float3 from, const kb_float3 to, float radius);
+KB_API void     kb_gizmo_draw_cylinder        (kb_gizmo* gizmo, const kb_float3 from, const kb_float3 to, float radius);
+KB_API void     kb_gizmo_draw_axis            (kb_gizmo* gizmo, const kb_float3 pos, float length);
+KB_API void     kb_gizmo_draw_grid            (kb_gizmo* gizmo, kb_axis axis, const kb_float3 center, uint32_t size, float step);
+KB_API void     kb_gizmo_draw_aabb            (kb_gizmo* gizmo, const kb_aabb aabb);
 KB_API void     kb_gizmo_flush                (kb_gizmo* gizmo, bool force);
 
 #ifdef __cplusplus

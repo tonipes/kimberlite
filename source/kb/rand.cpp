@@ -29,12 +29,12 @@ KB_API float kb_rand_unit(kb_rng* rng) {
   return 2.0f * kb_rand(rng) - 1.0f;
 }
 
-KB_API Float2 kb_rand_unit_circle(kb_rng* rng) {
+KB_API kb_float2 kb_rand_unit_circle(kb_rng* rng) {
   float a = kb_rand_unit(rng) * PI2;
   return { cos(a), sin(a) };
 }
 
-KB_API Float3 kb_rand_unit_sphere(kb_rng* rng) {
+KB_API kb_float3 kb_rand_unit_sphere(kb_rng* rng) {
 	float r0  = kb_rand_unit(rng) * 2.0f - 1.0f;
 	float r1  = kb_rand_unit(rng) * PI2;
 	float s1  = sqrt(1.0f - r0 * r1);

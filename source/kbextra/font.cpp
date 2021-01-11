@@ -227,7 +227,7 @@ void kb_font_break_line(kb_font_info* info, float* current_y) {
   *current_y += kb_font_get_line_height(info);
 }
 
-void kb_font_quad_advance(kb_font_info* info, int codepoint, float* current_x, float* current_y, FloatRect* pos, FloatRect* uv) {  
+void kb_font_quad_advance(kb_font_info* info, int codepoint, float* current_x, float* current_y, kb_rect_float* pos, kb_rect_float* uv) {  
   KB_ASSERT_NOT_NULL(info);
   KB_ASSERT_NOT_NULL(current_x);
   KB_ASSERT_NOT_NULL(current_y);
@@ -260,9 +260,9 @@ KB_API float kb_font_get_line_height(kb_font_info* info) {
 }
 
 KB_API uint32_t kb_font_advance_line(kb_font_info* info, const char* str, uint32_t len, float* width) {    
-  Float2 current_pos { 0.0f, 0.0f };
+  kb_float2 current_pos { 0.0f, 0.0f };
   
-  FloatRect pos;
+  kb_rect_float pos;
 
   float pmin = FLOATMAX;
   float pmax = FLOATMIN;
@@ -290,7 +290,7 @@ KB_API uint32_t kb_font_advance_line(kb_font_info* info, const char* str, uint32
   return cpos;
 }
 
-KB_API Float2 kb_font_get_string_dimensions(kb_font_info* info, const char* str, uint32_t len) {
+KB_API kb_float2 kb_font_get_string_dimensions(kb_font_info* info, const char* str, uint32_t len) {
   uint32_t pos = 0;
   
   uint32_t lines = 0;
@@ -365,7 +365,7 @@ void kb_font_destruct(kb_font handle) {
   kb_table_destroy(&font_ref(handle)->info.char_table);
 }
 
-void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, uint32_t len, Float2 origin, Float2 scale, Float2 align, Float2 offset, uint32_t instance_count) {
+void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, uint32_t len, kb_float2 origin, kb_float2 scale, kb_float2 align, kb_float2 offset, uint32_t instance_count) {
   
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(font);
@@ -395,32 +395,32 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   uint32_t indices  = 0;
   uint32_t vertices = 0;
 
-  Float2 scale_factor = scale * (1.0f /  fnt->info.pixel_height);
+  kb_float2 scale_factor = scale * (1.0f /  fnt->info.pixel_height);
   scale_factor.y *= -1;
 
   float pos_offset = (float) (fnt->info.ascent) * fnt->info.scale_factor;
   
-  Float2 str_dim = kb_font_get_string_dimensions(&fnt->info, str, len);
+  kb_float2 str_dim = kb_font_get_string_dimensions(&fnt->info, str, len);
 
   float origin_x = pos_offset * offset.x;
   float origin_y = pos_offset * offset.y;
 
-  Float2 current_pos = {
+  kb_float2 current_pos = {
     origin_x,
     pos_offset + origin_y
   };
 
-  FloatRect pos;
-  FloatRect uv;
+  kb_rect_float pos;
+  kb_rect_float uv;
   
   uint32_t strpos = 0;
   
-  Float2 padding = { fnt->info.padding, fnt->info.padding };
+  kb_float2 padding = { fnt->info.padding, fnt->info.padding };
 
   float line_width = 0.0f;
   kb_font_advance_line(&fnt->info, str, len, &line_width);
   
-  Float2 align_offset = {
+  kb_float2 align_offset = {
     -line_width * fnt->info.pixel_height,
     -str_dim.y * fnt->info.pixel_height,
   };
@@ -443,10 +443,10 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
     }
     kb_font_quad_advance(&fnt->info, codep, &current_pos.x, &current_pos.y, &pos, &uv);
     
-    Float2 current_align = (align_offset * align);
+    kb_float2 current_align = (align_offset * align);
   
-    Float2 from = scale_factor * (pos.from - padding + current_align);
-    Float2 to   = scale_factor * (pos.to + padding + current_align);
+    kb_float2 from = scale_factor * (pos.from - padding + current_align);
+    kb_float2 to   = scale_factor * (pos.to + padding + current_align);
     
     kb_simple_vertex verts[4] = {
       { { origin.x + from.x,  origin.y - from.y,   0.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, { uv.from.x , uv.from.y } },

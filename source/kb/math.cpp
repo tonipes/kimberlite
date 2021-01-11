@@ -6,49 +6,26 @@
 
 #include <kb/math.h>
 
-const Float3 DirRight    = { 1.0f, 0.0f, 0.0f };
-const Float3 DirUp       = { 0.0f, 1.0f, 0.0f };
-const Float3 DirForward  = { 0.0f, 0.0f, 1.0f };
-
-const Float3 Float2Max   = { FLOATMAX, FLOATMAX };
-const Float3 Float2Min   = { FLOATMIN, FLOATMIN };
-const Float3 Float3Max   = { FLOATMAX, FLOATMAX, FLOATMAX };
-const Float3 Float3Min   = { FLOATMIN, FLOATMIN, FLOATMIN };
-
-const Float4x4 IdentityFloat4x4 = { .m = {
-  1.0f, 0.0f, 0.0f, 0.0f,
-  0.0f, 1.0f, 0.0f, 0.0f,
-  0.0f, 0.0f, 1.0f, 0.0f,
-  0.0f, 0.0f, 0.0f, 1.0f,
-}};
-
-const Float4x4 ZeroFloat4x4 = { .m = {
-  0.0f, 0.0f, 0.0f, 0.0f,
-  0.0f, 0.0f, 0.0f, 0.0f,
-  0.0f, 0.0f, 0.0f, 0.0f,
-  0.0f, 0.0f, 0.0f, 0.0f,
-}};
-
-KB_API Float3 act_quat(const Quaternion a, const Float3 b) {
-  const Quaternion tmp0 = inv_quat(a);
-  const Quaternion qv   = { b.x, b.y, b.z, 0.0f };
-  const Quaternion tmp1 = mul_quat(tmp0, qv);
-  const Quaternion res  = mul_quat(tmp1, a);
+KB_API kb_float3 act_quat(const kb_quat a, const kb_float3 b) {
+  const kb_quat tmp0 = inv_quat(a);
+  const kb_quat qv   = { b.x, b.y, b.z, 0.0f };
+  const kb_quat tmp1 = mul_quat(tmp0, qv);
+  const kb_quat res  = mul_quat(tmp1, a);
 
   return { res.x, res.y, res.z };
 }
 
-KB_API Quaternion slerp_quat(const Quaternion a, const Quaternion b, float t) {
-  const float tt = 1 - t;
-  float dot = dot_quat(a, b);
+KB_API kb_quat slerp_quat(const kb_quat a, const kb_quat b, kb_float t) {
+  const kb_float tt = 1 - t;
+  kb_float dot = dot_quat(a, b);
 
-	float th = acos_scalar(dot);
-	float sn = sin_scalar(th);
+	kb_float th = acos_scalar(dot);
+	kb_float sn = sin_scalar(th);
 
-	float wa = sin_scalar(tt * th) / sn;
-	float wb = sin_scalar(t  * th) / sn;
+	kb_float wa = sin_scalar(tt * th) / sn;
+	kb_float wb = sin_scalar(t  * th) / sn;
   
-  Quaternion r {
+  kb_quat r {
 	  wa * a.x + wb * b.x,
 	  wa * a.y + wb * b.y,
 	  wa * a.z + wb * b.z,
@@ -58,12 +35,12 @@ KB_API Quaternion slerp_quat(const Quaternion a, const Quaternion b, float t) {
   return norm_quat(r);
 }
 
-KB_API Float4x4 look_at(const Float3 from, const Float3 to, const Float3 global_up) {
-  const Float3 forward  = kb::norm(to - from);
-  const Float3 right    = kb::norm(kb::cross(global_up, forward));
-  const Float3 up       = kb::norm(kb::cross(forward, right));
+KB_API kb_float4x4 look_at(const kb_float3 from, const kb_float3 to, const kb_float3 global_up) {
+  const kb_float3 forward  = kb::norm(to - from);
+  const kb_float3 right    = kb::norm(kb::cross(global_up, forward));
+  const kb_float3 up       = kb::norm(kb::cross(forward, right));
 
-  Float4x4 res = ZeroFloat4x4;
+  kb_float4x4 res = kb_float4x4_zero;
   res.m[ 0] = right.x;
   res.m[ 1] = up.x;
   res.m[ 2] = forward.x;
@@ -81,17 +58,17 @@ KB_API Float4x4 look_at(const Float3 from, const Float3 to, const Float3 global_
   return res;  
 }
 
-KB_API Float4x4 orthographic(float left, float right, float top, float bottom, float near, float far) {
-		const float aa = 2.0f / (right - left);
-		const float bb = 2.0f / (top - bottom);
-		const float cc = 1.0f / (far - near);
+KB_API kb_float4x4 orthographic(kb_float left, kb_float right, kb_float top, kb_float bottom, kb_float near, kb_float far) {
+		const kb_float aa = 2.0f / (right - left);
+		const kb_float bb = 2.0f / (top - bottom);
+		const kb_float cc = 1.0f / (far - near);
 
-		const float dd = (left + right ) / (left   - right);
-		const float ee = (top  + bottom) / (bottom - top  );
+		const kb_float dd = (left + right ) / (left   - right);
+		const kb_float ee = (top  + bottom) / (bottom - top  );
 
-		const float ff = near / (near - far);
+		const kb_float ff = near / (near - far);
 
-    Float4x4 res = ZeroFloat4x4;  
+    kb_float4x4 res = kb_float4x4_zero;
 		res.m[ 0] = aa;
 		res.m[ 5] = bb;
 		res.m[10] = cc;
@@ -103,15 +80,15 @@ KB_API Float4x4 orthographic(float left, float right, float top, float bottom, f
     return res;
 }
 
-KB_API Float4x4 perspective(float fov, float aspect, float near, float far) {
-  const float height = 1.0f / tan_scalar(deg_to_rad(fov) * 0.5f);
-  const float width  = height / aspect;
+KB_API kb_float4x4 perspective(kb_float fov, kb_float aspect, kb_float near, kb_float far) {
+  const kb_float height = 1.0f / tan_scalar(deg_to_rad(fov) * 0.5f);
+  const kb_float width  = height / aspect;
 
-  const float diff = far - near;
-  const float aa = far / diff;
-  const float bb = near * aa;
+  const kb_float diff = far - near;
+  const kb_float aa = far / diff;
+  const kb_float bb = near * aa;
 
-  Float4x4 res = ZeroFloat4x4;  
+  kb_float4x4 res = kb_float4x4_zero;
   res.m[ 0] = -width;
 	res.m[ 5] = height; // Flip proj y 
 	res.m[10] = aa;
@@ -121,8 +98,8 @@ KB_API Float4x4 perspective(float fov, float aspect, float near, float far) {
   return res;
 }
 
-KB_API Float4x4 transform_mtx(const Float3 v) {
-  Float4x4 res = IdentityFloat4x4;
+KB_API kb_float4x4 transform_mtx(const kb_float3 v) {
+  kb_float4x4 res = kb_float4x4_ident;
 	
   res.m[12] = v.x;
 	res.m[13] = v.y;
@@ -131,8 +108,8 @@ KB_API Float4x4 transform_mtx(const Float3 v) {
   return res;
 }
 
-KB_API Float4x4 scaling_mtx(const Float3 v) {
-  Float4x4 res = IdentityFloat4x4;
+KB_API kb_float4x4 scaling_mtx(const kb_float3 v) {
+  kb_float4x4 res = kb_float4x4_ident;
 	
   res.m[0]  = v.x;
 	res.m[5]  = v.y;
@@ -141,26 +118,26 @@ KB_API Float4x4 scaling_mtx(const Float3 v) {
   return res;
 }
 
-KB_API Float4x4 rotation_mtx(const Quaternion v) {
-  Float4x4 res = IdentityFloat4x4;
+KB_API kb_float4x4 rotation_mtx(const kb_quat v) {
+  kb_float4x4 res = kb_float4x4_ident;
 
-  const float x = v.x;
-  const float y = v.y;
-  const float z = v.z;
-  const float w = v.w;
+  const kb_float x = v.x;
+  const kb_float y = v.y;
+  const kb_float z = v.z;
+  const kb_float w = v.w;
 
-  const float xx  = x + x;
-  const float yy  = y + y;
-  const float zz  = z + z;
-  const float xxx = xx * x;
-  const float xxy = xx * y;
-  const float xxz = xx * z;
-  const float xxw = xx * w;
-  const float yyy = yy * y;
-  const float yyz = yy * z;
-  const float yyw = yy * w;
-  const float zzz = zz * z;
-  const float zzw = zz * w;
+  const kb_float xx  = x + x;
+  const kb_float yy  = y + y;
+  const kb_float zz  = z + z;
+  const kb_float xxx = xx * x;
+  const kb_float xxy = xx * y;
+  const kb_float xxz = xx * z;
+  const kb_float xxw = xx * w;
+  const kb_float yyy = yy * y;
+  const kb_float yyz = yy * z;
+  const kb_float yyw = yy * w;
+  const kb_float zzz = zz * z;
+  const kb_float zzw = zz * w;
 
   res.m[ 0] = 1.0f - (yyy + zzz);
   res.m[ 1] =         xxy - zzw;
@@ -177,20 +154,20 @@ KB_API Float4x4 rotation_mtx(const Quaternion v) {
   return res;
 }
 
-KB_API void translate(Float4x4* mtx, const Float3 v) {
+KB_API void translate(kb_float4x4* mtx, const kb_float3 v) {
   *mtx = mul_float4x4(*mtx, transform_mtx(v));
 }
 
-KB_API void scale(Float4x4* mtx, const Float3 v) {
+KB_API void scale(kb_float4x4* mtx, const kb_float3 v) {
   *mtx = mul_float4x4(*mtx, scaling_mtx(v));
 }
 
-KB_API void rotate(Float4x4* mtx, const Quaternion v) {
+KB_API void rotate(kb_float4x4* mtx, const kb_quat v) {
   *mtx = mul_float4x4(*mtx, rotation_mtx(v));
 }
 
-KB_API Float4x4 mul_float4x4(const Float4x4 a, const Float4x4 b) {
-  Float4x4 res = {};
+KB_API kb_float4x4 mul_float4x4(const kb_float4x4 a, const kb_float4x4 b) {
+  kb_float4x4 res = {};
 
   res.mm[0][0] = a.mm[0][0] * b.mm[0][0] + a.mm[0][1] * b.mm[1][0] + a.mm[0][2] * b.mm[2][0] + a.mm[0][3] * b.mm[3][0];
   res.mm[0][1] = a.mm[0][0] * b.mm[0][1] + a.mm[0][1] * b.mm[1][1] + a.mm[0][2] * b.mm[2][1] + a.mm[0][3] * b.mm[3][1];
@@ -212,15 +189,15 @@ KB_API Float4x4 mul_float4x4(const Float4x4 a, const Float4x4 b) {
   return res;
 }
 
-KB_API Float3 get_point(Axis axis, float x, float y) {
-  Float3 result;
+KB_API kb_float3 get_point(kb_axis axis, kb_float x, kb_float y) {
+  kb_float3 result;
 
   switch (axis) {
-    case Axis::AxisX:
+    case kb_axis::kb_axis_x:
       result = { 0.0f, x, y };
       break;
 
-    case Axis::AxisY:
+    case kb_axis::kb_axis_y:
       result = { y, 0.0f, x };
       break;
 
@@ -232,18 +209,18 @@ KB_API Float3 get_point(Axis axis, float x, float y) {
   return result;
 }
 
-KB_API void tangent_frame(const Float3 n, Float3* t, Float3* b) {
-  const float nx = n.x;
-  const float ny = n.y;
-  const float nz = n.z;
+KB_API void tangent_frame(const kb_float3 n, kb_float3* t, kb_float3* b) {
+  const kb_float nx = n.x;
+  const kb_float ny = n.y;
+  const kb_float nz = n.z;
 
   if (abs_scalar(nx) > abs_scalar(nz)) {
-    float inv_len = 1.0f / sqrt_scalar(nx*nx + nz*nz);
+    kb_float inv_len = 1.0f / sqrt_scalar(nx*nx + nz*nz);
     t->x = -nz * inv_len;
     t->y =  0.0f;
     t->z =  nx * inv_len;
   } else {
-    float inv_len = 1.0f / sqrt_scalar(ny*ny + nz*nz);
+    kb_float inv_len = 1.0f / sqrt_scalar(ny*ny + nz*nz);
     t->x =  0.0f;
     t->y =  nz * inv_len;
     t->z = -ny * inv_len;
@@ -252,11 +229,11 @@ KB_API void tangent_frame(const Float3 n, Float3* t, Float3* b) {
   *b = cross_float3(n, *t);
 }
 
-KB_API void tangent_frame_with_spin(const Float3 n, float spin, Float3* t, Float3* b) {
+KB_API void tangent_frame_with_spin(const kb_float3 n, kb_float spin, kb_float3* t, kb_float3* b) {
   tangent_frame(n, t, b);
   
-  const float sa = sin_scalar(spin);
-  const float ca = cos_scalar(spin);
+  const kb_float sa = sin_scalar(spin);
+  const kb_float ca = cos_scalar(spin);
 
   t->x = -sa * b->x + ca * t->x;
   t->y = -sa * b->y + ca * t->y;
@@ -265,7 +242,7 @@ KB_API void tangent_frame_with_spin(const Float3 n, float spin, Float3* t, Float
   *b = cross_float3(n, *t); 
 }
 
-uint32_t float_rgba_to_uint(const Float4 color) {
+uint32_t float_rgba_to_uint(const kb_float4 color) {
   uint32_t r = 255 * color.x;
   uint32_t g = 255 * color.y;
   uint32_t b = 255 * color.z;
@@ -274,8 +251,8 @@ uint32_t float_rgba_to_uint(const Float4 color) {
   return (a << 24) | (b << 16) | (g << 8) | (r << 0);
 }
 
-KB_API Float4x4 transpose_float4x4(const Float4x4 a) {
-  Float4x4 res = {};
+KB_API kb_float4x4 transpose_float4x4(const kb_float4x4 a) {
+  kb_float4x4 res = {};
 
   res.m[ 0] = a.m[ 0];
   res.m[ 4] = a.m[ 1];
@@ -297,33 +274,33 @@ KB_API Float4x4 transpose_float4x4(const Float4x4 a) {
   return res;
 }
 
-KB_API Float4x4 inv_float4x4(const Float4x4 a) {
-  const float xx = a.m[ 0];
-  const float xy = a.m[ 1];
-  const float xz = a.m[ 2];
-  const float xw = a.m[ 3];
-  const float yx = a.m[ 4];
-  const float yy = a.m[ 5];
-  const float yz = a.m[ 6];
-  const float yw = a.m[ 7];
-  const float zx = a.m[ 8];
-  const float zy = a.m[ 9];
-  const float zz = a.m[10];
-  const float zw = a.m[11];
-  const float wx = a.m[12];
-  const float wy = a.m[13];
-  const float wz = a.m[14];
-  const float ww = a.m[15];
+KB_API kb_float4x4 inv_float4x4(const kb_float4x4 a) {
+  const kb_float xx = a.m[ 0];
+  const kb_float xy = a.m[ 1];
+  const kb_float xz = a.m[ 2];
+  const kb_float xw = a.m[ 3];
+  const kb_float yx = a.m[ 4];
+  const kb_float yy = a.m[ 5];
+  const kb_float yz = a.m[ 6];
+  const kb_float yw = a.m[ 7];
+  const kb_float zx = a.m[ 8];
+  const kb_float zy = a.m[ 9];
+  const kb_float zz = a.m[10];
+  const kb_float zw = a.m[11];
+  const kb_float wx = a.m[12];
+  const kb_float wy = a.m[13];
+  const kb_float wz = a.m[14];
+  const kb_float ww = a.m[15];
 
-  float det = 0.0f;
+  kb_float det = 0.0f;
   det += xx * ( yy * (zz * ww - zw * wz) - yz * (zy * ww - zw * wy) + yw * (zy * wz - zz * wy) );
   det -= xy * ( yx * (zz * ww - zw * wz) - yz * (zx * ww - zw * wx) + yw * (zx * wz - zz * wx) );
   det += xz * ( yx * (zy * ww - zw * wy) - yy * (zx * ww - zw * wx) + yw * (zx * wy - zy * wx) );
   det -= xw * ( yx * (zy * wz - zz * wy) - yy * (zx * wz - zz * wx) + yz * (zx * wy - zy * wx) );
 
-  float inv_det = 1.0f / det;
+  kb_float inv_det = 1.0f / det;
   
-  Float4x4 res = {};
+  kb_float4x4 res = {};
 
   res.m[ 0] = +( yy * (zz * ww - wz * zw) - yz * (zy * ww - wy * zw) + yw * (zy * wz - wy * zz) ) * inv_det;
   res.m[ 1] = -( xy * (zz * ww - wz * zw) - xz * (zy * ww - wy * zw) + xw * (zy * wz - wy * zz) ) * inv_det;
@@ -348,7 +325,7 @@ KB_API Float4x4 inv_float4x4(const Float4x4 a) {
   return res;
 }
 
-KB_API Float4 act_float4x4(const Float4x4 mtx, const Float4 vec) {
+KB_API kb_float4 act_float4x4(const kb_float4x4 mtx, const kb_float4 vec) {
   return {
     vec.x * mtx.m[ 0] + vec.y * mtx.m[4] + vec.z * mtx.m[ 8] + vec.w * mtx.m[12],
 		vec.x * mtx.m[ 1] + vec.y * mtx.m[5] + vec.z * mtx.m[ 9] + vec.w * mtx.m[13],
@@ -357,47 +334,47 @@ KB_API Float4 act_float4x4(const Float4x4 mtx, const Float4 vec) {
   };
 }
 
-KB_API float ray_plane_intersection(const Ray ray, const Plane plane) {
-  float denom = dot_float3(plane.normal, ray.dir);
+KB_API kb_float ray_plane_intersection(const kb_ray ray, const kb_plane plane) {
+  kb_float denom = dot_float3(plane.normal, ray.dir);
   
   if (denom > FLT_EPSILON) {
-    Float3 p = sub_float3((scale_float3(plane.normal, plane.dist)), ray.pos);
+    kb_float3 p = sub_float3((scale_float3(plane.normal, plane.dist)), ray.pos);
     return dot_float3(p, plane.normal) / denom;
   }
 
   return NAN;
 }
 
-KB_API Float3 unproject(Float4x4 unproj, Float3 point) {
-  Float4 v = act_float4x4(unproj, Float4 { point.x, point.y, point.z, 1.0 });
-  return scale_float3(Float3 { v.x, v.y, v.z }, (1.0 / v.w));
+KB_API kb_float3 unproject(kb_float4x4 unproj, kb_float3 point) {
+  kb_float4 v = act_float4x4(unproj, kb_float4 { point.x, point.y, point.z, 1.0 });
+  return scale_float3(kb_float3 { v.x, v.y, v.z }, (1.0 / v.w));
 }
 
-KB_API Ray unproject_view(Float4x4 unproj, Float2 p) {
-  const Float3 orig = unproject(unproj, Float3 { 0, 0, -1 });
-  Float3 pp = unproject(unproj, Float3 { p.x, p.y, 0.9999f });
-  Float3 dir = sub_float3(orig, pp);
+KB_API kb_ray unproject_view(kb_float4x4 unproj, kb_float2 p) {
+  const kb_float3 orig = unproject(unproj, kb_float3 { 0, 0, -1 });
+  kb_float3 pp = unproject(unproj, kb_float3 { p.x, p.y, 0.9999f });
+  kb_float3 dir = sub_float3(orig, pp);
 
   return {orig, dir};
 }
 
-KB_API Quaternion inv_quat(const Quaternion a) {
+KB_API kb_quat inv_quat(const kb_quat a) {
   // TODO: Check
-  const Quaternion conj = conj_quat(a);
+  const kb_quat conj = conj_quat(a);
   return scale_quat(conj, 1.0f / len_quat(conj));
 }
 
-KB_API Quaternion  norm_quat(const Quaternion a) {
+KB_API kb_quat  norm_quat(const kb_quat a) {
   // TODO: Check
-  const float norm = dot_quat(a, a);
+  const kb_float norm = dot_quat(a, a);
   if (0.0f < norm) {
     return scale_quat(a, 1.0f / sqrt_scalar(norm));
   }
-  return (Quaternion) { 0.0f, 0.0f, 0.0f, 1.0f};
+  return (kb_quat) { 0.0f, 0.0f, 0.0f, 1.0f};
 }
 
-KB_API  Quaternion mul_quat(const Quaternion a, const Quaternion b) {
-  return (Quaternion) {
+KB_API  kb_quat mul_quat(const kb_quat a, const kb_quat b) {
+  return (kb_quat) {
     a.w * b.x + a.x * b.w + a.y * b.z - a.z * b.y,
     a.w * b.y + a.y * b.w + a.z * b.x - a.x * b.z,
     a.w * b.z + a.z * b.w + a.x * b.y - a.y * b.x,
@@ -405,26 +382,60 @@ KB_API  Quaternion mul_quat(const Quaternion a, const Quaternion b) {
   };
 }
 
-KB_API Quaternion euler_quat(const Float3 euler) {
-  const float hx = euler.x * 0.5f;
-  const float hy = euler.y * 0.5f;
-  const float hz = euler.z * 0.5f;
+KB_API kb_quat euler_quat(const kb_float3 euler) {
+  const kb_float hx = euler.x * 0.5f;
+  const kb_float hy = euler.y * 0.5f;
+  const kb_float hz = euler.z * 0.5f;
   
-  const Quaternion x = { sin_scalar(hx), 0.0f, 0.0f, cos_scalar(hx) };
-  const Quaternion y = { 0.0f, sin_scalar(hy), 0.0f, cos_scalar(hy) };
-  const Quaternion z = { 0.0f, 0.0f, sin_scalar(hz), cos_scalar(hz) };
+  const kb_quat x = { sin_scalar(hx), 0.0f, 0.0f, cos_scalar(hx) };
+  const kb_quat y = { 0.0f, sin_scalar(hy), 0.0f, cos_scalar(hy) };
+  const kb_quat z = { 0.0f, 0.0f, sin_scalar(hz), cos_scalar(hz) };
 
   return mul_quat(x, mul_quat(y, z));
 }
 
-KB_API Quaternion axis_angle_quat(const Float3 axis, float angle) {
-  const float half = angle * 0.5f;
-  const float s = sin_scalar(half);
+KB_API kb_quat axis_angle_quat(const kb_float3 axis, kb_float angle) {
+  const kb_float half = angle * 0.5f;
+  const kb_float s = sin_scalar(half);
 
-  return (Quaternion) {
+  return (kb_quat) {
     axis.x * s,
     axis.y * s,
     axis.z * s,
     cos(half),
+  };
+}
+
+KB_API bool aabb_contains(kb_aabb_int aabb, kb_int3 pos) {
+  return true
+    && pos.x >= aabb.min.x && pos.x < aabb.max.x
+    && pos.y >= aabb.min.y && pos.y < aabb.max.y
+    && pos.z >= aabb.min.z && pos.z < aabb.max.z
+  ;
+}
+
+KB_API kb_float3  cross_float3    (const kb_float3 a, const kb_float3 b) {
+  return (kb_float3) { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x };
+}
+
+KB_API uint64_t align_up(uint64_t a, uint64_t align) {
+  const uint64_t mask = (uint64_t)(align - 1);
+  return (uint64_t)( (a + mask) & ~mask);
+}
+
+KB_API kb_float2 circle_point(kb_float angle) {
+  return (kb_float2) { 
+    sin_scalar(angle), 
+    cos_scalar(angle) 
+  };
+}
+
+KB_API kb_float2 squircle_point(kb_float angle) {
+  kb_float sa = sin_scalar(angle);
+  kb_float ca = cos_scalar(angle);
+
+  return (kb_float2) {
+    sqrt_scalar(abs_scalar(sa)) * sign_scalar(sa),
+    sqrt_scalar(abs_scalar(ca)) * sign_scalar(ca)
   };
 }

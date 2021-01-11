@@ -18,7 +18,7 @@
 const bool      vsync             = true;
 const bool      hide_cursor       = false;
 const uint32_t  msaa              = 0;
-const Int2      resolution        = { 1600, 900 };
+const kb_int2      resolution        = { 1600, 900 };
 const float     max_frametime     = 0.33f;
 
 // int main(int argc, char** argv) {

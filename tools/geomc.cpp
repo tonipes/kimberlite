@@ -39,13 +39,13 @@
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0
 
-#define POSITION_TYPE   Float4
-#define NORMAL_TYPE     Float4
-#define TANGENT_TYPE    Float4
-#define TEXCOORD_TYPE   Float4
-#define COLOR_TYPE      Float4
-#define JOINT_TYPE      Float4
-#define WEIGHT_TYPE     Float4
+#define POSITION_TYPE   kb_float4
+#define NORMAL_TYPE     kb_float4
+#define TANGENT_TYPE    kb_float4
+#define TEXCOORD_TYPE   kb_float4
+#define COLOR_TYPE      kb_float4
+#define JOINT_TYPE      kb_float4
+#define WEIGHT_TYPE     kb_float4
 
 const uint16_t POSITION_COMPONENT_COUNT = sizeof(POSITION_TYPE) / sizeof(float);
 const uint16_t NORMAL_COMPONENT_COUNT   = sizeof(NORMAL_TYPE)   / sizeof(float);
@@ -82,7 +82,7 @@ struct VertexIndices {
   uint32_t joints;
 };
 
-struct IndexTriangle {
+struct Indexkb_triangle {
 	VertexIndices vert[3];
 };
 
@@ -112,8 +112,8 @@ void print_help(const char* error = nullptr) {
   );
 }
 
-XForm get_node_xform(cgltf_node* node) {
-  XForm xform;
+kb_xform get_node_xform(cgltf_node* node) {
+  kb_xform xform;
   xform.position  = { 0, 0, 0 };
   xform.scale     = { 1, 1, 1 };
   xform.rotation  = { 0, 0, 0, 1 };
@@ -162,7 +162,7 @@ int main(int argc, const char* argv[]) {
   kb_array_create(&vertex_data.colors,    sizeof(COLOR_TYPE),     0);
   kb_array_create(&vertex_data.joints,    sizeof(JOINT_TYPE),     0);
   kb_array_create(&vertex_data.weights,   sizeof(WEIGHT_TYPE),    0);
-  kb_array_create(&vertex_data.triangles, sizeof(IndexTriangle),  0);
+  kb_array_create(&vertex_data.triangles, sizeof(Indexkb_triangle),  0);
 
   // Output geom
   kb_geometry_data geom {};
@@ -412,7 +412,7 @@ int main(int argc, const char* argv[]) {
           cgltf_size index_count = prim->indices->count;
           for (cgltf_size i = 0; i < index_count; i += 3) { // Tri
             kb_array_resize(&vertex_data.triangles, kb_array_count(&vertex_data.triangles) + 1);            
-            IndexTriangle& tri = *(IndexTriangle*) kb_array_back(&vertex_data.triangles);
+            Indexkb_triangle& tri = *(Indexkb_triangle*) kb_array_back(&vertex_data.triangles);
             
             for (int v = 0; v < 3; ++v) {
               uint32_t vertex_index = cgltf_accessor_read_index(prim->indices, v + i);
@@ -467,7 +467,7 @@ int main(int argc, const char* argv[]) {
     bool has_weights  = false;
 
     for (uint64_t tri_i = 0; tri_i < kb_array_count(&vertex_data.triangles); ++tri_i) {
-      IndexTriangle& tri = *(IndexTriangle*) kb_array_at(&vertex_data.triangles, tri_i);
+      Indexkb_triangle& tri = *(Indexkb_triangle*) kb_array_at(&vertex_data.triangles, tri_i);
 
       for (uint32_t i = 0; i < 3; ++i) {
         has_position  |= tri.vert[i].position   != UINT32_MAX;
@@ -534,7 +534,7 @@ int main(int argc, const char* argv[]) {
         uint32_t    prim_index        = 0;
 
         for (uint32_t tri_i = prim->first_triangle; tri_i < prim->first_triangle + prim->triangle_count; ++tri_i) {
-          IndexTriangle& tri = *(IndexTriangle*) kb_array_at(&vertex_data.triangles, tri_i);
+          Indexkb_triangle& tri = *(Indexkb_triangle*) kb_array_at(&vertex_data.triangles, tri_i);
 
           for (uint32_t v = 0; v < 3; ++v) {
             const VertexIndices& vert = tri.vert[v];

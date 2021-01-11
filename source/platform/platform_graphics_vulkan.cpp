@@ -529,7 +529,7 @@ KB_INTERNAL VkExtent2D select_swapchain_extent(VkSurfaceCapabilitiesKHR& capabil
   if (capabilities.currentExtent.width != UINT32_MAX) {
     return capabilities.currentExtent;
   } else {
-    Int2 size = kb_platform_surface_get_size();
+    kb_int2 size = kb_platform_surface_get_size();
     
     return {
       CLAMP(size.x, capabilities.minImageExtent.width, capabilities.maxImageExtent.width),
@@ -760,7 +760,7 @@ KB_INTERNAL void init_vk_swapchain() {
   uint32_t image_count_wanted = KB_CONFIG_MAX_FRAMES_IN_FLIGHT;
   uint32_t image_count_min    = details.capabilities.minImageCount;
   uint32_t image_count_max    = details.capabilities.maxImageCount > 0 ? details.capabilities.maxImageCount : UINT32_MAX;
-  image_count_max             = min_integer(image_count_max, KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
+  image_count_max             = kb_int_min(image_count_max, KB_CONFIG_MAX_FRAMES_IN_FLIGHT);
 
   uint32_t image_count = CLAMP(image_count_wanted, image_count_min, image_count_max);
   
@@ -1349,7 +1349,7 @@ KB_INTERNAL void cleanup_swapchain() {
 
 KB_INTERNAL void recreate_vk_swapchain() {
   kb_log_info("Recreate swapchain");
-  Int2 size { 0, 0 };
+  kb_int2 size { 0, 0 };
 
   while (size.x == 0 || size.y == 0) {
     size = kb_platform_surface_get_size();
@@ -2026,7 +2026,7 @@ KB_API void kb_platform_graphics_deinit() {
   kb_platform_surface_destroy();
 }
 
-KB_API Int2 kb_graphics_get_extent() {
+KB_API kb_int2 kb_graphics_get_extent() {
   return { (int) vk_swapchain_extent.width, (int) vk_swapchain_extent.height};
 }
 
@@ -2070,7 +2070,7 @@ KB_API void kb_platform_graphics_submit_calls(kb_graphics_call* calls, uint32_t 
   VkDescriptorBufferInfo  descriptor_buffer_infos   [MAX_DESCRIPTOR_UPDATES]  = {};
 
   VkCommandBuffer cb;
-  Int2 extent = kb_graphics_get_extent();
+  kb_int2 extent = kb_graphics_get_extent();
 
   { // Allocate command buffer
     CommandBufferPool& pool = get_current_command_buffer_pool();
