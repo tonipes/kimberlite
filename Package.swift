@@ -9,11 +9,53 @@ let package = Package(
       name: "Kimberlite",
       type: .static,
       targets: ["Kimberlite", "fmt"]
-    )
+    ),
+    .executable(name: "kb_geomc", targets: ["kb_geomc"]),
+    .executable(name: "kb_bin2c", targets: ["kb_bin2c"]),
+    .executable(name: "kb_fontc", targets: ["kb_fontc"]),
   ],
   dependencies: [  
   ],
   targets: [
+    .target(
+      name: "kb_fontc",
+      dependencies: ["fmt"],
+      path: "tools/fontc",
+      sources: [
+        "main.cpp",
+      ],
+      cxxSettings: [
+        .headerSearchPath(".."),
+        .headerSearchPath("../../include"),
+        .headerSearchPath("../../source"),
+      ]
+    ),
+    .target(
+      name: "kb_geomc",
+      dependencies: ["fmt"],
+      path: "tools/geomc",
+      sources: [
+        "main.cpp",
+      ],
+      cxxSettings: [
+        .headerSearchPath(".."),
+        .headerSearchPath("../../include"),
+        .headerSearchPath("../../source"),
+      ]
+    ),
+    .target(
+      name: "kb_bin2c",
+      dependencies: [],
+      path: "tools/bin2c",
+      sources: [
+        "main.cpp",
+      ],
+      cxxSettings: [
+        .headerSearchPath(".."),
+        .headerSearchPath("../../include"),
+        .headerSearchPath("../../source"),
+      ]
+    ),
     .target(
       name: "Kimberlite",
       dependencies: ["fmt"],

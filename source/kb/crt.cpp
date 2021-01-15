@@ -7,7 +7,6 @@
 #include <kb/crt.h>
 
 #include <kb/alloc.h>
-#include <kb/log.h>
 
 #include <string.h>
 #include <stdio.h>

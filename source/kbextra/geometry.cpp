@@ -223,17 +223,53 @@ void kb_mesh_destruct(kb_mesh handle) {
 
 void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info info) {
   KB_ASSERT_VALID(handle);
+  
+  kb_geometry_data geom {};
+  
+  kb_geometry_data_read(&geom, info.data);
+  
+  kb_geometry_data_dump_info(&geom);
+  
+  // Index buffer
+  kb_stream* ib_rwops = kb_stream_open_mem(geom.index_data, geom.index_data_size);
+  geometry_ref(handle)->index_buffer = kb_buffer_create({
+    .rwops        = ib_rwops,
+    .size         = geom.index_data_size,
+    .usage        = KB_BUFFER_USAGE_INDEX_BUFFER,
+  });
+  kb_stream_close(ib_rwops);
+  
+  // Vertex_buffer
+  kb_stream* vb_rwops = kb_stream_open_mem(geom.vertex_data, geom.vertex_data_size);
+  geometry_ref(handle)->vertex_buffer = kb_buffer_create({
+    .rwops        = vb_rwops,
+    .size         = geom.vertex_data_size,
+    .usage        = KB_BUFFER_USAGE_VERTEX_BUFFER,
+  });
+  kb_stream_close(vb_rwops);
 
-  geometry_ref(handle)->index_buffer   = info.index_buffer;
-  geometry_ref(handle)->vertex_buffer  = info.vertex_buffer;
+  geometry_ref(handle)->material_count = geom.material_count;
+  geometry_ref(handle)->materials      = KB_DEFAULT_ALLOC_TYPE(kb_material, geom.material_count);
 
-  geometry_ref(handle)->mesh_count     = info.mesh_count;
-  geometry_ref(handle)->meshes         = KB_DEFAULT_ALLOC_TYPE(kb_mesh, info.mesh_count);
-  kb_memcpy(geometry_ref(handle)->meshes, info.meshes, sizeof(kb_mesh) * info.mesh_count);
-
-  geometry_ref(handle)->material_count = info.material_count;
-  geometry_ref(handle)->materials      = KB_DEFAULT_ALLOC_TYPE(kb_material, info.material_count);
-  kb_memcpy(geometry_ref(handle)->materials, info.materials, sizeof(kb_material) * info.material_count);
+  for (uint32_t i = 0; i < geom.material_count; i++) {
+    geometry_ref(handle)->materials[i] = kb_material_get(geom.materials[i]);
+  }
+  
+  geometry_ref(handle)->mesh_count     = geom.mesh_count;
+  geometry_ref(handle)->meshes         = KB_DEFAULT_ALLOC_TYPE(kb_mesh, geom.mesh_count);
+  
+  for (uint32_t i = 0; i < geom.mesh_count; i++) {
+    geometry_ref(handle)->meshes[i] = kb_mesh_create({
+      .index_buffer     = geometry_ref(handle)->index_buffer,
+      .vertex_buffer    = geometry_ref(handle)->vertex_buffer,
+      .primitive_count  = geom.meshes[i].primitive_count,
+      .primitives       = geom.meshes[i].primitives,
+      .material_count   = geom.material_count,
+      .materials        = geometry_ref(handle)->materials,
+    });
+        
+    kb_mesh_mark(geometry_ref(handle)->meshes[i], kb_hash_string(geom.meshes[i].name));
+  }
 }
 
 void kb_geometry_destruct(kb_geometry handle) {
@@ -260,6 +296,7 @@ KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, u
   
   kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
   kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
+//  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_16);
 
   kb_primitive_ref& primitive = mesh_ref(mesh)->primitives[0];
 
@@ -279,24 +316,24 @@ KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t in
 
   kb_encoder_push(encoder);
   
-  kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
-  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
+  // kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
+  // kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
 
   for (uint32_t i = 0; i < mesh_ref(mesh)->primitive_count; ++i) {
-    kb_primitive_ref& primitive = mesh_ref(mesh)->primitives[i];
-
-    kb_material material = primitive.material;
+    kb_material material = mesh_ref(mesh)->primitives[i].material;
     
     if (bind_material && kb_is_valid(material)) {
       kb_encoder_bind_material(encoder, material);
     }
+    
+    kb_encoder_submit_primitive_draw(encoder, mesh, i, instance_count);
 
-    kb_encoder_submit(encoder, 
-      primitive.first_index,
-      primitive.first_vertex,
-      primitive.index_count,
-      instance_count
-    );
+    // kb_encoder_submit(encoder, 
+      // primitive.first_index,
+      // primitive.first_vertex,
+      // primitive.index_count,
+      // instance_count
+    // );
   }  
   
   kb_encoder_pop(encoder);

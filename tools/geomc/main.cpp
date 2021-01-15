@@ -4,13 +4,12 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
+
 #define KB_TOOL_ONLY
 
 #include <kb/core.h>
 #include <kb/time.h>
 #include <kb/array.h>
-#include <kb/log.h>
-#include <kb/log.h>
 
 #include <kbextra/cliargs.h>
 #include <kbextra/geometry.h>
@@ -19,22 +18,38 @@
 #include "kb/array.cpp"
 #include "kb/alloc.cpp"
 #include "kb/hash.cpp"
-#include "kb/log.cpp"
 #include "kb/time.cpp"
-#include "kb/thread.cpp"
 #include "kb/crt.cpp"
+#include "kb/thread.cpp"
+#include "kb/log.cpp"
 #include "kb/texture.cpp"
+#include "kb/math.cpp"
 
 #include "kbextra/vertex.cpp"
 #include "kbextra/cliargs.cpp"
 #include "kbextra/geometry.cpp"
 
 #include <meshoptimizer/meshoptimizer.h>
+#include <meshoptimizer/allocator.cpp>
+#include <meshoptimizer/clusterizer.cpp>
+#include <meshoptimizer/indexcodec.cpp>
+#include <meshoptimizer/indexgenerator.cpp>
+#include <meshoptimizer/overdrawanalyzer.cpp>
+#include <meshoptimizer/overdrawoptimizer.cpp>
+#include <meshoptimizer/simplifier.cpp>
+#include <meshoptimizer/spatialorder.cpp>
+#include <meshoptimizer/stripifier.cpp>
+#include <meshoptimizer/vcacheanalyzer.cpp>
+#include <meshoptimizer/vcacheoptimizer.cpp>
+#include <meshoptimizer/vertexcodec.cpp>
+#include <meshoptimizer/vertexfilter.cpp>
+#include <meshoptimizer/vfetchanalyzer.cpp>
+#include <meshoptimizer/vfetchoptimizer.cpp>
 
 #define CGLTF_IMPLEMENTATION
 #include <cgltf/cgltf.h>
 
-#include "platform_rwops_stdio.cpp"
+#include <platform/platform_rwops_stdio.cpp>
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0
@@ -56,7 +71,8 @@ const uint16_t JOINT_COMPONENT_COUNT    = sizeof(JOINT_TYPE)    / sizeof(float);
 const uint16_t WEIGHT_COMPONENT_COUNT   = sizeof(WEIGHT_TYPE)   / sizeof(float);
 
 using IndexType = uint32_t;
-const uint32_t MAX_INDEX_COUNT_PER_PRIMITIVE = 4294967295; // 2^32 - 1
+// const uint32_t MAX_INDEX_COUNT_PER_PRIMITIVE = 4294967295; // 2^32 - 1
+const uint32_t MAX_INDEX_COUNT_PER_PRIMITIVE = 65535; // 2^16 - 1
 
 // Temporary storage types
 struct PrimitiveParseData {
@@ -108,7 +124,7 @@ void print_help(const char* error = nullptr) {
 
   printf(
     "Kimberlite geomc\n"
-    "\tUsage: geomc --input <in> --output <out>"
+    "\tUsage: geomc --input <in> --output <out>\n"
   );
 }
 
@@ -436,7 +452,7 @@ int main(int argc, const char* argv[]) {
 
         while (tri_ind < tri_count) {
           uint32_t tris_remaining = tri_count - tri_ind;
-          uint32_t prim_tri_count = min(tris_remaining, MAX_INDEX_COUNT_PER_PRIMITIVE / 3);
+          uint32_t prim_tri_count = kb_int_min(tris_remaining, MAX_INDEX_COUNT_PER_PRIMITIVE / 3);
 
           uint32_t idx = dst->prim_count++;
 
@@ -659,16 +675,17 @@ int main(int argc, const char* argv[]) {
     KB_DEFAULT_FREE(geom_ind_data);
   }
 
-  kb_log_info("All done! Total optimization time: {}", double(total_optim_time) / double(kb_time_get_frequency()));
-
+  printf("All done! Total optimization time: %f\n", double(total_optim_time) / double(kb_time_get_frequency()));
+    
   //#####################################################################################################################
   // Export
   //#####################################################################################################################
-
+    
   kb_geometry_data_write(&geom, rwops_out);
-  
-  exit_val = EXIT_SUCCESS;
 
+  return EXIT_SUCCESS;
+
+  exit_val = EXIT_SUCCESS;
 end:
   kb_stream_close(rwops_in);
   kb_stream_close(rwops_out);

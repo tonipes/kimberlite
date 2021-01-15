@@ -17,21 +17,21 @@
 #include "kb/log.cpp"
 #include "kb/thread.cpp"
 #include "kb/table.cpp"
+#include "kb/math.cpp"
 
 #include "kbextra/cliargs.cpp"
 #include "kbextra/font.cpp"
 
-#include "platform_rwops_stdio.cpp"
-
+#include "platform/platform_rwops_stdio.cpp"
 
 #define STB_RECT_PACK_IMPLEMENTATION 
-#include "stb_rect_pack.h"
+#include "stb/stb_rect_pack.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include "stb/stb_image_write.h"
 
 #define STB_TRUETYPE_IMPLEMENTATION 
-#include "stb_truetype.h"
+#include "stb/stb_truetype.h"
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0

@@ -180,10 +180,10 @@ KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const kb_float3 normal, const 
   
   kb_float3 udir;
   kb_float3 vdir;
-  tangent_frame_with_spin(normal, 0.0f, &udir, &vdir);
+  kb_tangent_frame_with_spin(normal, 0.0f, &udir, &vdir);
 
-  kb_float2 xy0 = circle_point(0.0f);
-  kb_float2 xy1 = squircle_point(0.0f);
+  kb_float2 xy0 = kb_circle_point(0.0f);
+  kb_float2 xy1 = kb_squircle_point(0.0f);
 
   kb_float3 pos  = kb_float3_scale(udir, kb_float_lerp(xy0.x, xy1.x, weight) * radius);
   kb_float3 tmp0 = kb_float3_scale(vdir, kb_float_lerp(xy0.y, xy1.y, weight) * radius);
@@ -198,8 +198,8 @@ KB_API void kb_gizmo_draw_circle(kb_gizmo* gizmo, const kb_float3 normal, const 
 
   for (uint32_t i = 1; i < num; ++i) {
     float angle = step * i;
-    xy0 = circle_point(angle);
-    xy1 = squircle_point(angle);
+    xy0 = kb_circle_point(angle);
+    xy1 = kb_squircle_point(angle);
 
     pos  = kb_float3_scale(udir, kb_float_lerp(xy0.x, xy1.x, weight) * radius);
     tmp0 = kb_float3_scale(vdir, kb_float_lerp(xy0.y, xy1.y, weight) * radius);
@@ -223,7 +223,7 @@ KB_API void kb_gizmo_draw_arc(kb_gizmo* gizmo, kb_axis axis, const kb_float3 pos
 
   auto deg = kb_float_wrap(degrees, 360.0f);
   
-  kb_float3 cpos = get_point(axis, kb_float_sin(0) * radius, kb_float_cos(0) * radius);
+  kb_float3 cpos = kb_point_on_plane(axis, kb_float_sin(0) * radius, kb_float_cos(0) * radius);
 
   kb_gizmo_shape_move_to(gizmo, kb_float3_add(pos, cpos));
   
@@ -232,16 +232,16 @@ KB_API void kb_gizmo_draw_arc(kb_gizmo* gizmo, kb_axis axis, const kb_float3 pos
   const float step = (2.0f * PI) * (deg / 360.0f) / n;
 
   for (uint32_t i = 1; i < n + 1; ++i) {
-    cpos = get_point(axis, kb_float_sin(step * i) * radius, kb_float_cos(step * i) * radius);
+    cpos = kb_point_on_plane(axis, kb_float_sin(step * i) * radius, kb_float_cos(step * i) * radius);
     kb_gizmo_shape_line_to(gizmo, kb_float3_add(pos, cpos));
   }
 
   kb_gizmo_shape_move_to(gizmo, pos);
   
-  cpos = get_point(axis, kb_float_sin(0) * radius, kb_float_cos(0) * radius);
+  cpos = kb_point_on_plane(axis, kb_float_sin(0) * radius, kb_float_cos(0) * radius);
   kb_gizmo_shape_line_to(gizmo, kb_float3_add(pos, cpos));
 
-  cpos = get_point(axis, kb_float_sin(step * n) * radius, kb_float_cos(step * n) * radius);
+  cpos = kb_point_on_plane(axis, kb_float_sin(step * n) * radius, kb_float_cos(step * n) * radius);
   kb_gizmo_shape_move_to(gizmo, kb_float3_add(pos, cpos));
 
   kb_gizmo_shape_line_to(gizmo, pos);
@@ -272,7 +272,7 @@ KB_API void kb_gizmo_draw_grid(kb_gizmo* gizmo, kb_axis axis, const kb_float3 po
   KB_ASSERT_NOT_NULL(gizmo);
 
   kb_gizmo_push(gizmo);
-  // kb_gizmo_push_transform(gizmo, transform_mtx(pos), true);
+  // kb_gizmo_push_transform(gizmo, kb_float4x4_translation(pos), true);
   
   const uint32_t num = (size / 2) * 2;
 
@@ -282,17 +282,17 @@ KB_API void kb_gizmo_draw_grid(kb_gizmo* gizmo, kb_axis axis, const kb_float3 po
   float yy = b;
   
   for (uint32_t i = 0; i < num; ++i) {
-    kb_gizmo_shape_move_to(gizmo, pos + get_point(axis, b, yy));
-    kb_gizmo_shape_line_to(gizmo, pos + get_point(axis, a, yy));
-    kb_gizmo_shape_move_to(gizmo, pos + get_point(axis, yy, b));
-    kb_gizmo_shape_line_to(gizmo, pos + get_point(axis, yy, a));
+    kb_gizmo_shape_move_to(gizmo, pos + kb_point_on_plane(axis, b, yy));
+    kb_gizmo_shape_line_to(gizmo, pos + kb_point_on_plane(axis, a, yy));
+    kb_gizmo_shape_move_to(gizmo, pos + kb_point_on_plane(axis, yy, b));
+    kb_gizmo_shape_line_to(gizmo, pos + kb_point_on_plane(axis, yy, a));
     yy += step;
   }
 
-  kb_gizmo_shape_move_to(gizmo, pos + get_point(axis, b, b));
-  kb_gizmo_shape_line_to(gizmo, pos + get_point(axis, b, a));
-  kb_gizmo_shape_line_to(gizmo, pos + get_point(axis, a, a));
-  kb_gizmo_shape_line_to(gizmo, pos + get_point(axis, a, b));
+  kb_gizmo_shape_move_to(gizmo, pos + kb_point_on_plane(axis, b, b));
+  kb_gizmo_shape_line_to(gizmo, pos + kb_point_on_plane(axis, b, a));
+  kb_gizmo_shape_line_to(gizmo, pos + kb_point_on_plane(axis, a, a));
+  kb_gizmo_shape_line_to(gizmo, pos + kb_point_on_plane(axis, a, b));
 
   // kb_gizmo_pop_transform(gizmo, true);
   kb_gizmo_pop(gizmo);

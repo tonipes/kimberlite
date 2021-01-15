@@ -1355,7 +1355,7 @@ KB_INTERNAL void recreate_vk_swapchain() {
     size = kb_platform_surface_get_size();
   }
   
-  float scale = kb_platform_surface_get_scaling();
+  float kb_float4x4_scale = kb_platform_surface_get_scaling();
   
   vkDeviceWaitIdle(vk_device);
   
@@ -1923,7 +1923,7 @@ KB_API void kb_platform_buffer_destruct(kb_buffer handle) {
 KB_API void* kb_platform_graphics_transient_alloc(uint64_t size, uint64_t align) {
   kb_transient_buffer* buffer = &get_current_transient_buffer();
 
-  uint64_t p = align_up(buffer->memory_position, align);
+  uint64_t p = kb_align_up(buffer->memory_position, align);
   buffer->memory_position = p + size;
 
   return (uint8_t*) buffer->buffer.alloc_info.pMappedData + p;

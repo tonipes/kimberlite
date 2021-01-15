@@ -16,6 +16,7 @@
 #include "kb/crt.cpp"
 #include "kb/texture.cpp"
 #include "kb/log.h"
+#include "kb/math.cpp"
 
 #include "kbextra/cliargs.cpp"
 

@@ -29,8 +29,8 @@ typedef struct kb_primitive_data {
   uint32_t            first_index;
   uint32_t            index_count;
   int32_t             material;
-  kb_sphere              sphere;
-  kb_aabb                aabb;
+  kb_sphere           sphere;
+  kb_aabb             aabb;
 } kb_primitive_data;
 
 typedef struct kb_mesh_data {
@@ -41,7 +41,7 @@ typedef struct kb_mesh_data {
 
 typedef struct kb_node_data {
   char                name[KB_CONFIG_MAX_NAME_SIZE];
-  kb_xform               xform;
+  kb_xform            xform;
   int32_t             mesh;
   uint32_t            children_count;
   uint32_t*           children;
@@ -62,12 +62,7 @@ typedef struct kb_geometry_data {
 } kb_geometry_data;
 
 typedef struct kb_geometry_create_info {
-  kb_buffer           vertex_buffer;
-  kb_buffer           index_buffer;
-  uint32_t            material_count;
-  kb_material*        materials;
-  uint32_t            mesh_count;
-  kb_mesh*            meshes;
+  kb_stream*         data;
 } kb_geometry_create_info;
 
 typedef struct kb_mesh_create_info {

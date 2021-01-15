@@ -6,7 +6,6 @@
 
 #include <kb/alloc.h>
 
-#include <kb/log.h>
 #include <kb/crt.h>
 #include <kb/math.h>
 
@@ -31,7 +30,7 @@ void* real_to_aligned(void* ptr, uint32_t header_size, uint32_t align) {
   uintptr_t address = (uintptr_t) ptr;
 
   uintptr_t unaligned = address + header_size;
-  uintptr_t aligned = align_up(unaligned, int32_t(align));
+  uintptr_t aligned = kb_align_up(unaligned, int32_t(align));
 
   return (void*) aligned;
 }

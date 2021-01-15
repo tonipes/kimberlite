@@ -26,7 +26,7 @@ typedef enum kb_gizmo_action {
 
 typedef struct kb_gizmo_attribs {
   float               offset;
-  float               scale;
+  float               kb_float4x4_scale;
   kb_float4              color;
   bool                wireframe;
   uint8_t             lod;

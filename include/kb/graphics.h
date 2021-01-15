@@ -246,7 +246,7 @@ typedef struct kb_attachment_info {
 } kb_attachment_info;
 
 typedef struct kb_attachment_bind_info {
-  kb_float4                    clear_color;
+  kb_float4                 clear_color;
   float                     clear_depth;
   uint32_t                  clear_stencil;
   kb_load_action            load_action;

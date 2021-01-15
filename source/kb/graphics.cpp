@@ -16,16 +16,16 @@ typedef struct pipeline_info {
   kb_vertex_layout_info     vertex_layout;
 } pipeline_info;
 
-typedef struct attachment {
+typedef struct kb_pipe_attachment {
   kb_format                 format;
   kb_texture                texture;
   kb_texture_usage          usage;
   bool                      surface_proxy;
   bool                      resize_with_surface;
-} attachment;
+} kb_pipe_attachment;
 
 typedef struct graphics_pipe_info {
-  attachment                attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
+  kb_pipe_attachment        attachments[KB_CONFIG_MAX_PIPE_ATTACHMENTS];
   int32_t                   attachment_count;
   int32_t                   pass_count;
   kb_renderpass_info        passes[KB_CONFIG_MAX_PASSES];
@@ -63,7 +63,7 @@ kb_encoder_pool*    encoder_pools;
 graphics_pipe_info* graphics_pipe;
 
 uint32_t            resource_slot;
-kb_int2                current_extent;
+kb_int2             current_extent;
 kb_graphics_call*   draw_call_cache[KB_CONFIG_MAX_RENDERPASSES];
 uint32_t            draw_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
 
@@ -155,7 +155,7 @@ KB_API int64_t kb_graphics_transient_alloc(uint64_t size, kb_buffer_usage usage)
   // TODO: Calculate align from usage
   uint64_t align = 256;
 
-  size_t pos = align_up(buffer.position, align);
+  size_t pos = kb_align_up(buffer.position, align);
   buffer.position = pos + size;
   
   return pos;
@@ -189,21 +189,23 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
 
   // Attachments
   for (uint32_t attachment_i = 0; attachment_i < info.pipe.attachment_count; ++attachment_i) {
-    graphics_pipe->attachments[attachment_i] = {};
-    
     const kb_attachment_info& attachment_info = info.pipe.attachments[attachment_i];
+    
+    kb_pipe_attachment& attachment = graphics_pipe->attachments[attachment_i];
+    attachment = {};
     
     if (attachment_info.surface_proxy) {
       // Drawable proxy. Mark as such and do not create a texture
-      graphics_pipe->attachments[attachment_i].surface_proxy = true;
+      attachment.surface_proxy = true;
     } else {
       // Regular attachment. Create a texture
       KB_ASSERT(attachment_info.texture.usage & KB_TEXTURE_USAGE_RENDER_TARGET, "Graphics pipeline attachments must be render targets");
-
-      graphics_pipe->attachments[attachment_i].resize_with_surface = attachment_info.use_surface_size;
-      graphics_pipe->attachments[attachment_i].format = attachment_info.texture.format;
-      graphics_pipe->attachments[attachment_i].usage = attachment_info.texture.usage;
-      graphics_pipe->attachments[attachment_i].texture = kb_texture_create({
+      kb_log_debug("Attachment {}: surface size: {}, format: {}", attachment_i, attachment_info.use_surface_size, attachment_info.texture.format);
+      
+      attachment.resize_with_surface = attachment_info.use_surface_size;
+      attachment.format = attachment_info.texture.format;
+      attachment.usage = attachment_info.texture.usage;
+      attachment.texture = kb_texture_create({
         .rwops = NULL,
         .texture = {
           .format = attachment_info.texture.format,
@@ -214,6 +216,9 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
         .mipmaps = false,
         .filter = KB_FILTER_LINEAR
       });
+      
+      kb_log_debug("Texture ID: {}", attachment.texture.idx);
+  
     }
   }
   
@@ -241,6 +246,7 @@ KB_API void kb_graphics_deinit() {
 }
 
 KB_API void kb_graphics_run_encoders() {
+  // Fill caches
   for (uint32_t encoder_i = 0; encoder_i < current_encoder_pool().count; ++encoder_i) {
     kb_encoder_state& state = current_encoder_pool().states[encoder_i];
     for (uint32_t call_i = 0; call_i < state.draw_call_count; ++call_i) {
@@ -248,8 +254,10 @@ KB_API void kb_graphics_run_encoders() {
       draw_call_cache[call.renderpass][draw_call_cache_pos[call.renderpass]++] = call;
     }
   }
-
+  
+  // Run passes
   for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
+
     if (draw_call_cache_pos[pass_i] <= 0) continue;
 
     kb_platform_graphics_submit_calls(pass_i, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
