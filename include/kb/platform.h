@@ -23,8 +23,8 @@ KB_API int            kb_platform_stream_file_open                    (kb_stream
 KB_API void           kb_platform_graphics_init                       (const kb_graphics_init_info info);
 KB_API void           kb_platform_graphics_deinit                     (void);
 KB_API void           kb_platform_graphics_frame                      (void);
-KB_API kb_int2           kb_platform_graphics_surface_extent             (void);
-KB_API float          kb_platform_graphics_surface_kb_float4x4_scale              (void);
+KB_API kb_int2        kb_platform_graphics_surface_extent             (void);
+KB_API float          kb_platform_graphics_surface_scale              (void);
 KB_API void           kb_platform_graphics_submit_calls               (uint32_t pass, kb_graphics_call* calls, uint32_t call_count);
 KB_API void*          kb_platform_graphics_buffer_mapped              (kb_buffer buffer, uint64_t offset);
 KB_API void           kb_platform_graphics_buffer_construct           (kb_buffer handle, const kb_buffer_create_info info);

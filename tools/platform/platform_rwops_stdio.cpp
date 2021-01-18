@@ -51,7 +51,6 @@ KB_INTERNAL int64_t tell_impl_file(kb_stream* rwops) {
 
 KB_INTERNAL int close_impl_file(kb_stream* rwops) {
   int res = fclose((FILE*) rwops->impl);
-  KB_DEFAULT_FREE(rwops);
   return res;
 }
 
@@ -112,7 +111,6 @@ KB_INTERNAL int64_t tell_impl_mem(kb_stream* rwops) {
 }
 
 KB_INTERNAL int close_impl_mem(kb_stream* rwops) {
-  KB_DEFAULT_FREE(rwops);
   return 0;
 }
 

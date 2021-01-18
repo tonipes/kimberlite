@@ -139,13 +139,48 @@ typedef enum kb_shader_stage {
 } kb_shader_stage;
 
 typedef enum kb_format {
-  KB_FORMAT_UNSUPPORTED           = 0,
-  KB_FORMAT_R8                    = 1,
-  KB_FORMAT_R8G8                  = 2,
-  KB_FORMAT_R8G8B8                = 3,
-  KB_FORMAT_R8G8B8A8              = 4,
-  KB_FORMAT_DEPTH                 = 5,
-  KB_FORMAT_DEPTH_STENCIL         = 6,
+  KB_FORMAT_UNSUPPORTED    = 0,
+  KB_FORMAT_R8_UNORM       = 1,
+  KB_FORMAT_R8_SNORM       = 2,
+  KB_FORMAT_R8_UINT        = 3,
+  KB_FORMAT_R8_SINT        = 4,
+  KB_FORMAT_R16_UNORM      = 5,
+  KB_FORMAT_R16_SNORM      = 6,
+  KB_FORMAT_R16_UINT       = 7,
+  KB_FORMAT_R16_SINT       = 8,
+  KB_FORMAT_R16_FLOAT      = 9,
+  KB_FORMAT_RG8_UNORM      = 10,
+  KB_FORMAT_RG8_SNORM      = 11,
+  KB_FORMAT_RG8_UINT       = 12,
+  KB_FORMAT_RG8_SINT       = 13,
+  KB_FORMAT_R32_UINT       = 14,
+  KB_FORMAT_R32_SINT       = 15,
+  KB_FORMAT_R32_FLOAT      = 16,
+  KB_FORMAT_RG16_UNORM     = 17,
+  KB_FORMAT_RG16_SNORM     = 18,
+  KB_FORMAT_RG16_UINT      = 19,
+  KB_FORMAT_RG16_SINT      = 20,
+  KB_FORMAT_RG16_FLOAT     = 21,
+  KB_FORMAT_RGBA8_UNORM    = 22,
+  KB_FORMAT_RGBA8_SNORM    = 23,
+  KB_FORMAT_RGBA8_UINT     = 24,
+  KB_FORMAT_RGBA8_SINT     = 25,
+  KB_FORMAT_RG32_UINT      = 26,
+  KB_FORMAT_RG32_SINT      = 27,
+  KB_FORMAT_RG32_FLOAT     = 28,
+  KB_FORMAT_RGBA16_UNORM   = 29,
+  KB_FORMAT_RGBA16_SNORM   = 30,
+  KB_FORMAT_RGBA16_UINT    = 31,
+  KB_FORMAT_RGBA16_SINT    = 32,
+  KB_FORMAT_RGBA16_FLOAT   = 33,
+  KB_FORMAT_RGBA32_UINT    = 34,
+  KB_FORMAT_RGBA32_SINT    = 35,
+  KB_FORMAT_RGBA32_FLOAT   = 36,
+
+  KB_FORMAT_SURFACE        = 90,
+  KB_FORMAT_DEPTH          = 91,
+  KB_FORMAT_STENCIL        = 92,
+  KB_FORMAT_DEPTH_STENCIL  = 93,
 } kb_format;
 
 typedef enum kb_filter {
@@ -180,6 +215,15 @@ typedef enum kb_store_action {
   KB_STORE_ACTION_STORE           = 1,
 } kb_store_action;
 
+typedef enum kb_sampler_address_mode {
+  KB_SAMPLER_ADDRESS_MODE_UNKNOWN               = 0,
+  KB_SAMPLER_ADDRESS_MODE_REPEAT                = 1,
+  KB_SAMPLER_ADDRESS_MODE_MIRROR_REPEAT         = 2,
+  KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE         = 3,
+  KB_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE  = 4,
+//  KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER       = 5,
+} kb_sampler_address_mode;
+
 typedef struct kb_blend_info {
   bool                      enabled;
   kb_blend_op               alpha_blend_op;
@@ -200,29 +244,22 @@ typedef struct kb_texture_info {
   kb_format                 format;
   kb_texture_usage          usage;
 } kb_texture_info;
-
+\
 typedef struct kb_texture_data {
   kb_texture_info           header;
   uint64_t                  data_size;
   void*                     data;
 } kb_texture_data;
 
-typedef struct kb_shader_binding_slot {
-  kb_binding_type           type;
-  uint32_t                  index;
-  uint64_t                  size;
-  kb_shader_stage           stages;
-} kb_shader_binding_slot;
-
 typedef struct kb_uniform_buffer_info {
+  kb_hash                   hash;
   uint32_t                  slot;
-  const char*               name;
   uint32_t                  size;
 } kb_uniform_buffer_info;
 
 typedef struct kb_uniform_texture_info {
+  kb_hash                   hash;
   uint32_t                  slot;
-  const char*               name;
 } kb_uniform_texture_info;
 
 typedef struct kb_uniform_layout {
@@ -232,11 +269,20 @@ typedef struct kb_uniform_layout {
   kb_uniform_texture_info   frag_textures   [KB_CONFIG_MAX_UNIFORM_BINDINGS];
 } kb_uniform_layout;
 
+typedef struct kb_sampler_info {
+  kb_filter                 min_filter;
+  kb_filter                 mag_filter;
+  kb_sampler_address_mode   address_mode_u;
+  kb_sampler_address_mode   address_mode_v;
+  kb_sampler_address_mode   address_mode_w;
+  float                     anisotropy;
+} kb_sampler_info;
+
 typedef struct kb_texture_create_info {
   kb_stream*                rwops;
   kb_texture_info           texture;
+  kb_sampler_info           sampler;
   bool                      mipmaps;
-  kb_filter                 filter;
 } kb_texture_create_info;
 
 typedef struct kb_attachment_info {
@@ -331,7 +377,7 @@ typedef struct kb_pipeline_create_info {
 
 typedef struct kb_graphics_init_info {
   bool                      vsync;
-  kb_int2                      resolution;
+  kb_int2                   resolution;
   kb_graphics_pipeline_info pipe;
 } kb_graphics_init_info;
 
@@ -402,7 +448,7 @@ KB_API void                 kb_graphics_init                          (const kb_
 KB_API void                 kb_graphics_deinit                        (void);
 KB_API void                 kb_graphics_frame                         (void);
 KB_API void                 kb_graphics_run_encoders                  (void);
-KB_API kb_int2                 kb_graphics_get_extent                    (void);
+KB_API kb_int2              kb_graphics_get_extent                    (void);
 KB_API float                kb_graphics_get_aspect                    (void);
 KB_API uint32_t             kb_graphics_get_current_resource_slot     (void);
 KB_API void*                kb_graphics_get_buffer_mapped             (kb_buffer buffer, uint64_t offset);
@@ -412,7 +458,7 @@ KB_API kb_texture           kb_graphics_pipe_attachment_texture       (uint32_t 
 KB_API kb_format            kb_graphics_pipe_attachment_format        (uint32_t attachment);
 KB_API bool                 kb_graphics_pipe_attachment_surface_proxy (uint32_t attachment);
 KB_API kb_renderpass_info*  kb_graphics_get_renderpass_info           (uint32_t pass);
-KB_API kb_uniform_slot      kb_uniform_get_slot                       (const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type, kb_shader_stage stage);
+KB_API kb_uniform_slot      kb_uniform_get_slot                       (const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type);
 KB_API kb_encoder           kb_encoder_begin                          (void);
 KB_API void                 kb_encoder_end                            (kb_encoder encoder);
 KB_API void                 kb_encoder_push                           (kb_encoder encoder);

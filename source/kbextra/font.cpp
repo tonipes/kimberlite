@@ -346,11 +346,19 @@ void kb_font_construct(kb_font handle, const kb_font_create_info info) {
     .texture = {
       .width  = font_data.atlas_bitmap_width,
       .height = font_data.atlas_bitmap_height,
-      .format = KB_FORMAT_R8G8B8A8,
+      .format = KB_FORMAT_RGBA8_UNORM,
       .usage  = KB_TEXTURE_USAGE_SHADER_READ
     },
+    .sampler = {
+      .min_filter     = KB_FILTER_LINEAR,
+      .mag_filter     = KB_FILTER_LINEAR,
+      .address_mode_u = KB_SAMPLER_ADDRESS_MODE_REPEAT,
+      .address_mode_v = KB_SAMPLER_ADDRESS_MODE_REPEAT,
+      .address_mode_w = KB_SAMPLER_ADDRESS_MODE_REPEAT,
+      .anisotropy     = 16.0f,
+    },
     .mipmaps = false,
-    .filter = KB_FILTER_LINEAR,
+//    .filter = KB_FILTER_LINEAR,
   });
 }
 

@@ -35,10 +35,12 @@ KB_API void kb_sound_construct(kb_sound handle, const kb_sound_create_info info)
   *sound_info_ref(handle) = info.playback;
 
   kb_platform_audio_sound_construct(handle, info);
+  kb_sound_set_initialized(handle, true);
 }
 
 KB_API void kb_sound_destruct(kb_sound handle) {
   kb_platform_audio_sound_destruct(handle);
+  kb_sound_set_initialized(handle, false);
 }
 
 KB_API kb_sound_inst kb_sound_play(kb_sound handle) {

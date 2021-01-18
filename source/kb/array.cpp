@@ -91,14 +91,6 @@ KB_API void kb_array_resize(kb_array* array, uint64_t size) {
   kb_array_reserve(array, size);
   array->pos = size;
 }
-//
-//KB_API void* kb_array_at(kb_array* array, uint64_t index) {
-//  KB_ASSERT_NOT_NULL(array);
-//
-//  if (index > array->cap) return nullptr;
-//
-//  return &(((uint8_t*) array->data)[array->elem_size * index]);
-//}
 
 KB_API void* kb_array_at(const kb_array* array, uint64_t index) {
   KB_ASSERT_NOT_NULL(array);

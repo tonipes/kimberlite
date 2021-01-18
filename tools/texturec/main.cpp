@@ -9,21 +9,23 @@
 #include <kb/core.h>
 #include <kb/time.h>
 #include <kb/graphics.h>
+#include <kb/log.h>
 
 #include <kbextra/cliargs.h>
 
 #include "kb/alloc.cpp"
 #include "kb/crt.cpp"
 #include "kb/texture.cpp"
-#include "kb/log.h"
 #include "kb/math.cpp"
+#include "kb/log.cpp"
+#include "kb/thread.cpp"
 
 #include "kbextra/cliargs.cpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
+#include <stb/stb_image.h>
 
-#include "platform_rwops_stdio.cpp"
+#include <platform/platform_rwops_stdio.cpp>
 
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0
@@ -71,8 +73,8 @@ void print_help(const char* error = nullptr) {
 
 int main(int argc, const char* argv[]) {
   int             exit_val      = EXIT_FAIL;
-  kb_stream*       rwops_in      = nullptr;
-  kb_stream*       rwops_out     = nullptr;
+  kb_stream*      rwops_in      = nullptr;
+  kb_stream*      rwops_out     = nullptr;
   const char*     in_filepath   = nullptr;
   const char*     out_filepath  = nullptr;
   int             tex_width     = 0;
@@ -113,30 +115,28 @@ int main(int argc, const char* argv[]) {
     print_help("Unable to open output file");
     goto end;
   }
-
+  
   // Load
   pixel_data = stbi_load_from_callbacks(&stb_io_callbacks, rwops_in, &tex_width, &tex_height, &tex_channels, STBI_rgb_alpha);
   data_size = tex_width * tex_height * STBI_rgb_alpha;
-  
+
   if (!pixel_data) {
-    printf("Failed to load texture\n");
     goto end;
   }
   
   // Fill info
-  texture.header.format = KB_FORMAT_R8G8B8A8;
+  texture.header.format = KB_FORMAT_RGBA8_UNORM;
   texture.header.width  = tex_width;
   texture.header.height = tex_height;
   texture.data_size     = data_size;
   texture.data          = pixel_data;
 
   kb_texture_write(&texture, rwops_out);
-
+    
   exit_val = EXIT_SUCCESS;
 
 end:
   stbi_image_free(pixel_data);
-
   kb_stream_close(rwops_in);
   kb_stream_close(rwops_out);
 

@@ -23,10 +23,18 @@ typedef enum kb_vertex_attribute_type {
 } kb_vertex_attribute_type;
 
 typedef struct kb_simple_vertex {
-  kb_float4                    pos;
-  kb_float4                    color;
-  kb_float4                    texcoord;
+  kb_float4                 position;
+  kb_float4                 color;
+  kb_float4                 texcoord;
 } kb_simple_vertex;
+
+typedef struct kb_vertex_default {
+  kb_float4                 position;
+  kb_float4                 normal;
+  kb_float4                 tangent;
+  kb_float4                 color;
+  kb_float4                 texcoord;
+} kb_vertex_default;
 
 typedef struct kb_vertex_attribute {
   uint32_t                  location;

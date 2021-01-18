@@ -13,10 +13,24 @@ let package = Package(
     .executable(name: "kb_geomc", targets: ["kb_geomc"]),
     .executable(name: "kb_bin2c", targets: ["kb_bin2c"]),
     .executable(name: "kb_fontc", targets: ["kb_fontc"]),
+    .executable(name: "kb_texturec", targets: ["kb_texturec"]),
   ],
   dependencies: [  
   ],
   targets: [
+    .target(
+      name: "kb_texturec",
+      dependencies: ["fmt"],
+      path: "tools/texturec",
+      sources: [
+        "main.cpp",
+      ],
+      cxxSettings: [
+        .headerSearchPath(".."),
+        .headerSearchPath("../../include"),
+        .headerSearchPath("../../source"),
+      ]
+    ),
     .target(
       name: "kb_fontc",
       dependencies: ["fmt"],

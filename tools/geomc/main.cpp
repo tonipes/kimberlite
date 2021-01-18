@@ -54,13 +54,13 @@
 #define EXIT_FAIL     1
 #define EXIT_SUCCESS  0
 
-#define POSITION_TYPE   kb_float4
-#define NORMAL_TYPE     kb_float4
-#define TANGENT_TYPE    kb_float4
-#define TEXCOORD_TYPE   kb_float4
-#define COLOR_TYPE      kb_float4
-#define JOINT_TYPE      kb_float4
-#define WEIGHT_TYPE     kb_float4
+#define POSITION_TYPE   kb::float4
+#define NORMAL_TYPE     kb::float4
+#define TANGENT_TYPE    kb::float4
+#define TEXCOORD_TYPE   kb::float4
+#define COLOR_TYPE      kb::float4
+#define JOINT_TYPE      kb::float4
+#define WEIGHT_TYPE     kb::float4
 
 const uint16_t POSITION_COMPONENT_COUNT = sizeof(POSITION_TYPE) / sizeof(float);
 const uint16_t NORMAL_COMPONENT_COUNT   = sizeof(NORMAL_TYPE)   / sizeof(float);
@@ -71,8 +71,6 @@ const uint16_t JOINT_COMPONENT_COUNT    = sizeof(JOINT_TYPE)    / sizeof(float);
 const uint16_t WEIGHT_COMPONENT_COUNT   = sizeof(WEIGHT_TYPE)   / sizeof(float);
 
 using IndexType = uint32_t;
-// const uint32_t MAX_INDEX_COUNT_PER_PRIMITIVE = 4294967295; // 2^32 - 1
-const uint32_t MAX_INDEX_COUNT_PER_PRIMITIVE = 65535; // 2^16 - 1
 
 // Temporary storage types
 struct PrimitiveParseData {
@@ -89,28 +87,29 @@ struct MeshParseData {
 };
 
 struct VertexIndices {
-  uint32_t position;
-  uint32_t normal;
-  uint32_t tangent;
-  uint32_t texcoords;
-  uint32_t colors;
-  uint32_t weights;
-  uint32_t joints;
+  IndexType position;
+  IndexType normal;
+  IndexType tangent;
+  IndexType texcoords;
+  IndexType colors;
+  IndexType weights;
+  IndexType joints;
 };
 
-struct Indexkb_triangle {
+struct IndexTriangle {
 	VertexIndices vert[3];
 };
 
 struct VertexData {
-  kb_array positions;
-  kb_array normals;
-  kb_array tangents;
-  kb_array texcoords;
-  kb_array colors;
-  kb_array joints;
-  kb_array weights;
-  kb_array triangles;
+  kb::array<POSITION_TYPE>  positions;
+  kb::array<NORMAL_TYPE>    normals;
+  kb::array<TANGENT_TYPE>   tangents;
+  kb::array<TEXCOORD_TYPE>  texcoords;
+  kb::array<COLOR_TYPE>     colors;
+  kb::array<JOINT_TYPE>     joints;
+  kb::array<WEIGHT_TYPE>    weights;
+  
+  kb::array<IndexTriangle> triangles;
 };
 
 template <typename T>
@@ -120,11 +119,19 @@ int32_t index_from(const T* f, const T* e) {
 }
 
 void print_help(const char* error = nullptr) {
-  if (error != nullptr) printf("%s", error);
+  if (error != nullptr) printf("%s\n\n", error);
 
   printf(
     "Kimberlite geomc\n"
-    "\tUsage: geomc --input <in> --output <out>\n"
+    "\tUsage: geomc --input <file> --output <file> --index_size <int>\n" 
+    "\tSet data to export with\n" 
+    "\t\t--position\n"
+    "\t\t--normal\n"
+    "\t\t--tangent\n"
+    "\t\t--texcoord\n"
+    "\t\t--color\n"
+    "\t\t--joints\n"
+    "\t\t--weights\n"
   );
 }
 
@@ -163,26 +170,27 @@ int main(int argc, const char* argv[]) {
   uint32_t        input_size        = 0;
   void*           input_data        = nullptr;
 
-  kb_stream*       rwops_in          = nullptr;
-  kb_stream*       rwops_out         = nullptr;
+  kb_stream*      rwops_in          = nullptr;
+  kb_stream*      rwops_out         = nullptr;
   const char*     in_filepath       = nullptr;
   const char*     out_filepath      = nullptr;
 
   MeshParseData*  parse_meshes      = nullptr;
   VertexData      vertex_data       = {};
-  
-  kb_array_create(&vertex_data.positions, sizeof(POSITION_TYPE),  0);
-  kb_array_create(&vertex_data.normals,   sizeof(NORMAL_TYPE),    0);
-  kb_array_create(&vertex_data.tangents,  sizeof(TANGENT_TYPE),   0);
-  kb_array_create(&vertex_data.texcoords, sizeof(TEXCOORD_TYPE),  0);
-  kb_array_create(&vertex_data.colors,    sizeof(COLOR_TYPE),     0);
-  kb_array_create(&vertex_data.joints,    sizeof(JOINT_TYPE),     0);
-  kb_array_create(&vertex_data.weights,   sizeof(WEIGHT_TYPE),    0);
-  kb_array_create(&vertex_data.triangles, sizeof(Indexkb_triangle),  0);
+
+  bool            export_position   = false;
+  bool            export_normal     = false;
+  bool            export_tangent    = false;
+  bool            export_texcoord   = false;
+  bool            export_color      = false;
+  bool            export_joints     = false;
+  bool            export_weights    = false;
+
+  int             index_size        = 0;
+  uint64_t        max_prim_size     = 0;
 
   // Output geom
-  kb_geometry_data geom {};
-  geom.index_size = sizeof(IndexType);
+  kb_geometry_data geom = {};
 
   kb_cli_args args {};
   kb_cliargs_init(&args, argc, argv);
@@ -213,6 +221,28 @@ int main(int argc, const char* argv[]) {
   rwops_out = kb_stream_open_file(out_filepath, KB_FILE_MODE_WRITE);
   if (!rwops_out) {
     print_help("Unable to open output file");
+    goto end;
+  }
+
+  kb_cliargs_get_int(&args, &index_size, "index_size");
+  if (index_size != 32) {
+    print_help("Please specify index size with --index_size. Only 32 is supported");
+    goto end;
+  }
+    
+  max_prim_size   = ((uint64_t) 1 << index_size) - 1;
+  geom.index_size = index_size / 8;
+  
+  export_position = kb_cliargs_has(&args, "position");
+  export_normal   = kb_cliargs_has(&args, "normal");
+  export_tangent  = kb_cliargs_has(&args, "tangent");
+  export_texcoord = kb_cliargs_has(&args, "texcoord");
+  export_color    = kb_cliargs_has(&args, "color");
+  export_joints   = kb_cliargs_has(&args, "joints");
+  export_weights  = kb_cliargs_has(&args, "weights");
+
+  if (!(export_position || export_normal || export_tangent || export_texcoord || export_color || export_joints || export_weights)) {
+    print_help("Nothing to export");
     goto end;
   }
 
@@ -254,31 +284,14 @@ int main(int argc, const char* argv[]) {
     // TODO: Skins
     for (cgltf_size skin_i = 0; skin_i < gltf_data->skins_count; ++skin_i) {
       cgltf_skin* src = &gltf_data->skins[skin_i];
-      // kb_log_info("Skin: {}", src->name);
-      // if (src->skeleton != NULL) kb_log_info("\tSkeleton: {}", src->skeleton->name);
-
-      // for (uint32_t i = 0; i < src->joints_count; i++) {
-        // kb_log_info("\tJoint ({}) {}", i, src->joints[i]->name);
-      // }
     }
 
     // TODO: Animations
     for (cgltf_size anim_i = 0; anim_i < gltf_data->animations_count; ++anim_i) {
       cgltf_animation* src = &gltf_data->animations[anim_i];
-      // kb_log_info("Animation: {}", src->name);
-      // kb_log_info("\tChannels: {}", src->channels_count);
-      // kb_log_info("\tSamplers: {}", src->samplers_count);
-
-      // for (uint32_t i = 0; i < src->samplers_count; i++) {
-      //   kb_log_info("\tSampler (%u): interpolation: %u\n", i, src->samplers[i].interpolation);
-      // }
-
-      // for (uint32_t i = 0; i < src->channels_count; i++) {
-      //   kb_log_info("\tChannel (%u): path: %u, node: (%s)\n", i, src->channels[i].target_path, src->channels[i].target_node->name);
-      // }
     }
 
-    // kb_node_datas
+    // Node data
     for (cgltf_size node_i = 0; node_i < geom.node_count; ++node_i) {
       geom.nodes[node_i] = {};
 
@@ -296,7 +309,7 @@ int main(int argc, const char* argv[]) {
       geom.materials[material_i] = kb_hash_string(src->name);
     }
 
-    // kb_mesh_dataes
+    // Mesh Data
     for (cgltf_size mesh_i = 0; mesh_i < geom.mesh_count; ++mesh_i) {
       parse_meshes[mesh_i] = {};
       geom.meshes[mesh_i]  = {};
@@ -308,106 +321,93 @@ int main(int argc, const char* argv[]) {
       for (cgltf_size prim_i = 0; prim_i < src->primitives_count; ++prim_i) {
         cgltf_primitive* prim = &src->primitives[prim_i];
 
-        uint32_t prim_first_triangle_index  = kb_array_count(&vertex_data.triangles);
-
-        uint32_t prim_first_position_index  = kb_array_count(&vertex_data.positions);
-        uint32_t prim_first_normal_index    = kb_array_count(&vertex_data.normals);
-        uint32_t prim_first_tangent_index   = kb_array_count(&vertex_data.tangents);
-        uint32_t prim_first_texcoord_index  = kb_array_count(&vertex_data.texcoords);
-        uint32_t prim_first_color_index     = kb_array_count(&vertex_data.colors);
-        uint32_t prim_first_joints_index    = kb_array_count(&vertex_data.joints);
-        uint32_t prim_first_weights_index   = kb_array_count(&vertex_data.weights);
+        uint32_t prim_first_triangle_index  = vertex_data.triangles.count(); //kb_array_count(&vertex_data.triangles);
+        uint32_t prim_first_position_index  = vertex_data.positions.count(); //kb_array_count(&vertex_data.positions);
+        uint32_t prim_first_normal_index    = vertex_data.normals.count(); //kb_array_count(&vertex_data.normals);
+        uint32_t prim_first_tangent_index   = vertex_data.tangents.count(); //kb_array_count(&vertex_data.tangents);
+        uint32_t prim_first_texcoord_index  = vertex_data.texcoords.count(); //kb_array_count(&vertex_data.texcoords);
+        uint32_t prim_first_color_index     = vertex_data.colors.count(); //kb_array_count(&vertex_data.colors);
+        uint32_t prim_first_joints_index    = vertex_data.joints.count(); //kb_array_count(&vertex_data.joints);
+        uint32_t prim_first_weights_index   = vertex_data.weights.count(); //kb_array_count(&vertex_data.weights);
 
         // Vertex data
         for (cgltf_size attrib_i = 0; attrib_i < prim->attributes_count; ++attrib_i) {
-          cgltf_attribute*  attrib          = &prim->attributes[attrib_i];
-          cgltf_accessor*   accessor        = attrib->data;
-          cgltf_size        accessor_count  = accessor->count;
-          cgltf_size        accessor_stride = accessor->stride;
-          cgltf_size        accessor_elem_size = cgltf_num_components(accessor->type);
+          cgltf_attribute*  attrib              = &prim->attributes[attrib_i];
+          cgltf_accessor*   accessor            = attrib->data;
+          cgltf_size        accessor_count      = accessor->count;
+          cgltf_size        accessor_stride     = accessor->stride;
+          cgltf_size        accessor_elem_size  = cgltf_num_components(accessor->type);
           
-          // kb_log_debug("Accessor stride {}", accessor_stride);
-
           if (attrib->index > 0) {
             printf("ERROR: Only attrib index 0 is currently supported. Sorry!\n");
-            break;
+            continue;
           }
 
           switch (attrib->type) {
             case cgltf_attribute_type_position: {
-              uint32_t start = kb_array_count(&vertex_data.positions);
-              // uint32_t target_count = accessor_count * POSITION_COMPONENT_COUNT;
-
-              kb_array_resize(&vertex_data.positions, start + accessor_count);
+              uint32_t start = vertex_data.positions.count();
+              vertex_data.positions.resize(start + accessor_count);
 
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.positions, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) &vertex_data.positions.at(start + i), accessor_elem_size);
+
               }
             } break;
 
             case cgltf_attribute_type_normal: {
-              uint32_t start = kb_array_count(&vertex_data.normals);
-              // uint32_t target_count = accessor_count * NORMAL_COMPONENT_COUNT;
-
-              kb_array_resize(&vertex_data.normals, start + accessor_count);
+              uint32_t start = vertex_data.normals.count();
+              vertex_data.normals.resize(start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.normals, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) &vertex_data.normals.at(start + i), accessor_elem_size);
               }
             } break;
 
             case cgltf_attribute_type_tangent: {
-              uint32_t start = kb_array_count(&vertex_data.tangents);
-              // uint32_t target_count = accessor_count * TANGENT_COMPONENT_COUNT;
-
-              kb_array_resize(&vertex_data.tangents, start + accessor_count);
+              uint32_t start = vertex_data.tangents.count();
+              vertex_data.tangents.resize(start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.tangents, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) &vertex_data.tangents.at(start + i), accessor_elem_size);
               }
             } break;
 
             case cgltf_attribute_type_texcoord: {
-              uint32_t start = kb_array_count(&vertex_data.texcoords);
-              // uint32_t target_count = accessor_count * TEXCOORD_COMPONENT_COUNT;
-
-              kb_array_resize(&vertex_data.texcoords, start + accessor_count);
+              uint32_t start = vertex_data.texcoords.count();
+              vertex_data.texcoords.resize(start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.texcoords, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) &vertex_data.texcoords.at(start + i), accessor_elem_size);
               }
             } break;
 
             case cgltf_attribute_type_color: {
-              uint32_t start = kb_array_count(&vertex_data.colors);
-              // uint32_t target_count = accessor_count * COLOR_COMPONENT_COUNT;
+              uint32_t start = vertex_data.colors.count();
 
-              kb_array_resize(&vertex_data.colors, start + accessor_count);
+              vertex_data.colors.resize(start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.colors, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) &vertex_data.colors.at(start + i), accessor_elem_size);
               }
             } break;
 
             case cgltf_attribute_type_joints: {
-              uint32_t start = kb_array_count(&vertex_data.joints);
-              // uint32_t target_count = accessor_count * JOINT_COMPONENT_COUNT;
+              uint32_t start = vertex_data.joints.count();
 
-              kb_array_resize(&vertex_data.joints, start + accessor_count);
+              vertex_data.joints.resize(start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.joints, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) &vertex_data.joints.at(start + i), accessor_elem_size);
               }
             } break;
 
             case cgltf_attribute_type_weights: {
-              uint32_t start = kb_array_count(&vertex_data.weights);
-              // uint32_t target_count = accessor_count * WEIGHT_COMPONENT_COUNT;
+              uint32_t start = vertex_data.weights.count();
 
-              kb_array_resize(&vertex_data.weights, start + accessor_count);
+              vertex_data.weights.resize(start + accessor_count);
               
               for (uint32_t i = 0; i < accessor_count; i++) {
-                cgltf_accessor_read_float(accessor, i, (cgltf_float*) kb_array_at(&vertex_data.weights, start + i), accessor_elem_size);
+                cgltf_accessor_read_float(accessor, i, (cgltf_float*) &vertex_data.weights.at(start + i), accessor_elem_size);
               }
             } break;
 
@@ -415,44 +415,45 @@ int main(int argc, const char* argv[]) {
           }
         }
 
-        bool has_position = prim_first_position_index < kb_array_count(&vertex_data.positions);      
-        bool has_normal   = prim_first_normal_index   < kb_array_count(&vertex_data.normals);
-        bool has_tangent  = prim_first_tangent_index  < kb_array_count(&vertex_data.tangents);
-        bool has_texcoord = prim_first_texcoord_index < kb_array_count(&vertex_data.texcoords);
-        bool has_color    = prim_first_color_index    < kb_array_count(&vertex_data.colors);
-        bool has_joints   = prim_first_joints_index   < kb_array_count(&vertex_data.joints);
-        bool has_weights  = prim_first_weights_index  < kb_array_count(&vertex_data.weights);
+        bool has_position = export_position && prim_first_position_index < vertex_data.positions.count();
+        bool has_normal   = export_normal   && prim_first_normal_index   < vertex_data.normals.count();
+        bool has_tangent  = export_tangent  && prim_first_tangent_index  < vertex_data.tangents.count();
+        bool has_texcoord = export_texcoord && prim_first_texcoord_index < vertex_data.texcoords.count();
+        bool has_color    = export_color    && prim_first_color_index    < vertex_data.colors.count();
+        bool has_joints   = export_joints   && prim_first_joints_index   < vertex_data.joints.count();
+        bool has_weights  = export_weights  && prim_first_weights_index  < vertex_data.weights.count();
 
         // Indices
         if (prim->indices) {
           cgltf_size index_count = prim->indices->count;
           for (cgltf_size i = 0; i < index_count; i += 3) { // Tri
-            kb_array_resize(&vertex_data.triangles, kb_array_count(&vertex_data.triangles) + 1);            
-            Indexkb_triangle& tri = *(Indexkb_triangle*) kb_array_back(&vertex_data.triangles);
+            vertex_data.triangles.resize(vertex_data.triangles.count() + 1);
+            IndexTriangle& tri = vertex_data.triangles.back();
+            
             
             for (int v = 0; v < 3; ++v) {
               uint32_t vertex_index = cgltf_accessor_read_index(prim->indices, v + i);
           
-              tri.vert[v].position  = has_position  ? prim_first_position_index + vertex_index : UINT32_MAX;
-              tri.vert[v].normal    = has_normal    ? prim_first_normal_index   + vertex_index : UINT32_MAX;
-              tri.vert[v].tangent   = has_tangent   ? prim_first_tangent_index  + vertex_index : UINT32_MAX;
-              tri.vert[v].texcoords = has_texcoord  ? prim_first_texcoord_index + vertex_index : UINT32_MAX;
-              tri.vert[v].colors    = has_color     ? prim_first_color_index    + vertex_index : UINT32_MAX;
-              tri.vert[v].joints    = has_joints    ? prim_first_joints_index   + vertex_index : UINT32_MAX;
-              tri.vert[v].weights   = has_weights   ? prim_first_weights_index  + vertex_index : UINT32_MAX;
+              tri.vert[v].position  = has_position  ? prim_first_position_index + vertex_index : (IndexType) -1;
+              tri.vert[v].normal    = has_normal    ? prim_first_normal_index   + vertex_index : (IndexType) -1;
+              tri.vert[v].tangent   = has_tangent   ? prim_first_tangent_index  + vertex_index : (IndexType) -1;
+              tri.vert[v].texcoords = has_texcoord  ? prim_first_texcoord_index + vertex_index : (IndexType) -1;
+              tri.vert[v].colors    = has_color     ? prim_first_color_index    + vertex_index : (IndexType) -1;
+              tri.vert[v].joints    = has_joints    ? prim_first_joints_index   + vertex_index : (IndexType) -1;
+              tri.vert[v].weights   = has_weights   ? prim_first_weights_index  + vertex_index : (IndexType) -1;
             }
 
           }
         }
 
         // Split to primitives
-        uint32_t tri_count = kb_array_count(&vertex_data.triangles) - prim_first_triangle_index;
+        uint32_t tri_count = vertex_data.triangles.count() - prim_first_triangle_index;
 
         uint32_t tri_ind = 0;
 
         while (tri_ind < tri_count) {
           uint32_t tris_remaining = tri_count - tri_ind;
-          uint32_t prim_tri_count = kb_int_min(tris_remaining, MAX_INDEX_COUNT_PER_PRIMITIVE / 3);
+          uint32_t prim_tri_count = kb_int_min(tris_remaining, max_prim_size / 3);
 
           uint32_t idx = dst->prim_count++;
 
@@ -482,17 +483,17 @@ int main(int argc, const char* argv[]) {
     bool has_joints   = false;
     bool has_weights  = false;
 
-    for (uint64_t tri_i = 0; tri_i < kb_array_count(&vertex_data.triangles); ++tri_i) {
-      Indexkb_triangle& tri = *(Indexkb_triangle*) kb_array_at(&vertex_data.triangles, tri_i);
+    for (uint64_t tri_i = 0; tri_i < vertex_data.triangles.count(); ++tri_i) {
+      IndexTriangle& tri = vertex_data.triangles.at(tri_i);
 
       for (uint32_t i = 0; i < 3; ++i) {
-        has_position  |= tri.vert[i].position   != UINT32_MAX;
-        has_normal    |= tri.vert[i].normal     != UINT32_MAX;
-        has_tangent   |= tri.vert[i].tangent    != UINT32_MAX;
-        has_texcoord  |= tri.vert[i].texcoords  != UINT32_MAX;
-        has_color     |= tri.vert[i].colors     != UINT32_MAX;
-        has_weights   |= tri.vert[i].weights    != UINT32_MAX;
-        has_joints    |= tri.vert[i].joints     != UINT32_MAX;
+        has_position  |= tri.vert[i].position   != (IndexType) -1;
+        has_normal    |= tri.vert[i].normal     != (IndexType) -1;
+        has_tangent   |= tri.vert[i].tangent    != (IndexType) -1;
+        has_texcoord  |= tri.vert[i].texcoords  != (IndexType) -1;
+        has_color     |= tri.vert[i].colors     != (IndexType) -1;
+        has_weights   |= tri.vert[i].weights    != (IndexType) -1;
+        has_joints    |= tri.vert[i].joints     != (IndexType) -1;
       }
     }
     
@@ -518,8 +519,8 @@ int main(int argc, const char* argv[]) {
 
     uint32_t vertex_stride = kb_vertex_layout_stride(&vertex_layout);
 
-    uint64_t max_vertex_count = kb_array_count(&vertex_data.triangles) * 3;
-    uint64_t max_index_count  = kb_array_count(&vertex_data.triangles) * 3;
+    uint64_t max_vertex_count = vertex_data.triangles.count() * 3;
+    uint64_t max_index_count  = vertex_data.triangles.count() * 3;
 
     uint8_t*  geom_vert_data  = (uint8_t*)    KB_DEFAULT_ALLOC(max_vertex_count * vertex_stride);
     IndexType* geom_ind_data  = (IndexType*)  KB_DEFAULT_ALLOC(sizeof(IndexType) * max_index_count);
@@ -531,7 +532,7 @@ int main(int argc, const char* argv[]) {
       MeshParseData* mesh = &parse_meshes[i];
 
       // Init output mesh
-      kb_mesh_data* mesh_out            = &geom.meshes[i];
+      kb_mesh_data* mesh_out    = &geom.meshes[i];
       mesh_out->primitive_count = mesh->prim_count;
       mesh_out->primitives      = KB_DEFAULT_ALLOC_TYPE(kb_primitive_data, mesh_out->primitive_count);
       
@@ -550,7 +551,7 @@ int main(int argc, const char* argv[]) {
         uint32_t    prim_index        = 0;
 
         for (uint32_t tri_i = prim->first_triangle; tri_i < prim->first_triangle + prim->triangle_count; ++tri_i) {
-          Indexkb_triangle& tri = *(Indexkb_triangle*) kb_array_at(&vertex_data.triangles, tri_i);
+          IndexTriangle& tri = vertex_data.triangles.at(tri_i);
 
           for (uint32_t v = 0; v < 3; ++v) {
             const VertexIndices& vert = tri.vert[v];
@@ -560,7 +561,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_position);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_position);
               
-              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.positions, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, &vertex_data.positions.at(idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             if (has_normal) {
@@ -568,7 +569,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_normal);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_normal);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.normals, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, &vertex_data.normals.at(idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_tangent) {
@@ -576,7 +577,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_tangent);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_tangent);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.tangents, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, &vertex_data.tangents.at(idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             if (has_texcoord) {
@@ -584,7 +585,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_texcoord);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_texcoord);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.texcoords, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, &vertex_data.texcoords.at(idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_color) {
@@ -592,7 +593,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_color);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_color);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.colors, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, &vertex_data.colors.at(idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_weights) {
@@ -600,7 +601,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_weights);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_weights);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.weights, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, &vertex_data.weights.at(idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
             
             if (has_joints) {
@@ -608,7 +609,7 @@ int main(int argc, const char* argv[]) {
               uint32_t attrib_size   = kb_vertex_layout_size(&vertex_layout, attrib_joints);
               uint32_t attrib_offset = kb_vertex_layout_offset(&vertex_layout, attrib_joints);
 
-              kb_memcpy_with_stride(prim_vert_data, kb_array_at(&vertex_data.joints, idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
+              kb_memcpy_with_stride(prim_vert_data, &vertex_data.joints.at(idx), attrib_size, prim_vert, vertex_stride, attrib_offset);
             }
 
             prim_ind_data[prim_index++] = prim_vert;
@@ -682,8 +683,6 @@ int main(int argc, const char* argv[]) {
   //#####################################################################################################################
     
   kb_geometry_data_write(&geom, rwops_out);
-
-  return EXIT_SUCCESS;
 
   exit_val = EXIT_SUCCESS;
 end:

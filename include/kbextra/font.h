@@ -91,7 +91,7 @@ KB_API void   kb_font_quad_advance            (kb_font_info* info, int codepoint
 KB_API float  kb_font_get_line_height         (kb_font_info* info);
 KB_API kb_float2 kb_font_get_string_dimensions   (kb_font_info* info, const char* str, uint32_t len);
 
-KB_API void   kb_encoder_submit_text          (kb_encoder encoder, kb_font font, const char* str, uint32_t len, kb_float2 origin, kb_float2 kb_float4x4_scale, kb_float2 align, kb_float2 offset, uint32_t instance_count);
+KB_API void   kb_encoder_submit_text          (kb_encoder encoder, kb_font font, const char* str, uint32_t len, kb_float2 origin, kb_float2 scale, kb_float2 align, kb_float2 offset, uint32_t instance_count);
 
 KB_API kb_font_info* kb_font_get_info         (kb_font font);
 

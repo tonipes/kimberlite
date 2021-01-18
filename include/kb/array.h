@@ -112,9 +112,25 @@ namespace kb {
     T& operator[](uint64_t idx) {
       return *(T*) kb_array_at(this, idx);
     }
-    
+
     const T& operator[](uint64_t idx) const {
       return *(const T*) kb_array_at(this, idx);
+    }
+
+    T& at(uint64_t idx) {
+      return (*this)[idx];
+    }
+
+    const T& at(uint64_t idx) const {
+      return (*this)[idx];
+    }
+
+    T& back() {
+      return *(T*) kb_array_back(this);
+    }
+
+    const T& back() const {
+      return *(T*) kb_array_back(this);
     }
 
   };

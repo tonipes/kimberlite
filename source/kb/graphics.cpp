@@ -14,6 +14,7 @@
 typedef struct pipeline_info {
   kb_uniform_layout         uniform_layout;
   kb_vertex_layout_info     vertex_layout;
+  uint32_t                  renderpass;
 } pipeline_info;
 
 typedef struct kb_pipe_attachment {
@@ -93,7 +94,7 @@ KB_RESOURCE_DATA_HASHED_DEF (buffer,        kb_buffer);
 KB_RESOURCE_DATA_HASHED_DEF (texture,       kb_texture);
 KB_RESOURCE_DATA_HASHED_DEF (pipeline,      kb_pipeline);
 
-KB_RESOURCE_STORAGE_DEF     (pipeline_info,         kb_pipeline,      pipeline_info,      KB_CONFIG_MAX_PROGRAMS);
+KB_RESOURCE_STORAGE_DEF     (pipeline_info, kb_pipeline,      pipeline_info,      KB_CONFIG_MAX_PROGRAMS);
 
 #define COMPARE_VALUE(_a, _b) if (_a < _b) return -1; if (_b < _a) return 1;
 
@@ -176,14 +177,12 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
     transient_buffers[frame_i].buffer = kb_buffer_create({
       .rwops  = NULL,
       .size   = KB_CONFIG_TRANSIENT_BUFFER_SIZE,
-      .usage = KB_BUFFER_USAGE_VERTEX_BUFFER | KB_BUFFER_USAGE_INDEX_BUFFER | KB_BUFFER_USAGE_UNIFORM_BUFFER | KB_BUFFER_USAGE_CPU_WRITE
+      .usage  = KB_BUFFER_USAGE_VERTEX_BUFFER | KB_BUFFER_USAGE_INDEX_BUFFER | KB_BUFFER_USAGE_UNIFORM_BUFFER | KB_BUFFER_USAGE_CPU_WRITE
     });
   }
 
   graphics_pipe = KB_DEFAULT_ALLOC_TYPE(graphics_pipe_info, 1);
-  
   current_extent = kb_platform_graphics_surface_extent();
-        
   graphics_pipe->attachment_count = info.pipe.attachment_count;
   graphics_pipe->pass_count = info.pipe.pass_count;
 
@@ -200,7 +199,6 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
     } else {
       // Regular attachment. Create a texture
       KB_ASSERT(attachment_info.texture.usage & KB_TEXTURE_USAGE_RENDER_TARGET, "Graphics pipeline attachments must be render targets");
-      kb_log_debug("Attachment {}: surface size: {}, format: {}", attachment_i, attachment_info.use_surface_size, attachment_info.texture.format);
       
       attachment.resize_with_surface = attachment_info.use_surface_size;
       attachment.format = attachment_info.texture.format;
@@ -213,12 +211,16 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
           .height = attachment_info.use_surface_size ? current_extent.y : attachment_info.texture.height,
           .usage  = attachment_info.texture.usage,
         },
+        .sampler = {
+          .min_filter     = KB_FILTER_NEAREST,
+          .mag_filter     = KB_FILTER_NEAREST,
+          .address_mode_u = KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+          .address_mode_v = KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+          .address_mode_w = KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+          .anisotropy     = 0.0f,
+        },
         .mipmaps = false,
-        .filter = KB_FILTER_LINEAR
       });
-      
-      kb_log_debug("Texture ID: {}", attachment.texture.idx);
-  
     }
   }
   
@@ -251,7 +253,10 @@ KB_API void kb_graphics_run_encoders() {
     kb_encoder_state& state = current_encoder_pool().states[encoder_i];
     for (uint32_t call_i = 0; call_i < state.draw_call_count; ++call_i) {
       kb_graphics_call& call = state.draw_calls[call_i];
-      draw_call_cache[call.renderpass][draw_call_cache_pos[call.renderpass]++] = call;
+      KB_ASSERT_VALID(call.pipeline);
+      uint32_t renderpass = pipeline_info_ref(call.pipeline)->renderpass;
+      
+      draw_call_cache[renderpass][draw_call_cache_pos[renderpass]++] = call;
     }
   }
   
@@ -342,99 +347,86 @@ KB_API void kb_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_i
   
   pipeline_info_ref(handle)->uniform_layout  = info.uniform_layout;
   pipeline_info_ref(handle)->vertex_layout   = info.vertex_layout;
+  pipeline_info_ref(handle)->renderpass      = info.renderpass;
 
   kb_platform_graphics_pipeline_construct(handle, info);
+  kb_pipeline_set_initialized(handle, true);
 }
 
 KB_API void kb_pipeline_destruct(kb_pipeline handle) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_graphics_pipeline_destruct(handle);
+  kb_pipeline_set_initialized(handle, false);
 }
 
 KB_API void kb_texture_construct(kb_texture handle, const kb_texture_create_info info) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_graphics_texture_construct(handle, info);
+  kb_texture_set_initialized(handle, true);
 }
 
 KB_API void kb_texture_destruct(kb_texture handle) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_graphics_texture_destruct(handle);
+  kb_texture_set_initialized(handle, false);
 }
 
 KB_API void kb_buffer_construct(kb_buffer handle, const kb_buffer_create_info info) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_graphics_buffer_construct(handle, info);
+  kb_buffer_set_initialized(handle, true);
 }
 
 KB_API void kb_buffer_destruct(kb_buffer handle) {
   KB_ASSERT_VALID(handle);
 
   kb_platform_graphics_buffer_destruct(handle);
+  kb_buffer_set_initialized(handle, false);
 }
 
-KB_API kb_uniform_slot kb_uniform_get_slot(const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type, kb_shader_stage stage) {
+KB_API kb_uniform_slot kb_uniform_get_slot(const kb_uniform_layout* layout, kb_hash hash, kb_binding_type type) {
   KB_ASSERT_NOT_NULL(layout);
-  
+
   kb_uniform_slot out {};
   
-  if (stage & KB_SHADER_STAGE_VERTEX) {
-    
-    if (type == KB_BINDING_TYPE_UNIFORM_BUFFER) {
-      for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        const kb_uniform_buffer_info& buffer_info = layout->vert_ubos[i];
-        if (kb_hash_string(buffer_info.name) == hash) { // VBO found
-          out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
-          out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
-          out.vert_index = buffer_info.slot;
-          break;
-        }
+  if (type == KB_BINDING_TYPE_UNIFORM_BUFFER) {
+    for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
+      
+      if (layout->vert_ubos[i].hash == hash) {
+        out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
+        out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
+        out.vert_index = layout->vert_ubos[i].slot;
       }
-    }
-
-    else if (type == KB_BINDING_TYPE_TEXTURE) {
-      for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        const kb_uniform_texture_info& texture_info = layout->vert_textures[i];
-        if (kb_hash_string(texture_info.name) == hash) { // Texture found
-          out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
-          out.type = KB_BINDING_TYPE_TEXTURE;
-          out.vert_index = texture_info.slot;
-          break;
-        }
+      
+      if (layout->frag_ubos[i].hash == hash) {
+        out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
+        out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
+        out.frag_index = layout->frag_ubos[i].slot;
       }
-    }
 
+    }
   }
 
-  if (stage & KB_SHADER_STAGE_FRAGMENT) {
-
-    if (type == KB_BINDING_TYPE_UNIFORM_BUFFER) {
-      for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        const kb_uniform_buffer_info& buffer_info = layout->frag_ubos[i];
-        if (kb_hash_string(buffer_info.name) == hash) { // VBO found
-          out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
-          out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
-          out.frag_index = buffer_info.slot;
-          break;
-        }
+  if (type == KB_BINDING_TYPE_TEXTURE) {
+    for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
+      
+      if (layout->vert_textures[i].hash == hash) {
+        out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_VERTEX);
+        out.type = KB_BINDING_TYPE_TEXTURE;
+        out.vert_index = layout->vert_textures[i].slot;
       }
-    }
-
-    else if (type == KB_BINDING_TYPE_TEXTURE) {
-      for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
-        const kb_uniform_texture_info& texture_info = layout->frag_textures[i];
-        if (kb_hash_string(texture_info.name) == hash) { // Texture found
-          out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
-          out.type = KB_BINDING_TYPE_TEXTURE;
-          out.frag_index = texture_info.slot;
-          break;
-        }
+      
+      if (layout->frag_textures[i].hash == hash) {
+        out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_FRAGMENT);
+        out.type = KB_BINDING_TYPE_TEXTURE;
+        out.frag_index = layout->frag_textures[i].slot;
       }
-    }
 
+    }
   }
   
   return out;

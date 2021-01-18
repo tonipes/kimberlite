@@ -26,8 +26,8 @@ typedef enum kb_gizmo_action {
 
 typedef struct kb_gizmo_attribs {
   float               offset;
-  float               kb_float4x4_scale;
-  kb_float4              color;
+  float               scale;
+  kb_float4           color;
   bool                wireframe;
   uint8_t             lod;
 } kb_gizmo_attribs;
@@ -37,22 +37,20 @@ typedef struct kb_gizmo {
   uint16_t            line_index_cache_pos;
   uint32_t            mtx_stack_pos;
   uint32_t            attrib_stack_pos;
-  kb_float4x4            view;
-  kb_float4x4            proj;
-  kb_float3              current_pos;
+  kb_float4x4         view;
+  kb_float4x4         proj;
+  kb_float3           current_pos;
   kb_gizmo_action     action;
   kb_encoder          encoder;
   kb_pipeline         pipeline;
   kb_simple_vertex*   line_vertex_cache;
   uint16_t*           line_index_cache;
-  kb_float4x4            mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
+  kb_float4x4         mtx_stack[KB_CONFIG_GIZMO_STACK_SIZE];
   kb_gizmo_attribs    attribs[KB_CONFIG_GIZMO_STACK_SIZE];
 } kb_gizmo;
 
-
 KB_API void     kb_gizmo_create               (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_destroy              (kb_gizmo* gizmo);
-
 KB_API void     kb_gizmo_begin                (kb_gizmo* gizmo, kb_encoder encoder, kb_pipeline pipeline);
 KB_API void     kb_gizmo_end                  (kb_gizmo* gizmo);
 KB_API void     kb_gizmo_push                 (kb_gizmo* gizmo);

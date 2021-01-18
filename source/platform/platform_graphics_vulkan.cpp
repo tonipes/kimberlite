@@ -1355,7 +1355,7 @@ KB_INTERNAL void recreate_vk_swapchain() {
     size = kb_platform_surface_get_size();
   }
   
-  float kb_float4x4_scale = kb_platform_surface_get_scaling();
+  float scale = kb_platform_surface_get_scaling();
   
   vkDeviceWaitIdle(vk_device);
   

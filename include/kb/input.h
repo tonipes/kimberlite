@@ -281,36 +281,36 @@ KB_API          void          kb_input_init                           (const kb_
 KB_API          void          kb_input_deinit                         (void);
 KB_API          void          kb_input_frame                          (void);
 
-KB_API_INLINE   bool          kb_input_key_down                       (kb_scancode scancode)                              { return state_curr.keyboard[scancode]; }
-KB_API_INLINE   bool          kb_input_key_up                         (kb_scancode scancode)                              { return !state_curr.keyboard[scancode]; }
-KB_API_INLINE   bool          kb_input_key_released                   (kb_scancode scancode)                              { return kb_deactivated(state_curr.keyboard, state_prev.keyboard, scancode); }
-KB_API_INLINE   bool          kb_input_key_pressed                    (kb_scancode scancode)                              { return kb_activated(state_curr.keyboard, state_prev.keyboard, scancode); }
+KB_API_INLINE   bool          kb_input_key_down                       (kb_scancode scancode)                              { return kb_input_get_state_curr()->keyboard[scancode]; }
+KB_API_INLINE   bool          kb_input_key_up                         (kb_scancode scancode)                              { return !kb_input_get_state_curr()->keyboard[scancode]; }
+KB_API_INLINE   bool          kb_input_key_released                   (kb_scancode scancode)                              { return kb_deactivated(kb_input_get_state_curr()->keyboard, kb_input_get_state_prev()->keyboard, scancode); }
+KB_API_INLINE   bool          kb_input_key_pressed                    (kb_scancode scancode)                              { return kb_activated(kb_input_get_state_curr()->keyboard, kb_input_get_state_prev()->keyboard, scancode); }
   
-KB_API_INLINE   kb_float2        kb_input_mouse_wheel                    (void)                                              { return state_curr.wheel; }
-KB_API_INLINE   bool          kb_input_mouse_button_down              (kb_mouse_button button)                            { return state_curr.mouse[button]; }
-KB_API_INLINE   bool          kb_input_mouse_button_up                (kb_mouse_button button)                            { return !state_curr.mouse[button]; }
-KB_API_INLINE   bool          kb_input_mouse_button_released          (kb_mouse_button button)                            { return kb_deactivated(state_curr.mouse, state_prev.mouse, button); }
-KB_API_INLINE   bool          kb_input_mouse_button_pressed           (kb_mouse_button button)                            { return kb_activated(state_curr.mouse, state_prev.mouse, button); }
-KB_API_INLINE   kb_float2        kb_input_mouse_pos                      (void)                                              { return state_curr.mouse_pos; }
-KB_API_INLINE   kb_float2        kb_input_mouse_delta                    (void)                                              { return kb_float2_sub(state_curr.mouse_pos, state_prev.mouse_pos); }
+KB_API_INLINE   kb_float2     kb_input_mouse_wheel                    (void)                                              { return kb_input_get_state_curr()->wheel; }
+KB_API_INLINE   bool          kb_input_mouse_button_down              (kb_mouse_button button)                            { return kb_input_get_state_curr()->mouse[button]; }
+KB_API_INLINE   bool          kb_input_mouse_button_up                (kb_mouse_button button)                            { return !kb_input_get_state_curr()->mouse[button]; }
+KB_API_INLINE   bool          kb_input_mouse_button_released          (kb_mouse_button button)                            { return kb_deactivated(kb_input_get_state_curr()->mouse, kb_input_get_state_prev()->mouse, button); }
+KB_API_INLINE   bool          kb_input_mouse_button_pressed           (kb_mouse_button button)                            { return kb_activated(kb_input_get_state_curr()->mouse, kb_input_get_state_prev()->mouse, button); }
+KB_API_INLINE   kb_float2     kb_input_mouse_pos                      (void)                                              { return kb_input_get_state_curr()->mouse_pos; }
+KB_API_INLINE   kb_float2     kb_input_mouse_delta                    (void)                                              { return kb_float2_sub(kb_input_get_state_curr()->mouse_pos, kb_input_get_state_prev()->mouse_pos); }
 
-KB_API_INLINE   bool          kb_input_gamepad_button_down            (uint32_t gamepad, kb_gamepad_button button)        { return state_curr.gamepad[gamepad].button[button]; }
+KB_API_INLINE   bool          kb_input_gamepad_button_down            (uint32_t gamepad, kb_gamepad_button button)        { return kb_input_get_state_curr()->gamepad[gamepad].button[button]; }
 KB_API_INLINE   bool          kb_input_gamepad_button_up              (uint32_t gamepad, kb_gamepad_button button)        { return !kb_input_gamepad_button_down(gamepad, button); }
-KB_API_INLINE   bool          kb_input_gamepad_button_released        (uint32_t gamepad, kb_gamepad_button button)        { return kb_deactivated(state_curr.gamepad[gamepad].button, state_prev.gamepad[gamepad].button, button); }
-KB_API_INLINE   bool          kb_input_gamepad_button_pressed         (uint32_t gamepad, kb_gamepad_button button)        { return kb_activated(state_curr.gamepad[gamepad].button, state_prev.gamepad[gamepad].button, button); }
+KB_API_INLINE   bool          kb_input_gamepad_button_released        (uint32_t gamepad, kb_gamepad_button button)        { return kb_deactivated(kb_input_get_state_curr()->gamepad[gamepad].button, kb_input_get_state_prev()->gamepad[gamepad].button, button); }
+KB_API_INLINE   bool          kb_input_gamepad_button_pressed         (uint32_t gamepad, kb_gamepad_button button)        { return kb_activated(kb_input_get_state_curr()->gamepad[gamepad].button, kb_input_get_state_prev()->gamepad[gamepad].button, button); }
 KB_API          bool          kb_input_gamepad_connected              (uint32_t gamepad);
 KB_API          const char*   kb_input_gamepad_name                   (uint32_t gamepad);
   
-KB_API_INLINE   float         kb_input_gamepad_axis_value             (uint32_t gamepad, kb_gamepad_axis axis)            { return state_curr.gamepad[gamepad].axis[axis]; }
-KB_API_INLINE   float         kb_input_gamepad_axis_delta             (uint32_t gamepad, kb_gamepad_axis axis)            { return state_curr.gamepad[gamepad].axis[axis] - state_prev.gamepad[gamepad].axis[axis]; }
+KB_API_INLINE   float         kb_input_gamepad_axis_value             (uint32_t gamepad, kb_gamepad_axis axis)            { return kb_input_get_state_curr()->gamepad[gamepad].axis[axis]; }
+KB_API_INLINE   float         kb_input_gamepad_axis_delta             (uint32_t gamepad, kb_gamepad_axis axis)            { return kb_input_get_state_curr()->gamepad[gamepad].axis[axis] - kb_input_get_state_prev()->gamepad[gamepad].axis[axis]; }
 KB_API_INLINE   float         kb_input_gamepad_axis_distance          (uint32_t gamepad, kb_gamepad_axis axis)            { return kb_float_abs(kb_input_gamepad_axis_delta(gamepad, axis)); }
 
-KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_axis_value    (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return (kb_float2) { kb_input_gamepad_axis_value(gamepad, axis.x), kb_input_gamepad_axis_value(gamepad, axis.y) }; }
-KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_axis_delta    (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return (kb_float2) { kb_input_gamepad_axis_delta(gamepad, axis.x), kb_input_gamepad_axis_delta(gamepad, axis.y) }; }
+KB_API_INLINE   kb_float2     kb_input_gamepad_joystick_axis_value    (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return (kb_float2) { kb_input_gamepad_axis_value(gamepad, axis.x), kb_input_gamepad_axis_value(gamepad, axis.y) }; }
+KB_API_INLINE   kb_float2     kb_input_gamepad_joystick_axis_delta    (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return (kb_float2) { kb_input_gamepad_axis_delta(gamepad, axis.x), kb_input_gamepad_axis_delta(gamepad, axis.y) }; }
 KB_API_INLINE   float         kb_input_gamepad_joystick_axis_distance (uint32_t gamepad, kb_gamepad_joystick_axis axis)   { return kb_float2_len(kb_input_gamepad_joystick_axis_delta(gamepad, axis)); }
 
-KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_value         (uint32_t gamepad, kb_gamepad_joystick joystick)    { return kb_input_gamepad_joystick_axis_value(gamepad, joystick_axis[joystick]); }
-KB_API_INLINE   kb_float2        kb_input_gamepad_joystick_delta         (uint32_t gamepad, kb_gamepad_joystick joystick)    { return kb_input_gamepad_joystick_axis_delta(gamepad, joystick_axis[joystick]); }
+KB_API_INLINE   kb_float2     kb_input_gamepad_joystick_value         (uint32_t gamepad, kb_gamepad_joystick joystick)    { return kb_input_gamepad_joystick_axis_value(gamepad, joystick_axis[joystick]); }
+KB_API_INLINE   kb_float2     kb_input_gamepad_joystick_delta         (uint32_t gamepad, kb_gamepad_joystick joystick)    { return kb_input_gamepad_joystick_axis_delta(gamepad, joystick_axis[joystick]); }
 KB_API_INLINE   float         kb_input_gamepad_joystick_distance      (uint32_t gamepad, kb_gamepad_joystick joystick)    { return kb_input_gamepad_joystick_axis_distance(gamepad, joystick_axis[joystick]); }
 
 //KB_API          uint32_t      kb_input_event_gamepad_connect        (void);

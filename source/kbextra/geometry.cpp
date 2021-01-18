@@ -213,12 +213,15 @@ void kb_mesh_construct(kb_mesh handle, const kb_mesh_create_info info) {
       mesh_ref(handle)->primitives[i].material = info.materials[info.primitives[i].material];
     }
   }
+
+  kb_mesh_set_initialized(handle, true);
 }
 
 void kb_mesh_destruct(kb_mesh handle) {
   KB_ASSERT_VALID(handle);
 
   KB_DEFAULT_FREE(mesh_ref(handle)->primitives);
+  kb_mesh_set_initialized(handle, false);
 }
 
 void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info info) {
@@ -270,6 +273,8 @@ void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info inf
         
     kb_mesh_mark(geometry_ref(handle)->meshes[i], kb_hash_string(geom.meshes[i].name));
   }
+
+  kb_geometry_set_initialized(handle, true);
 }
 
 void kb_geometry_destruct(kb_geometry handle) {
@@ -284,6 +289,8 @@ void kb_geometry_destruct(kb_geometry handle) {
 
   KB_DEFAULT_FREE(geometry_ref(handle)->meshes);
   KB_DEFAULT_FREE(geometry_ref(handle)->materials);
+  
+  kb_geometry_set_initialized(handle, false);
 }
 
 KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, uint32_t prim_index, uint32_t instance_count) {
@@ -291,14 +298,12 @@ KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, u
   KB_ASSERT_VALID(mesh);
 
   KB_ASSERT(mesh_ref(mesh)->primitive_count > prim_index, "Primitive index too large");
-
-  kb_encoder_push(encoder);
   
   kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
   kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
 //  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_16);
 
-  kb_primitive_ref& primitive = mesh_ref(mesh)->primitives[0];
+  kb_primitive_ref& primitive = mesh_ref(mesh)->primitives[prim_index];
 
   kb_encoder_submit(encoder, 
     primitive.first_index,
@@ -307,36 +312,25 @@ KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, u
     instance_count
   );
   
-  kb_encoder_pop(encoder);
 }
 
 KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t instance_count, bool bind_material) {
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(mesh);
-
-  kb_encoder_push(encoder);
   
-  // kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
-  // kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
-
   for (uint32_t i = 0; i < mesh_ref(mesh)->primitive_count; ++i) {
+    kb_encoder_push(encoder);
+
     kb_material material = mesh_ref(mesh)->primitives[i].material;
     
-    if (bind_material && kb_is_valid(material)) {
+    if (bind_material && kb_is_valid(material) && kb_material_is_initialized(material)) {
       kb_encoder_bind_material(encoder, material);
     }
     
     kb_encoder_submit_primitive_draw(encoder, mesh, i, instance_count);
-
-    // kb_encoder_submit(encoder, 
-      // primitive.first_index,
-      // primitive.first_vertex,
-      // primitive.index_count,
-      // instance_count
-    // );
+    kb_encoder_pop(encoder);
   }  
   
-  kb_encoder_pop(encoder);
 }
 
 #endif

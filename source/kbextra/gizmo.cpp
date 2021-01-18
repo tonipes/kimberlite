@@ -115,12 +115,12 @@ KB_API void kb_gizmo_shape_line_to(kb_gizmo* gizmo, const kb_float3 pos) {
   gizmo->line_index_cache[gizmo->line_index_cache_pos++] = end_vertex_index;
 
   kb_simple_vertex* start_vert = &gizmo->line_vertex_cache[start_vertex_index];
-  start_vert->pos     = { gizmo->current_pos.x, gizmo->current_pos.y, gizmo->current_pos.z, 1.0f };
-  start_vert->color   = attribs.color;
+  start_vert->position  = { gizmo->current_pos.x, gizmo->current_pos.y, gizmo->current_pos.z, 1.0f };
+  start_vert->color     = attribs.color;
 
   kb_simple_vertex* end_vert = &gizmo->line_vertex_cache[end_vertex_index];
-  end_vert->pos     = { pos.x, pos.y, pos.z, 1.0f };
-  end_vert->color   = attribs.color;
+  end_vert->position  = { pos.x, pos.y, pos.z, 1.0f };
+  end_vert->color     = attribs.color;
 
   gizmo->current_pos = pos;
 }

@@ -49,19 +49,19 @@ extern "C" {
 #define VECTOR_TYPE_3(name, type) typedef struct name { type x, y, z; } name;
 #define VECTOR_TYPE_4(name, type) typedef struct name { type x, y, z, w; } name;
 
-#define TYPE_OPERATORS(T, TT) \
-inline T    operator- (const T& a)                { return kb::neg(a); } \
-inline T    operator* (const T& a,  const T& b)   { return kb::mul(a, b); } \
-inline T    operator* (const T& a,  const TT& b)  { return kb::scale(a, b); } \
-inline T    operator+ (const T& a,  const T& b)   { return kb::add(a, b); } \
-inline T    operator- (const T& a,  const T& b)   { return kb::sub(a, b); } \
-inline bool operator==(const T& a,  const T& b)   { return kb::equal(a, b); } \
-inline T&   operator+=(T& a,        const T& b)   { a = kb::add(a, b); return a; } \
-inline T&   operator-=(T& a,        const T& b)   { a = kb::sub(a, b); return a; } \
-inline T&   operator*=(T& a,        const T& b)   { a = kb::mul(a, b); return a; } \
-inline T&   operator*=(T& a,        const TT& b)  { a = kb::scale(a, b); return a; } \
-inline T&   operator/=(T& a,        const T& b)   { a = kb::div(a, b); return a; } \
-inline T&   operator/=(T& a,        const TT& b)  { a = kb::scale(a, b); return a; } \
+#define TYPE_OPERATORS(T, S) \
+inline T    operator- (const T& a)                { return kb::neg(a); }              \
+inline T    operator* (const T& a,  const T& b)   { return kb::mul(a, b); }           \
+inline T    operator* (const T& a,  const S& b)   { return kb::scale(a, b); }         \
+inline T    operator+ (const T& a,  const T& b)   { return kb::add(a, b); }           \
+inline T    operator- (const T& a,  const T& b)   { return kb::sub(a, b); }           \
+inline bool operator==(const T& a,  const T& b)   { return kb::equal(a, b); }         \
+inline T&   operator+=(T& a,        const T& b)   { a = kb::add(a, b); return a; }    \
+inline T&   operator-=(T& a,        const T& b)   { a = kb::sub(a, b); return a; }    \
+inline T&   operator*=(T& a,        const T& b)   { a = kb::mul(a, b); return a; }    \
+inline T&   operator*=(T& a,        const S& b)   { a = kb::scale(a, b); return a; }  \
+inline T&   operator/=(T& a,        const T& b)   { a = kb::div(a, b); return a; }    \
+inline T&   operator/=(T& a,        const S& b)   { a = kb::scale(a, b); return a; }  \
 
 #define FUNC1_DEF_N(F, T1, func)          inline auto F(const T1& a) { return func(a); }
 #define FUNC2_DEF_N(F, T1, T2, func)      inline auto F(const T1& a, const T2& b) { return func(a, b); }
@@ -466,7 +466,7 @@ KB_API        void         kb_tangent_frame_with_spin (const kb_float3 normal, f
 KB_API        uint32_t     kb_color_rgba_to_uint      (const kb_float4 color);
 KB_API        float        kb_ray_plane_intersection  (const kb_ray ray, const kb_plane plane);
 KB_API        kb_float3    kb_unproject               (kb_float4x4 unproj, kb_float3 point);
-KB_API        kb_ray       kb_unproject_view       (kb_float4x4 unproj, kb_float2 p);
+KB_API        kb_ray       kb_unproject_view          (kb_float4x4 unproj, kb_float2 p);
 KB_API        uint64_t     kb_align_up                (uint64_t a, uint64_t align);
 KB_API        kb_float2    kb_circle_point            (kb_float angle);
 KB_API        kb_float2    kb_squircle_point          (kb_float angle);

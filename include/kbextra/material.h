@@ -14,23 +14,21 @@
 #include <kb/resource.h>
 #include <kb/graphics.h>
 
-// KB_HANDLE(kb_material);
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef struct kb_material      { kb_handle_idx idx; } kb_material;
-
+KB_HANDLE(kb_material);
 
 typedef struct kb_material_texture {
-  kb_hash                   slot_hash;
+  kb_uniform_slot           slot;
   kb_texture                texture;
 } kb_material_texture;
 
 typedef struct kb_material_uniform {
-  kb_hash                   slot_hash;
-  float                     data[KB_CONFIG_MAX_UNIFORM_BLOCK_SIZE];
+  kb_uniform_slot           slot;
+  void*                     data;
+  uint64_t                  size;
 } kb_material_uniform;
 
 typedef struct kb_material_create_info {
