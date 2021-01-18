@@ -53,7 +53,6 @@
 
 #define KB_ENUM_OF(name, def) enum name { def(KB_ENUM_GEN) }; static const char* name##keys[] = { def(KB_ENUM_GEN_STR) };
 
-
 #define KB_ENUM_FLAG_OPERATORS(_T) \
   template<class _T> constexpr inline _T operator~ (_T a) { return (_T)~(int)a; } \
   template<class _T> constexpr inline _T operator| (_T a, _T b) { return (_T)((int)a | (int)b); } \

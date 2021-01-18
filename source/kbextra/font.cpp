@@ -342,12 +342,12 @@ void kb_font_construct(kb_font handle, const kb_font_create_info info) {
   font_ref(handle)->pipeline      = info.pipeline;
   font_ref(handle)->atlas_slot    = info.atlas_slot;
   font_ref(handle)->atlas_texture = kb_texture_create({
-    .rwops = texture_data,
-    .texture = {
+    .rwops    = texture_data,
+    .usage    = KB_TEXTURE_USAGE_SHADER_READ,
+    .texture  = {
       .width  = font_data.atlas_bitmap_width,
       .height = font_data.atlas_bitmap_height,
       .format = KB_FORMAT_RGBA8_UNORM,
-      .usage  = KB_TEXTURE_USAGE_SHADER_READ
     },
     .sampler = {
       .min_filter     = KB_FILTER_LINEAR,
@@ -358,7 +358,6 @@ void kb_font_construct(kb_font handle, const kb_font_create_info info) {
       .anisotropy     = 16.0f,
     },
     .mipmaps = false,
-//    .filter = KB_FILTER_LINEAR,
   });
 }
 

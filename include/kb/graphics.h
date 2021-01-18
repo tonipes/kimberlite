@@ -125,62 +125,53 @@ typedef enum kb_topology_type {
 typedef enum kb_binding_type {
   KB_BINDING_TYPE_UNKNOWN         = 0,
   KB_BINDING_TYPE_TEXTURE         = 1,
-  KB_BINDING_TYPE_UNIFORM_BUFFER  = 6,
-  KB_BINDING_TYPE_STORAGE_BUFFER  = 7,
-  KB_BINDING_TYPE_UNSUPPORTED     = 0x7FFFFFFF,
+  KB_BINDING_TYPE_UNIFORM_BUFFER  = 2,
+  KB_BINDING_TYPE_STORAGE_BUFFER  = 3,
 } kb_binding_type;
 
-typedef enum kb_shader_stage {
-  KB_SHADER_STAGE_UNKNOWN         = 0x00000000,
-  KB_SHADER_STAGE_VERTEX          = 0x00000001,
-  KB_SHADER_STAGE_GEOMETRY        = 0x00000008,
-  KB_SHADER_STAGE_FRAGMENT        = 0x00000010,
-  KB_SHADER_STAGE_COMPUTE         = 0x00000020,
-} kb_shader_stage;
-
 typedef enum kb_format {
-  KB_FORMAT_UNSUPPORTED    = 0,
-  KB_FORMAT_R8_UNORM       = 1,
-  KB_FORMAT_R8_SNORM       = 2,
-  KB_FORMAT_R8_UINT        = 3,
-  KB_FORMAT_R8_SINT        = 4,
-  KB_FORMAT_R16_UNORM      = 5,
-  KB_FORMAT_R16_SNORM      = 6,
-  KB_FORMAT_R16_UINT       = 7,
-  KB_FORMAT_R16_SINT       = 8,
-  KB_FORMAT_R16_FLOAT      = 9,
-  KB_FORMAT_RG8_UNORM      = 10,
-  KB_FORMAT_RG8_SNORM      = 11,
-  KB_FORMAT_RG8_UINT       = 12,
-  KB_FORMAT_RG8_SINT       = 13,
-  KB_FORMAT_R32_UINT       = 14,
-  KB_FORMAT_R32_SINT       = 15,
-  KB_FORMAT_R32_FLOAT      = 16,
-  KB_FORMAT_RG16_UNORM     = 17,
-  KB_FORMAT_RG16_SNORM     = 18,
-  KB_FORMAT_RG16_UINT      = 19,
-  KB_FORMAT_RG16_SINT      = 20,
-  KB_FORMAT_RG16_FLOAT     = 21,
-  KB_FORMAT_RGBA8_UNORM    = 22,
-  KB_FORMAT_RGBA8_SNORM    = 23,
-  KB_FORMAT_RGBA8_UINT     = 24,
-  KB_FORMAT_RGBA8_SINT     = 25,
-  KB_FORMAT_RG32_UINT      = 26,
-  KB_FORMAT_RG32_SINT      = 27,
-  KB_FORMAT_RG32_FLOAT     = 28,
-  KB_FORMAT_RGBA16_UNORM   = 29,
-  KB_FORMAT_RGBA16_SNORM   = 30,
-  KB_FORMAT_RGBA16_UINT    = 31,
-  KB_FORMAT_RGBA16_SINT    = 32,
-  KB_FORMAT_RGBA16_FLOAT   = 33,
-  KB_FORMAT_RGBA32_UINT    = 34,
-  KB_FORMAT_RGBA32_SINT    = 35,
-  KB_FORMAT_RGBA32_FLOAT   = 36,
+  KB_FORMAT_UNSUPPORTED           = 0,
+  KB_FORMAT_R8_UNORM              = 1,
+  KB_FORMAT_R8_SNORM              = 2,
+  KB_FORMAT_R8_UINT               = 3,
+  KB_FORMAT_R8_SINT               = 4,
+  KB_FORMAT_R16_UNORM             = 5,
+  KB_FORMAT_R16_SNORM             = 6,
+  KB_FORMAT_R16_UINT              = 7,
+  KB_FORMAT_R16_SINT              = 8,
+  KB_FORMAT_R16_FLOAT             = 9,
+  KB_FORMAT_RG8_UNORM             = 10,
+  KB_FORMAT_RG8_SNORM             = 11,
+  KB_FORMAT_RG8_UINT              = 12,
+  KB_FORMAT_RG8_SINT              = 13,
+  KB_FORMAT_R32_UINT              = 14,
+  KB_FORMAT_R32_SINT              = 15,
+  KB_FORMAT_R32_FLOAT             = 16,
+  KB_FORMAT_RG16_UNORM            = 17,
+  KB_FORMAT_RG16_SNORM            = 18,
+  KB_FORMAT_RG16_UINT             = 19,
+  KB_FORMAT_RG16_SINT             = 20,
+  KB_FORMAT_RG16_FLOAT            = 21,
+  KB_FORMAT_RGBA8_UNORM           = 22,
+  KB_FORMAT_RGBA8_SNORM           = 23,
+  KB_FORMAT_RGBA8_UINT            = 24,
+  KB_FORMAT_RGBA8_SINT            = 25,
+  KB_FORMAT_RG32_UINT             = 26,
+  KB_FORMAT_RG32_SINT             = 27,
+  KB_FORMAT_RG32_FLOAT            = 28,
+  KB_FORMAT_RGBA16_UNORM          = 29,
+  KB_FORMAT_RGBA16_SNORM          = 30,
+  KB_FORMAT_RGBA16_UINT           = 31,
+  KB_FORMAT_RGBA16_SINT           = 32,
+  KB_FORMAT_RGBA16_FLOAT          = 33,
+  KB_FORMAT_RGBA32_UINT           = 34,
+  KB_FORMAT_RGBA32_SINT           = 35,
+  KB_FORMAT_RGBA32_FLOAT          = 36,
 
-  KB_FORMAT_SURFACE        = 90,
-  KB_FORMAT_DEPTH          = 91,
-  KB_FORMAT_STENCIL        = 92,
-  KB_FORMAT_DEPTH_STENCIL  = 93,
+  KB_FORMAT_SURFACE               = 90,
+  KB_FORMAT_DEPTH                 = 91,
+  KB_FORMAT_STENCIL               = 92,
+  KB_FORMAT_DEPTH_STENCIL         = 93,
 } kb_format;
 
 typedef enum kb_filter {
@@ -189,7 +180,7 @@ typedef enum kb_filter {
 } kb_filter;
 
 typedef enum kb_buffer_usage {
-  KB_BUFFER_USAGE_UNKNOWN         = 1 << 0,
+  KB_BUFFER_USAGE_UNKNOWN         = 0,
   KB_BUFFER_USAGE_VERTEX_BUFFER   = 1 << 1,
   KB_BUFFER_USAGE_INDEX_BUFFER    = 1 << 2,
   KB_BUFFER_USAGE_UNIFORM_BUFFER  = 1 << 3,
@@ -198,12 +189,20 @@ typedef enum kb_buffer_usage {
 } kb_buffer_usage;
 
 typedef enum kb_texture_usage {
-  KB_TEXTURE_USAGE_UNKNOWN        = 1 << 0,
+  KB_TEXTURE_USAGE_UNKNOWN        = 0,
   KB_TEXTURE_USAGE_RENDER_TARGET  = 1 << 1,
   KB_TEXTURE_USAGE_SHADER_WRITE   = 1 << 2,
   KB_TEXTURE_USAGE_SHADER_READ    = 1 << 3,
 } kb_texture_usage;
   
+typedef enum kb_shader_stage {
+  KB_SHADER_STAGE_UNKNOWN         = 0,
+  KB_SHADER_STAGE_VERTEX          = 1 << 0,
+  KB_SHADER_STAGE_GEOMETRY        = 1 << 1,
+  KB_SHADER_STAGE_FRAGMENT        = 1 << 2,
+  KB_SHADER_STAGE_COMPUTE         = 1 << 3,
+} kb_shader_stage;
+
 typedef enum kb_load_action {
   KB_LOAD_ACTION_DONT_CARE        = 0,
   KB_LOAD_ACTION_LOAD             = 1,
@@ -221,7 +220,6 @@ typedef enum kb_sampler_address_mode {
   KB_SAMPLER_ADDRESS_MODE_MIRROR_REPEAT         = 2,
   KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE         = 3,
   KB_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE  = 4,
-//  KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER       = 5,
 } kb_sampler_address_mode;
 
 typedef struct kb_blend_info {
@@ -242,7 +240,6 @@ typedef struct kb_texture_info {
   uint32_t                  width;
   uint32_t                  height;
   kb_format                 format;
-  kb_texture_usage          usage;
 } kb_texture_info;
 \
 typedef struct kb_texture_data {
@@ -282,6 +279,7 @@ typedef struct kb_texture_create_info {
   kb_stream*                rwops;
   kb_texture_info           texture;
   kb_sampler_info           sampler;
+  kb_texture_usage          usage;
   bool                      mipmaps;
 } kb_texture_create_info;
 
@@ -289,6 +287,7 @@ typedef struct kb_attachment_info {
   kb_texture_info           texture;
   bool                      use_surface_size;
   bool                      surface_proxy;
+  kb_texture_usage          usage;
 } kb_attachment_info;
 
 typedef struct kb_attachment_bind_info {
@@ -463,7 +462,6 @@ KB_API kb_encoder           kb_encoder_begin                          (void);
 KB_API void                 kb_encoder_end                            (kb_encoder encoder);
 KB_API void                 kb_encoder_push                           (kb_encoder encoder);
 KB_API void                 kb_encoder_pop                            (kb_encoder encoder);
-KB_API void                 kb_encoder_bind_renderpass                (kb_encoder encoder, uint32_t renderpass);
 KB_API void                 kb_encoder_bind_pipeline                  (kb_encoder encoder, kb_pipeline pipeline);
 KB_API void                 kb_encoder_bind_buffer                    (kb_encoder encoder, uint32_t slot, kb_buffer vertex_buffer, uint64_t offset);
 KB_API void                 kb_encoder_bind_index_buffer              (kb_encoder encoder, kb_buffer index_buffer, uint64_t offset, kb_index_type type);
@@ -481,5 +479,44 @@ KB_API void                 kb_texture_write                          (const kb_
 #ifdef __cplusplus
 
 KB_ENUM_FLAG_OPERATORS(kb_shader_stage);
+//KB_ENUM_FLAG_OPERATORS(kb_buffer_usage);
+//KB_ENUM_FLAG_OPERATORS(kb_texture_usage);
 
 #endif
+//
+//typedef enum kb_graphics_platform_call_type {
+//  KB_PLATFORM_GRAPHICS_CALL_TYPE_UNKNOWN              = 0,
+//  KB_PLATFORM_GRAPHICS_CALL_TYPE_BIND_PIPELINE        = 1,
+//  KB_PLATFORM_GRAPHICS_CALL_TYPE_BIND_TEXTURE         = 2,
+//  KB_PLATFORM_GRAPHICS_CALL_TYPE_BIND_UNIFORM_BUFFER  = 3,
+//  KB_PLATFORM_GRAPHICS_CALL_TYPE_BIND_VERTEX_BUFFER   = 4,
+//  KB_PLATFORM_GRAPHICS_CALL_TYPE_BIND_INDEX_BUFFER    = 5,
+//  KB_PLATFORM_GRAPHICS_CALL_TYPE_DRAW                 = 6,
+//} kb_binding_type;
+//
+//typedef struct kb_graphics_platform_call {
+//  kb_graphics_platform_call_type type;
+//
+//  union {
+//    kb_pipeline         pipeline;
+//
+//    struct {
+//      kb_texture        texture;
+//      kb_shader_stages  stages;
+//    } texture_bind;
+//
+//    struct {
+//      kb_buffer         buffer;
+//      uint32_t          index;
+//      uint64_t          offset;
+//      uint32_t          index_size;
+//    } buffer_bind;
+//
+//    struct {
+//      uint32_t          first_vertex;
+//      uint32_t          first_index;
+//      uint32_t          index_count;
+//      uint32_t          instance_count;
+//    } draw_call;
+//  };
+//} kb_graphics_platform_call;

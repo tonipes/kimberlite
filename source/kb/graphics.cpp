@@ -33,7 +33,6 @@ typedef struct graphics_pipe_info {
 } graphics_pipe_info;
 
 typedef struct kb_encoder_frame {
-  uint32_t                  renderpass;
   kb_pipeline               pipeline;
   kb_vertex_buffer_binding  vertex_buffer_bindings[KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS];
   kb_index_buffer_binding   index_buffer;
@@ -127,8 +126,30 @@ static int draw_call_compare(const void* a, const void* b) {
   const kb_graphics_call* aa = (kb_graphics_call*) a;
   const kb_graphics_call* bb = (kb_graphics_call*) b;
 
+  COMPARE_VALUE(aa->renderpass,               bb->renderpass);
   COMPARE_VALUE(aa->pipeline.idx,             bb->pipeline.idx);
   COMPARE_VALUE(aa->index_buffer.buffer.idx,  bb->index_buffer.buffer.idx);
+  
+  for (uint32_t i = 0; i < KB_CONFIG_MAX_VERTEX_BUFFERS_BINDINGS; ++i) {
+    COMPARE_VALUE(aa->vertex_buffer_bindings[i].buffer.idx, bb->vertex_buffer_bindings[i].buffer.idx);
+    COMPARE_VALUE(aa->vertex_buffer_bindings[i].offset,     bb->vertex_buffer_bindings[i].offset);
+  }
+  
+  for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
+    COMPARE_VALUE(aa->vert_uniform_bindings[i].buffer.idx,  bb->vert_uniform_bindings[i].buffer.idx);
+    COMPARE_VALUE(aa->vert_uniform_bindings[i].index,       bb->vert_uniform_bindings[i].index);
+    COMPARE_VALUE(aa->vert_uniform_bindings[i].offset,      bb->vert_uniform_bindings[i].offset);
+
+    COMPARE_VALUE(aa->frag_uniform_bindings[i].buffer.idx,  bb->frag_uniform_bindings[i].buffer.idx);
+    COMPARE_VALUE(aa->frag_uniform_bindings[i].index,       bb->frag_uniform_bindings[i].index);
+    COMPARE_VALUE(aa->frag_uniform_bindings[i].offset,      bb->frag_uniform_bindings[i].offset);
+
+    COMPARE_VALUE(aa->vert_texture_bindings[i].texture.idx, bb->vert_texture_bindings[i].texture.idx);
+    COMPARE_VALUE(aa->vert_texture_bindings[i].index,       bb->vert_texture_bindings[i].index);
+
+    COMPARE_VALUE(aa->frag_texture_bindings[i].texture.idx, bb->frag_texture_bindings[i].texture.idx);
+    COMPARE_VALUE(aa->frag_texture_bindings[i].index,       bb->frag_texture_bindings[i].index);
+  }
 
   return 0;
 }
@@ -198,18 +219,18 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
       attachment.surface_proxy = true;
     } else {
       // Regular attachment. Create a texture
-      KB_ASSERT(attachment_info.texture.usage & KB_TEXTURE_USAGE_RENDER_TARGET, "Graphics pipeline attachments must be render targets");
+      KB_ASSERT(attachment_info.usage & KB_TEXTURE_USAGE_RENDER_TARGET, "Graphics pipeline attachments must be render targets");
       
       attachment.resize_with_surface = attachment_info.use_surface_size;
       attachment.format = attachment_info.texture.format;
-      attachment.usage = attachment_info.texture.usage;
+      attachment.usage = attachment_info.usage;
       attachment.texture = kb_texture_create({
-        .rwops = NULL,
-        .texture = {
+        .rwops    = NULL,
+        .usage    = attachment_info.usage,
+        .texture  = {
           .format = attachment_info.texture.format,
           .width  = attachment_info.use_surface_size ? current_extent.x : attachment_info.texture.width,
           .height = attachment_info.use_surface_size ? current_extent.y : attachment_info.texture.height,
-          .usage  = attachment_info.texture.usage,
         },
         .sampler = {
           .min_filter     = KB_FILTER_NEAREST,
@@ -259,12 +280,14 @@ KB_API void kb_graphics_run_encoders() {
       draw_call_cache[renderpass][draw_call_cache_pos[renderpass]++] = call;
     }
   }
-  
+    
   // Run passes
   for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
-
     if (draw_call_cache_pos[pass_i] <= 0) continue;
-
+    
+    // Sort calls
+    kb_sort(draw_call_cache[pass_i], draw_call_cache_pos[pass_i], sizeof(kb_graphics_call), draw_call_compare);
+    
     kb_platform_graphics_submit_calls(pass_i, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
     draw_call_cache_pos[pass_i] = 0;
   }
@@ -285,16 +308,14 @@ KB_API void kb_graphics_frame() {
       
       kb_platform_graphics_texture_destruct(texture);
       
-      kb_texture_create_info info = {
+      kb_platform_graphics_texture_construct(texture, {
+        .usage  = graphics_pipe->attachments[attachment_i].usage,
         .texture = {
           .width  = (uint32_t) current_extent.x,
           .height = (uint32_t) current_extent.y,
           .format = graphics_pipe->attachments[attachment_i].format,
-          .usage  = graphics_pipe->attachments[attachment_i].usage,
         }
-      };
-
-      kb_platform_graphics_texture_construct(texture, info);
+      });
     }
   }
   
@@ -472,12 +493,12 @@ KB_API void kb_encoder_pop(kb_encoder encoder) {
 
   --state.stack_pos;
 }
-
-KB_API void kb_encoder_bind_renderpass(kb_encoder encoder, uint32_t renderpass) {
-  KB_ASSERT_VALID(encoder);
-
-  current_encoder_frame(encoder).renderpass = renderpass;
-}
+//
+//KB_API void kb_encoder_bind_renderpass(kb_encoder encoder, uint32_t renderpass) {
+//  KB_ASSERT_VALID(encoder);
+//
+//  current_encoder_frame(encoder).renderpass = renderpass;
+//}
 
 KB_API void kb_encoder_bind_pipeline(kb_encoder encoder, kb_pipeline pipeline) {
   KB_ASSERT_VALID(encoder);
@@ -586,7 +607,6 @@ KB_API void kb_encoder_submit(kb_encoder encoder, uint32_t first_index, uint32_t
   }
 
   call.pipeline             = frame.pipeline;
-  call.renderpass           = frame.renderpass;
   call.index_buffer         = frame.index_buffer;
   call.info.first_vertex    = first_vertex;
   call.info.first_index     = first_index;
