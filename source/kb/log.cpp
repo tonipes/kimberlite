@@ -6,8 +6,8 @@
 
 #include <kb/log.h>
 
-#include <kb/thread.h>
-#include <kb/crt.h>
+#include <kb/foundation/crt.h>
+#include <kb/foundation/thread.h>
 
 auto get_level_str(kb_log_level level) -> const char* {
   switch (level) {
@@ -36,7 +36,7 @@ auto get_level_color(kb_log_level level) -> const char* {
 static kb_log_level log_level   = kb_log_level::KB_LOG_LEVEL_TRACE;
 static bool         log_color   = false;
 static bool         log_header  = false;
-static kb_mutex*    log_mutex   = NULL; //kb_mutex_create();
+static kb_mutex*    log_mutex   = NULL;
 
 inline void print(const char* str) {
   kb_printf("%s", str);

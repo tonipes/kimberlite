@@ -6,11 +6,11 @@
 
 #pragma once
 
-#include <kb/core.h>
-#include <kb/handle.h>
-#include <kb/resource.h>
-#include <kb/math.h>
-#include <kb/stream.h>
+#include "foundation/core.h"
+#include "foundation/handle.h"
+#include "foundation/resource.h"
+#include "foundation/math.h"
+#include "foundation/stream.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,8 +20,8 @@ KB_HANDLE(kb_sound);
 KB_HANDLE(kb_sound_inst);
 
 typedef struct kb_sound_playback_info {
-  kb_float2                  pitch_range;
-  kb_float2                  volume_range;
+  kb_float2               pitch_range;
+  kb_float2               volume_range;
 } kb_sound_playback_info;
 
 typedef struct kb_audio_init_info {

@@ -29,6 +29,7 @@ let package = Package(
         .headerSearchPath(".."),
         .headerSearchPath("../../include"),
         .headerSearchPath("../../source"),
+        .headerSearchPath("../../libraries"),
       ]
     ),
     .target(
@@ -42,6 +43,7 @@ let package = Package(
         .headerSearchPath(".."),
         .headerSearchPath("../../include"),
         .headerSearchPath("../../source"),
+        .headerSearchPath("../../libraries"),
       ]
     ),
     .target(
@@ -55,11 +57,12 @@ let package = Package(
         .headerSearchPath(".."),
         .headerSearchPath("../../include"),
         .headerSearchPath("../../source"),
+        .headerSearchPath("../../libraries"),
       ]
     ),
     .target(
       name: "kb_bin2c",
-      dependencies: [],
+      dependencies: ["fmt"],
       path: "tools/bin2c",
       sources: [
         "main.cpp",
@@ -68,6 +71,7 @@ let package = Package(
         .headerSearchPath(".."),
         .headerSearchPath("../../include"),
         .headerSearchPath("../../source"),
+        .headerSearchPath("../../libraries"),
       ]
     ),
     .target(
@@ -93,9 +97,10 @@ let package = Package(
       ],
       cxxSettings: [
         .headerSearchPath("include"),
-        .headerSearchPath("libraries/fmt/include"),
+        .headerSearchPath("libraries"),
       ]
     ),
+    
     .target(
       name: "fmt",
       dependencies: [],

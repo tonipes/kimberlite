@@ -6,12 +6,11 @@
 
 #define KB_TOOL_ONLY
 
-#include <kb/stream.h>
+#include <kb/file.h>
+
 #include <kbextra/cliargs.h>
 
-#include "kb/alloc.cpp"
-#include "kb/crt.cpp"
-#include "kb/math.cpp"
+#include "kb/foundation.cpp"
 
 #include "kbextra/cliargs.cpp"
 

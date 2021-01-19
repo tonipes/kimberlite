@@ -4,9 +4,9 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/input.h>
+#include <kb/foundation.h>
 
-#include <kb/crt.h>
+#include <kb/input.h>
 #include <kb/platform.h>
 
 kb_input_state state_prev;

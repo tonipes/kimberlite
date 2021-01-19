@@ -6,8 +6,7 @@
 
 #pragma once
 
-#include <kb/core.h>
-#include <kb/math.h>
+#include <kb/foundation.h>
 #include <kb/graphics.h>
 
 #include <kbextra/vertex.h>

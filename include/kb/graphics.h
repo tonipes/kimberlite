@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include <kb/alloc.h>
-#include <kb/hash.h>
-#include <kb/resource.h>
-#include <kb/handle.h>
-#include <kb/math.h>
-#include <kb/stream.h>
+#include "foundation/alloc.h"
+#include "foundation/hash.h"
+#include "foundation/resource.h"
+#include "foundation/handle.h"
+#include "foundation/math.h"
+#include "foundation/stream.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -260,10 +260,10 @@ typedef struct kb_uniform_texture_info {
 } kb_uniform_texture_info;
 
 typedef struct kb_uniform_layout {
-  kb_uniform_buffer_info    vert_ubos       [KB_CONFIG_MAX_UNIFORM_BINDINGS];
-  kb_uniform_buffer_info    frag_ubos       [KB_CONFIG_MAX_UNIFORM_BINDINGS];
-  kb_uniform_texture_info   vert_textures   [KB_CONFIG_MAX_UNIFORM_BINDINGS];
-  kb_uniform_texture_info   frag_textures   [KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_buffer_info    vert_ubos[KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_buffer_info    frag_ubos[KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_texture_info   vert_textures[KB_CONFIG_MAX_UNIFORM_BINDINGS];
+  kb_uniform_texture_info   frag_textures[KB_CONFIG_MAX_UNIFORM_BINDINGS];
 } kb_uniform_layout;
 
 typedef struct kb_sampler_info {
@@ -351,10 +351,6 @@ typedef struct kb_rasterizer_info {
   kb_polygon_mode           polygon_mode;
 } kb_rasterizer_info;
 
-typedef struct kb_sampling_info {
-  uint32_t                  samples;
-} kb_sampling_info;
-
 typedef struct kb_depth_stencil_info {
   bool                      depth_test;
   bool                      depth_write;
@@ -369,9 +365,10 @@ typedef struct kb_pipeline_create_info {
   kb_vertex_layout_info     vertex_layout;
   kb_rasterizer_info        rasterizer;
   kb_depth_stencil_info     depth_stencil;
-  kb_sampling_info          sampling;
+  uint32_t                  samples;
   uint32_t                  renderpass;
   kb_color_blending_info    color_blending;
+  bool                      alpha_to_coverage;
 } kb_pipeline_create_info;
 
 typedef struct kb_graphics_init_info {
@@ -405,7 +402,6 @@ typedef struct kb_texture_binding {
 typedef struct kb_uniform_binding {
   kb_buffer                 buffer;
   uint32_t                  index;
-  uint64_t                  size;
   uint64_t                  offset;
 } kb_uniform_binding;
 
@@ -435,6 +431,11 @@ typedef struct kb_uniform_slot {
   kb_binding_type           type;
 } kb_uniform_slot;
 
+typedef struct kb_buffer_allocation {
+  kb_buffer                 buffer;
+  uint64_t                  offset;
+} kb_buffer_allocation;
+
 KB_RESOURCE_HASHED_FUNC_DECLS (buffer         , kb_buffer         , kb_buffer_create_info         )
 KB_RESOURCE_HASHED_FUNC_DECLS (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
 KB_RESOURCE_HASHED_FUNC_DECLS (texture        , kb_texture        , kb_texture_create_info        )
@@ -463,10 +464,11 @@ KB_API void                 kb_encoder_end                            (kb_encode
 KB_API void                 kb_encoder_push                           (kb_encoder encoder);
 KB_API void                 kb_encoder_pop                            (kb_encoder encoder);
 KB_API void                 kb_encoder_bind_pipeline                  (kb_encoder encoder, kb_pipeline pipeline);
-KB_API void                 kb_encoder_bind_buffer                    (kb_encoder encoder, uint32_t slot, kb_buffer vertex_buffer, uint64_t offset);
+KB_API void                 kb_encoder_bind_vertex_buffer             (kb_encoder encoder, uint32_t slot, kb_buffer vertex_buffer, uint64_t offset);
 KB_API void                 kb_encoder_bind_index_buffer              (kb_encoder encoder, kb_buffer index_buffer, uint64_t offset, kb_index_type type);
 KB_API void                 kb_encoder_bind_texture                   (kb_encoder encoder, const kb_uniform_slot slot, kb_texture texture);
-KB_API void                 kb_encoder_bind_uniform                   (kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size);
+KB_API void                 kb_encoder_bind_uniform_transient         (kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size);
+KB_API void                 kb_encoder_bind_uniform                   (kb_encoder encoder, uint32_t slot, kb_buffer buffer, uint64_t offset);
 KB_API void                 kb_encoder_submit                         (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count, uint32_t instance_count);
 KB_API void                 kb_encoder_reset_frame                    (kb_encoder encoder);
 KB_API void                 kb_texture_read                           (kb_texture_data* dst, kb_stream* src);

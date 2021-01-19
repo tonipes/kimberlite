@@ -6,12 +6,8 @@
 
 #include <kbextra/font.h>
 
-#include <kb/core.h>
-#include <kb/stream.h>
-#include <kb/alloc.h>
+#include <kb/foundation.h>
 #include <kb/graphics.h>
-#include <kb/stream.h>
-#include <kb/log.h>
 
 #include <kbextra/vertex.h>
 
@@ -484,7 +480,7 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   kb_encoder_bind_pipeline(encoder, fnt->pipeline);
   kb_encoder_bind_texture(encoder, fnt->atlas_slot, fnt->atlas_texture);
   
-  kb_encoder_bind_buffer(encoder, 0, buffer, vertex_data_offset);
+  kb_encoder_bind_vertex_buffer(encoder, 0, buffer, vertex_data_offset);
   kb_encoder_bind_index_buffer(encoder, buffer, index_data_offset, KB_INDEX_TYPE_16);
   kb_encoder_submit(encoder, 0, 0, indices, instance_count);
 

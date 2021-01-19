@@ -7,24 +7,21 @@
 
 #define KB_TOOL_ONLY
 
-#include <kb/core.h>
-#include <kb/time.h>
-#include <kb/array.h>
+
+#include <kb/foundation/core.h>
+#include <kb/foundation/time.h>
+#include <kb/foundation/array.h>
+
+#include <kb/log.h>
 
 #include <kbextra/cliargs.h>
 #include <kbextra/geometry.h>
 #include <kbextra/vertex.h>
 
-#include "kb/array.cpp"
-#include "kb/alloc.cpp"
-#include "kb/hash.cpp"
-#include "kb/time.cpp"
-#include "kb/crt.cpp"
-#include "kb/thread.cpp"
+#include "kb/foundation.cpp"
 #include "kb/log.cpp"
-#include "kb/texture.cpp"
-#include "kb/math.cpp"
 
+#include "kbextra/texture.cpp"
 #include "kbextra/vertex.cpp"
 #include "kbextra/cliargs.cpp"
 #include "kbextra/geometry.cpp"

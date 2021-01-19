@@ -4,12 +4,10 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
+#include <kb/foundation.h>
+
 #include <kb/audio.h>
 #include <kb/platform.h>
-
-#include <kb/core.h>
-#include <kb/stream.h>
-#include <kb/rand.h>
 
 KB_RESOURCE_ALLOC_FUNC_DEF  (sound,       kb_sound, kb_sound_create_info, KB_CONFIG_MAX_SOUNDS);
 KB_RESOURCE_DATA_HASHED_DEF (sound,       kb_sound);

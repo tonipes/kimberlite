@@ -6,8 +6,9 @@
 
 #include <kbextra/vertex.h>
 
-#include <kb/crt.h>
 #include <kb/log.h>
+
+#include <kb/foundation/crt.h>
 
 KB_INTERNAL uint64_t cv_attrib_sizes(kb_vertex_attribute_type type) {
   switch (type) {

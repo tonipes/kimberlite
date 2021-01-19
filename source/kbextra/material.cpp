@@ -6,11 +6,8 @@
 
 #include <kbextra/material.h>
 
-#include <kb/core.h>
-#include <kb/stream.h>
-#include <kb/alloc.h>
+#include <kb/foundation.h>
 #include <kb/graphics.h>
-#include <kb/stream.h>
 
 #ifndef KB_TOOL_ONLY
 
@@ -55,7 +52,7 @@ KB_API void kb_encoder_bind_material(kb_encoder encoder, kb_material material) {
   for (uint32_t i = 0; i < KB_CONFIG_MAX_UNIFORM_BINDINGS; ++i) {
     kb_material_uniform& uniform = material_ref(material)->uniforms[i];
     if (uniform.data != NULL && uniform.size > 0 && uniform.slot.stage != 0) {
-      kb_encoder_bind_uniform(encoder, uniform.slot, uniform.data, uniform.size);
+      kb_encoder_bind_uniform_transient(encoder, uniform.slot, uniform.data, uniform.size);
     }
     
     kb_material_texture& texture = material_ref(material)->textures[i];

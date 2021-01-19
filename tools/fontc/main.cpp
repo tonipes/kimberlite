@@ -6,18 +6,16 @@
 
 #define KB_TOOL_ONLY
 
-#include <kb/core.h>
-#include <kb/time.h>
+#include <kb/log.h>
+
+#include <kb/foundation/core.h>
+#include <kb/foundation/time.h>
 
 #include <kbextra/cliargs.h>
 #include <kbextra/font.h>
 
-#include "kb/alloc.cpp"
-#include "kb/crt.cpp"
+#include "kb/foundation.cpp"
 #include "kb/log.cpp"
-#include "kb/thread.cpp"
-#include "kb/table.cpp"
-#include "kb/math.cpp"
 
 #include "kbextra/cliargs.cpp"
 #include "kbextra/font.cpp"

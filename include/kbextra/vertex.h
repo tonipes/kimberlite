@@ -6,10 +6,7 @@
 
 #pragma once
 
-#include <kb/core.h>
-#include <kb/hash.h>
-#include <kb/math.h>
-
+#include <kb/foundation.h>
 #include <kb/graphics.h>
 
 #ifdef __cplusplus

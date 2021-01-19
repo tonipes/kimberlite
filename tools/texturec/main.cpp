@@ -6,20 +6,14 @@
 
 #define KB_TOOL_ONLY
 
-#include <kb/core.h>
-#include <kb/time.h>
-#include <kb/graphics.h>
-#include <kb/log.h>
+#include <kb/foundation/core.h>
+#include <kb/foundation/time.h>
 
 #include <kbextra/cliargs.h>
 
-#include "kb/alloc.cpp"
-#include "kb/crt.cpp"
-#include "kb/texture.cpp"
-#include "kb/math.cpp"
-#include "kb/log.cpp"
-#include "kb/thread.cpp"
+#include "kb/foundation.cpp"
 
+#include "kbextra/texture.cpp"
 #include "kbextra/cliargs.cpp"
 
 #define STB_IMAGE_IMPLEMENTATION

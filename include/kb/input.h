@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <kb/math.h>
+#include "foundation/math.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -246,16 +246,16 @@ typedef struct kb_input_init_info {
 } kb_input_init_info;
 
 typedef struct kb_gamepad_state {
-  float             axis      [KB_GAMEPAD_AXIS_COUNT];
-  uint8_t           button    [KB_GAMEPAD_BUTTON_COUNT];
+  float             axis[KB_GAMEPAD_AXIS_COUNT];
+  uint8_t           button[KB_GAMEPAD_BUTTON_COUNT];
 } kb_gamepad_state;
 
 typedef struct kb_input_state {
-  uint8_t           keyboard  [KB_KEY_COUNT];
-  uint8_t           mouse     [KB_MOUSE_BUTTON_COUNT];
-  kb_gamepad_state  gamepad   [KB_CONFIG_MAX_GAMEPADS];
-  kb_float2            mouse_pos;
-  kb_float2            wheel;
+  uint8_t           keyboard[KB_KEY_COUNT];
+  uint8_t           mouse[KB_MOUSE_BUTTON_COUNT];
+  kb_gamepad_state  gamepad[KB_CONFIG_MAX_GAMEPADS];
+  kb_float2         mouse_pos;
+  kb_float2         wheel;
 } kb_input_state;
 
 typedef struct kb_gamepad_joystick_axis {

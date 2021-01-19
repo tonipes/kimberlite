@@ -6,12 +6,7 @@
 
 #pragma once
 
-#include <kb/core.h>
-#include <kb/handle.h>
-#include <kb/math.h>
-#include <kb/stream.h>
-#include <kb/table.h>
-#include <kb/resource.h>
+#include <kb/foundation.h>
 #include <kb/graphics.h>
 
 #ifdef __cplusplus

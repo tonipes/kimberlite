@@ -6,11 +6,8 @@
 
 #include <kbextra/geometry.h>
 
-#include <kb/crt.h>
-#include <kb/alloc.h>
+#include <kb/foundation.h>
 #include <kb/graphics.h>
-#include <kb/log.h>
-#include <kb/stream.h>
 
 void kb_geometry_data_dump_info(const kb_geometry_data* geom) {
   KB_ASSERT_NOT_NULL(geom);
@@ -299,7 +296,7 @@ KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, u
 
   KB_ASSERT(mesh_ref(mesh)->primitive_count > prim_index, "Primitive index too large");
   
-  kb_encoder_bind_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
+  kb_encoder_bind_vertex_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
   kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
 //  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_16);
 

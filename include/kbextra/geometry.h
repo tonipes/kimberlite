@@ -6,11 +6,7 @@
 
 #pragma once
 
-#include <kb/math.h>
-#include <kb/handle.h>
-#include <kb/hash.h>
-#include <kb/stream.h>
-#include <kb/resource.h>
+#include <kb/foundation.h>
 #include <kb/graphics.h>
 
 #include <kbextra/vertex.h>

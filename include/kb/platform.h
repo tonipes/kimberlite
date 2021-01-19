@@ -6,13 +6,14 @@
 
 #pragma once
 
-#include <kb/core.h>
-#include <kb/alloc.h>
-#include <kb/stream.h>
-#include <kb/math.h>
-#include <kb/graphics.h>
-#include <kb/input.h>
-#include <kb/audio.h>
+#include "foundation/core.h"
+#include "foundation/alloc.h"
+#include "foundation/math.h"
+#include "foundation/stream.h"
+
+#include "graphics.h"
+#include "input.h"
+#include "audio.h"
 
 #ifdef __cplusplus
 extern "C" {

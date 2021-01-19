@@ -4,12 +4,10 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
-#include <kb/graphics.h>
+#include <kb/foundation.h>
 
+#include <kb/graphics.h>
 #include <kb/platform.h>
-#include <kb/time.h>
-#include <kb/sampler.h>
-#include <kb/log.h>
 
 typedef struct pipeline_info {
   kb_uniform_layout         uniform_layout;
@@ -507,7 +505,7 @@ KB_API void kb_encoder_bind_pipeline(kb_encoder encoder, kb_pipeline pipeline) {
   current_encoder_frame(encoder).pipeline = pipeline;
 }
 
-KB_API void kb_encoder_bind_buffer(kb_encoder encoder, uint32_t slot, kb_buffer buffer, uint64_t offset) {
+KB_API void kb_encoder_bind_vertex_buffer(kb_encoder encoder, uint32_t slot, kb_buffer buffer, uint64_t offset) {
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(buffer);
 
@@ -544,7 +542,26 @@ KB_API void kb_encoder_bind_texture(kb_encoder encoder, const kb_uniform_slot sl
   }
 }
 
-KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size) {
+KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot slot, kb_buffer buffer, uint64_t offset) {
+  KB_ASSERT_VALID(encoder);
+  KB_ASSERT_VALID(buffer);
+
+  if (slot.stage & KB_SHADER_STAGE_VERTEX) {
+    kb_uniform_binding* binding = &current_encoder_frame(current_encoder_state(encoder)).vert_uniform_bindings[slot.vert_index];
+    binding->index  = slot.vert_index;
+    binding->offset = offset,
+    binding->buffer = buffer;
+  }
+  
+  if (slot.stage & KB_SHADER_STAGE_FRAGMENT) {
+    kb_uniform_binding* binding = &current_encoder_frame(current_encoder_state(encoder)).frag_uniform_bindings[slot.frag_index]; 
+    binding->index  = slot.frag_index;
+    binding->offset = offset,
+    binding->buffer = buffer;
+  }
+}
+
+KB_API void kb_encoder_bind_uniform_transient(kb_encoder encoder, const kb_uniform_slot slot, const void* data, uint64_t size) {
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_NOT_NULL(data);
 
@@ -571,7 +588,6 @@ KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot sl
   if (slot.stage & KB_SHADER_STAGE_VERTEX) {
     kb_uniform_binding* binding = &current_encoder_frame(current_encoder_state(encoder)).vert_uniform_bindings[slot.vert_index];
     binding->index  = slot.vert_index;
-    binding->size   = data_size;
     binding->offset = buffer_offset,
     binding->buffer = buffer;
   }
@@ -579,7 +595,6 @@ KB_API void kb_encoder_bind_uniform(kb_encoder encoder, const kb_uniform_slot sl
   if (slot.stage & KB_SHADER_STAGE_FRAGMENT) {
     kb_uniform_binding* binding = &current_encoder_frame(current_encoder_state(encoder)).frag_uniform_bindings[slot.frag_index]; 
     binding->index  = slot.frag_index;
-    binding->size   = data_size;
     binding->offset = buffer_offset,
     binding->buffer = buffer;
   }
