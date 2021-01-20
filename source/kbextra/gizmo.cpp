@@ -65,12 +65,11 @@ KB_API void kb_gizmo_flush(kb_gizmo* gizmo, bool force) {
     uint64_t vertex_alloc_size  = gizmo->line_vertex_cache_pos * sizeof(kb_simple_vertex);
     uint64_t index_alloc_size   = gizmo->line_index_cache_pos  * sizeof(uint16_t);
     
-    kb_buffer buffer = kb_graphics_transient_buffer();
-    int64_t vertex_data_offset  = kb_graphics_transient_alloc(vertex_alloc_size,  KB_BUFFER_USAGE_VERTEX_BUFFER);
-    int64_t index_data_offset   = kb_graphics_transient_alloc(index_alloc_size,  KB_BUFFER_USAGE_INDEX_BUFFER);
-
-    kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_get_buffer_mapped(buffer, vertex_data_offset);
-    uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_get_buffer_mapped(buffer, index_data_offset);
+    kb_buffer_memory vertex_data_alloc  = kb_graphics_transient_alloc(vertex_alloc_size,  KB_BUFFER_USAGE_VERTEX_BUFFER);
+    kb_buffer_memory index_data_alloc   = kb_graphics_transient_alloc(index_alloc_size,  KB_BUFFER_USAGE_INDEX_BUFFER);
+    
+    kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_get_buffer_mapped(vertex_data_alloc);
+    uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_get_buffer_mapped(index_data_alloc);
 
     if (vertex_data_buffer != NULL) {
       kb_memcpy(vertex_data_buffer, gizmo->line_vertex_cache, vertex_alloc_size);
@@ -84,9 +83,9 @@ KB_API void kb_gizmo_flush(kb_gizmo* gizmo, bool force) {
 
     kb_encoder_push(gizmo->encoder);
       kb_encoder_bind_pipeline      (gizmo->encoder, gizmo->pipeline);
-      kb_encoder_bind_vertex_buffer        (gizmo->encoder, 0, buffer, vertex_data_offset);
-      kb_encoder_bind_index_buffer  (gizmo->encoder, buffer, index_data_offset, KB_INDEX_TYPE_16);
-      kb_encoder_submit             (gizmo->encoder, 0, 0, gizmo->line_index_cache_pos, 1);
+      kb_encoder_bind_vertex_buffer (gizmo->encoder, 0, vertex_data_alloc);
+      kb_encoder_bind_index_buffer  (gizmo->encoder, KB_INDEX_TYPE_16, index_data_alloc);
+      kb_encoder_submit_draw             (gizmo->encoder, 0, 0, gizmo->line_index_cache_pos, 1);
     kb_encoder_pop(gizmo->encoder);
   }
 

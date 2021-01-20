@@ -58,12 +58,12 @@ typedef struct kb_geometry_data {
 } kb_geometry_data;
 
 typedef struct kb_geometry_create_info {
-  kb_stream*         data;
+  kb_stream*          data;
 } kb_geometry_create_info;
 
 typedef struct kb_mesh_create_info {
-  kb_buffer           vertex_buffer;
-  kb_buffer           index_buffer;
+  kb_buffer_memory    vertex_memory;
+  kb_buffer_memory    index_memory;
   uint32_t            primitive_count;
   kb_primitive_data*  primitives;
   uint32_t            material_count;
@@ -81,7 +81,7 @@ KB_API void kb_geometry_data_write            (const kb_geometry_data* geometry,
 KB_API void kb_geometry_data_dump_info        (const kb_geometry_data* geometry);
 KB_API void kb_geometry_data_destroy          (kb_geometry_data* geometry);
 KB_API void kb_encoder_submit_mesh            (kb_encoder encoder, kb_mesh mesh, uint32_t instance_count, bool bind_material);
-KB_API void kb_encoder_submit_primitive_draw  (kb_encoder encoder, kb_mesh mesh, uint32_t prim_index, uint32_t instance_count);
+KB_API void kb_encoder_submit_primitive  (kb_encoder encoder, kb_mesh mesh, uint32_t prim_index, uint32_t instance_count);
 
 #ifdef __cplusplus
 }

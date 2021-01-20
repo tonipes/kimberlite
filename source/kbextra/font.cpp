@@ -385,12 +385,11 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   uint32_t vertex_alloc_size = max_vertices  * sizeof(kb_simple_vertex);
   uint32_t index_alloc_size  = max_indices   * sizeof(uint16_t);
   
-  kb_buffer buffer = kb_graphics_transient_buffer();
-  int64_t vertex_data_offset  = kb_graphics_transient_alloc(vertex_alloc_size, KB_BUFFER_USAGE_VERTEX_BUFFER);
-  int64_t index_data_offset   = kb_graphics_transient_alloc(index_alloc_size, KB_BUFFER_USAGE_INDEX_BUFFER);
-
-  kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_get_buffer_mapped(buffer, vertex_data_offset);
-  uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_get_buffer_mapped(buffer, index_data_offset);
+  kb_buffer_memory vertex_data_alloc = kb_graphics_transient_alloc(vertex_alloc_size, KB_BUFFER_USAGE_VERTEX_BUFFER);
+  kb_buffer_memory index_data_alloc = kb_graphics_transient_alloc(index_alloc_size, KB_BUFFER_USAGE_INDEX_BUFFER);
+  
+  kb_simple_vertex* vertex_data_buffer = (kb_simple_vertex*)  kb_graphics_get_buffer_mapped(vertex_data_alloc);
+  uint16_t*         index_data_buffer  = (uint16_t*)          kb_graphics_get_buffer_mapped(index_data_alloc);
 
   kb_simple_vertex* vertex_data = vertex_data_buffer;
   uint16_t*         index_data  = index_data_buffer;
@@ -480,9 +479,9 @@ void kb_encoder_submit_text(kb_encoder encoder, kb_font font, const char* str, u
   kb_encoder_bind_pipeline(encoder, fnt->pipeline);
   kb_encoder_bind_texture(encoder, fnt->atlas_slot, fnt->atlas_texture);
   
-  kb_encoder_bind_vertex_buffer(encoder, 0, buffer, vertex_data_offset);
-  kb_encoder_bind_index_buffer(encoder, buffer, index_data_offset, KB_INDEX_TYPE_16);
-  kb_encoder_submit(encoder, 0, 0, indices, instance_count);
+  kb_encoder_bind_vertex_buffer(encoder, 0, vertex_data_alloc);
+  kb_encoder_bind_index_buffer(encoder, KB_INDEX_TYPE_16, index_data_alloc);
+  kb_encoder_submit_draw(encoder, 0, 0, indices, instance_count);
 
   kb_encoder_pop(encoder);
 }

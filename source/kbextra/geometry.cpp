@@ -167,6 +167,9 @@ struct kb_primitive_ref {
 };
 
 struct kb_mesh_ref {
+  kb_buffer_memory vertex_memory;
+  kb_buffer_memory index_memory;
+
   kb_buffer           vertex_buffer;
   kb_buffer           index_buffer;
   kb_primitive_ref*   primitives;
@@ -174,8 +177,11 @@ struct kb_mesh_ref {
 };
 
 struct kb_geometry_ref {
-  kb_buffer           vertex_buffer;
-  kb_buffer           index_buffer;
+  // kb_buffer           vertex_buffer;
+  // kb_buffer           index_buffer;
+  kb_buffer_memory vertex_memory;
+  kb_buffer_memory index_memory;
+
   kb_material*        materials;
   kb_mesh*            meshes;
   uint32_t            material_count;
@@ -193,8 +199,8 @@ KB_RESOURCE_DATA_HASHED_DEF (geometry, kb_geometry);
 void kb_mesh_construct(kb_mesh handle, const kb_mesh_create_info info) {
   KB_ASSERT_VALID(handle);
 
-  mesh_ref(handle)->vertex_buffer  = info.vertex_buffer;
-  mesh_ref(handle)->index_buffer   = info.index_buffer;
+  mesh_ref(handle)->vertex_memory  = info.vertex_memory;
+  mesh_ref(handle)->index_memory   = info.index_memory;
 
   mesh_ref(handle)->primitive_count  = info.primitive_count;
   mesh_ref(handle)->primitives       = KB_DEFAULT_ALLOC_TYPE(kb_primitive_ref, info.primitive_count);
@@ -232,7 +238,8 @@ void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info inf
   
   // Index buffer
   kb_stream* ib_rwops = kb_stream_open_mem(geom.index_data, geom.index_data_size);
-  geometry_ref(handle)->index_buffer = kb_buffer_create({
+  geometry_ref(handle)->index_memory.offset = 0;
+  geometry_ref(handle)->index_memory.buffer = kb_buffer_create({
     .rwops        = ib_rwops,
     .size         = geom.index_data_size,
     .usage        = KB_BUFFER_USAGE_INDEX_BUFFER,
@@ -241,7 +248,8 @@ void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info inf
   
   // Vertex_buffer
   kb_stream* vb_rwops = kb_stream_open_mem(geom.vertex_data, geom.vertex_data_size);
-  geometry_ref(handle)->vertex_buffer = kb_buffer_create({
+  geometry_ref(handle)->vertex_memory.offset = 0;
+  geometry_ref(handle)->vertex_memory.buffer = kb_buffer_create({
     .rwops        = vb_rwops,
     .size         = geom.vertex_data_size,
     .usage        = KB_BUFFER_USAGE_VERTEX_BUFFER,
@@ -260,8 +268,8 @@ void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info inf
   
   for (uint32_t i = 0; i < geom.mesh_count; i++) {
     geometry_ref(handle)->meshes[i] = kb_mesh_create({
-      .index_buffer     = geometry_ref(handle)->index_buffer,
-      .vertex_buffer    = geometry_ref(handle)->vertex_buffer,
+      .index_memory     = geometry_ref(handle)->index_memory,
+      .vertex_memory    = geometry_ref(handle)->vertex_memory,
       .primitive_count  = geom.meshes[i].primitive_count,
       .primitives       = geom.meshes[i].primitives,
       .material_count   = geom.material_count,
@@ -277,8 +285,8 @@ void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info inf
 void kb_geometry_destruct(kb_geometry handle) {
   KB_ASSERT_VALID(handle);
   
-  kb_buffer_destroy(geometry_ref(handle)->index_buffer);
-  kb_buffer_destroy(geometry_ref(handle)->vertex_buffer);
+  kb_buffer_destroy(geometry_ref(handle)->index_memory.buffer);
+  kb_buffer_destroy(geometry_ref(handle)->vertex_memory.buffer);
 
   for (uint32_t i = 0; i < geometry_ref(handle)->mesh_count; i++) {
     kb_mesh_destroy(geometry_ref(handle)->meshes[i]);
@@ -290,25 +298,23 @@ void kb_geometry_destruct(kb_geometry handle) {
   kb_geometry_set_initialized(handle, false);
 }
 
-KB_API void kb_encoder_submit_primitive_draw(kb_encoder encoder, kb_mesh mesh, uint32_t prim_index, uint32_t instance_count) {
+KB_API void kb_encoder_submit_primitive(kb_encoder encoder, kb_mesh mesh, uint32_t prim_index, uint32_t instance_count) {
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(mesh);
 
   KB_ASSERT(mesh_ref(mesh)->primitive_count > prim_index, "Primitive index too large");
   
-  kb_encoder_bind_vertex_buffer(encoder, 0, mesh_ref(mesh)->vertex_buffer, 0);
-  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_32);
-//  kb_encoder_bind_index_buffer(encoder, mesh_ref(mesh)->index_buffer, 0, KB_INDEX_TYPE_16);
+  kb_encoder_bind_vertex_buffer(encoder, 0, mesh_ref(mesh)->vertex_memory);
+  kb_encoder_bind_index_buffer(encoder, KB_INDEX_TYPE_32, mesh_ref(mesh)->index_memory);
 
   kb_primitive_ref& primitive = mesh_ref(mesh)->primitives[prim_index];
 
-  kb_encoder_submit(encoder, 
+  kb_encoder_submit_draw(encoder, 
     primitive.first_index,
     primitive.first_vertex,
     primitive.index_count,
     instance_count
   );
-  
 }
 
 KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t instance_count, bool bind_material) {
@@ -324,10 +330,9 @@ KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t in
       kb_encoder_bind_material(encoder, material);
     }
     
-    kb_encoder_submit_primitive_draw(encoder, mesh, i, instance_count);
+    kb_encoder_submit_primitive(encoder, mesh, i, instance_count);
     kb_encoder_pop(encoder);
-  }  
-  
+  }
 }
 
 #endif
