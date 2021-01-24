@@ -94,7 +94,7 @@ char* KB_API kb_strdup(const char* src) {
   return c;
 }
 
-KB_API void* kb_memdup(void* src, uint64_t size) {
+KB_API void* kb_memdup(const void* src, uint64_t size) {
   void* p = KB_DEFAULT_ALLOC(size);
   kb_memcpy(p, src, size);
   return p;

@@ -49,6 +49,7 @@ KB_API void kb_array_reset(kb_array* array) {
   KB_ASSERT_NOT_NULL(array);
 
   array->pos = 0;
+  kb_memset(array->data, 0, array->cap * array->elem_size);
 }
 
 KB_API void kb_array_copy(kb_array* dst, const kb_array* src) {

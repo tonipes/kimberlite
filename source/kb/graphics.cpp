@@ -5,7 +5,6 @@
 // ============================================================================
 
 #include <kb/foundation.h>
-
 #include <kb/graphics.h>
 #include <kb/platform.h>
 #include <kb/log.h>
@@ -75,6 +74,17 @@ uint32_t            compute_call_cache_pos[KB_CONFIG_MAX_RENDERPASSES];
 
 kb_transient_buffer transient_buffers[KB_CONFIG_MAX_FRAMES_IN_FLIGHT];
 
+uint32_t draw_call_count;
+uint32_t compute_call_count;
+
+// Stats
+int64_t frame_timestamp = 0.0f;
+
+kb::sampler frametime_sampler(100);
+kb::sampler platform_frametime_sampler(100);
+
+kb_graphics_stats stats_cache;
+
 kb_encoder_pool& current_encoder_pool() {
   return encoder_pools[kb_graphics_get_current_resource_slot()];
 }
@@ -116,7 +126,6 @@ void construct_encoder_pools() {
     for (int state_i = 0; state_i < KB_CONFIG_MAX_ENCODERS; ++state_i) {
       encoder_pools[pool_i].states[state_i].draw_calls = KB_DEFAULT_ALLOC_TYPE(kb_render_call, KB_CONFIG_MAX_DRAW_CALLS);
       encoder_pools[pool_i].states[state_i].compute_calls = KB_DEFAULT_ALLOC_TYPE(kb_compute_call, KB_CONFIG_MAX_DRAW_CALLS);
-      
     }
   }
 }
@@ -219,15 +228,20 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
     compute_call_cache_pos[pass_i] = 0;
     compute_call_cache[pass_i]     = KB_DEFAULT_ALLOC_TYPE(kb_compute_call, KB_CONFIG_MAX_DRAW_CALLS);
   }
-  
+
+  char tmpstr[512] = {0};
+
   // Transient buffers
   for (uint32_t frame_i = 0; frame_i < KB_CONFIG_MAX_FRAMES_IN_FLIGHT; frame_i++) {
+    kb::strfmt(tmpstr, 512, "Transient buffer ({})", frame_i);
+    
     transient_buffers[frame_i] = {};
     transient_buffers[frame_i].position = 0;
     transient_buffers[frame_i].buffer = kb_buffer_create({
-      .rwops  = NULL,
-      .size   = KB_CONFIG_TRANSIENT_BUFFER_SIZE,
-      .usage  = KB_BUFFER_USAGE_VERTEX_BUFFER | KB_BUFFER_USAGE_INDEX_BUFFER | KB_BUFFER_USAGE_UNIFORM_BUFFER | KB_BUFFER_USAGE_CPU_WRITE
+      .rwops        = NULL,
+      .size         = KB_CONFIG_TRANSIENT_BUFFER_SIZE,
+      .usage        = KB_BUFFER_USAGE_VERTEX_BUFFER | KB_BUFFER_USAGE_INDEX_BUFFER | KB_BUFFER_USAGE_UNIFORM_BUFFER | KB_BUFFER_USAGE_CPU_WRITE,
+      .debug_label  = tmpstr,
     });
   }
 
@@ -238,6 +252,7 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
 
   // Attachments
   for (uint32_t attachment_i = 0; attachment_i < info.pipe.attachment_count; ++attachment_i) {
+    kb::strfmt(tmpstr, 512, "Attachment ({})", attachment_i);
     const kb_attachment_info& attachment_info = info.pipe.attachments[attachment_i];
     
     kb_pipe_attachment& attachment = graphics_pipe->attachments[attachment_i];
@@ -249,21 +264,21 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
 
     if (!(attachment.flags & KB_ATTACHMENT_FLAGS_SURFACE_PROXY)) {
       // Not surface proxy, create attachment texture
-//      KB_ASSERT(attachment_info.usage & KB_TEXTURE_USAGE_RENDER_TARGET, "Graphics pipeline attachments must be render targets");
 
       kb_int2 attachment_size = calculate_attachment_size(current_extent, attachment_info.size, attachment_info.flags);
 
       attachment.format = attachment_info.format;
       attachment.usage = attachment_info.usage;
       attachment.texture = kb_texture_create({
-        .rwops    = NULL,
-        .usage    = attachment_info.usage,
-        .texture  = {
+        .rwops        = NULL,
+        .debug_label  = tmpstr,
+        .usage        = attachment_info.usage,
+        .texture      = {
           .format = attachment_info.format,
           .width  = (uint32_t) attachment_size.x,
           .height = (uint32_t) attachment_size.y,
         },
-        .sampler = {
+        .sampler      = {
           .min_filter     = KB_FILTER_NEAREST,
           .mag_filter     = KB_FILTER_NEAREST,
           .address_mode_u = KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
@@ -271,7 +286,7 @@ KB_API void kb_graphics_init(const kb_graphics_init_info info) {
           .address_mode_w = KB_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
           .anisotropy     = 0.0f,
         },
-        .mipmaps = false,
+        .mipmaps      = false,
       });
     }
   }
@@ -301,6 +316,9 @@ KB_API void kb_graphics_deinit() {
 }
 
 KB_API void kb_graphics_run_encoders() {
+  stats_cache.draw_calls_used = 0;
+  stats_cache.compute_calls_used = 0;
+  
   // Fill caches
   for (uint32_t encoder_i = 0; encoder_i < current_encoder_pool().count; ++encoder_i) {
     kb_encoder_state& state = current_encoder_pool().states[encoder_i];
@@ -330,11 +348,16 @@ KB_API void kb_graphics_run_encoders() {
 
       // Submit render calls
       kb_platform_graphics_submit_render_pass(pass_i, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
+      
+      stats_cache.draw_calls_used += draw_call_cache_pos[pass_i];
     }
     
     if (compute_call_cache_pos[pass_i] > 0) {
+
       // Submit compute calls
       kb_platform_graphics_submit_compute_pass(pass_i, compute_call_cache[pass_i], compute_call_cache_pos[pass_i]);
+
+      stats_cache.compute_calls_used += compute_call_cache_pos[pass_i];
     }
     
     compute_call_cache_pos[pass_i] = 0;
@@ -372,17 +395,50 @@ KB_API void kb_graphics_frame() {
       }
     }
   }
-  
+
+  int64_t platform_frame_start = kb_time_get_raw();
+
   kb_platform_graphics_frame();
   
-  // Reset pools
+  int64_t platform_frame_time_diff = kb_time_get_raw() - platform_frame_start;
+  double platform_frame_time = (double) platform_frame_time_diff / (double) kb_time_get_frequency();
+  
+  platform_frametime_sampler.push(platform_frame_time);
+
   kb_encoder_pool& current_pool = current_encoder_pool();
+
+  stats_cache.platform_frametime      = platform_frame_time;
+  stats_cache.platform_frametime_avg  = platform_frametime_sampler.avg();
+  stats_cache.platform_frametime_min  = platform_frametime_sampler.min();
+  stats_cache.platform_frametime_max  = platform_frametime_sampler.max();
+  
+  // Update stats
+  stats_cache.buffer_count            = kb_buffer_count();
+  stats_cache.texture_count           = kb_texture_count();
+  stats_cache.encoders_used           = current_pool.count;
+  stats_cache.encoders_allocated      = KB_CONFIG_MAX_ENCODERS;
+  stats_cache.frametime_avg           = frametime_sampler.avg();
+  stats_cache.frametime_min           = frametime_sampler.min();
+  stats_cache.frametime_max           = frametime_sampler.max();
+  stats_cache.draw_calls_allocated    = KB_CONFIG_MAX_DRAW_CALLS;
+  stats_cache.compute_calls_allocated = KB_CONFIG_MAX_DRAW_CALLS;
+  
+  // Reset pools
   for (int i = 0; i < current_pool.count; ++i) {
     reset_encoder_state(current_pool.states[i]);
   }
   current_pool.count = 0;
   
   acquire_frame_resources();
+
+  int64_t ctime = kb_current_time();
+  int64_t frametime_diff = ctime - frame_timestamp;
+  frame_timestamp = ctime;
+  
+  double frametime = (double) frametime_diff / (double) kb_time_get_frequency();
+  
+  frametime_sampler.push(frametime);
+  stats_cache.frametime = frametime;
 }
 
 KB_API kb_texture kb_graphics_pipe_attachment_texture(uint32_t attachment) {
@@ -484,7 +540,7 @@ KB_API kb_uniform_slot kb_uniform_get_slot(const kb_uniform_layout* layout, kb_h
       if (layout->compute_uniforms[i].hash == hash) {
         out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_COMPUTE);
         out.type = KB_BINDING_TYPE_UNIFORM_BUFFER;
-        out.fragment_slot = layout->compute_uniforms[i].slot;
+        out.compute_slot = layout->compute_uniforms[i].slot;
       }
     }
   }
@@ -506,7 +562,7 @@ KB_API kb_uniform_slot kb_uniform_get_slot(const kb_uniform_layout* layout, kb_h
       if (layout->compute_textures[i].hash == hash) {
         out.stage = (kb_shader_stage) (out.stage | KB_SHADER_STAGE_COMPUTE);
         out.type = KB_BINDING_TYPE_TEXTURE;
-        out.fragment_slot = layout->compute_textures[i].slot;
+        out.compute_slot = layout->compute_textures[i].slot;
       }
     }
   }
@@ -685,4 +741,8 @@ KB_API kb_int2 kb_graphics_get_extent() {
 KB_API float kb_graphics_get_aspect() {
   kb_int2 size = kb_graphics_get_extent();
   return float(size.x) / float(size.y);
+}
+
+KB_API void kb_graphics_get_stats(kb_graphics_stats* dst) {
+  *dst = stats_cache;
 }

@@ -6,6 +6,7 @@
 
 #include "foundation/alloc.cpp"
 #include "foundation/array.cpp"
+#include "foundation/build.cpp"
 #include "foundation/crt.cpp"
 #include "foundation/freelist.cpp"
 #include "foundation/hash.cpp"

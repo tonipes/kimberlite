@@ -300,6 +300,8 @@ typedef struct kb_texture_create_info {
   kb_sampler_info           sampler;
   kb_texture_usage          usage;
   bool                      mipmaps;
+  const char*               debug_label;
+  void*                     userdata;
 } kb_texture_create_info;
 
 typedef struct kb_attachment_info {
@@ -307,9 +309,8 @@ typedef struct kb_attachment_info {
   kb_float2                 size;
   kb_attachment_flags       flags;
   kb_sampler_info           sampler;
-  // bool                      use_surface_size;
-  // bool                      surface_proxy;
   kb_texture_usage          usage;
+
 } kb_attachment_info;
 
 typedef struct kb_attachment_bind_info {
@@ -343,6 +344,8 @@ typedef struct kb_buffer_create_info {
   kb_stream*                rwops;
   uint32_t                  size;
   kb_buffer_usage           usage;
+  const char*               debug_label;
+  void*                     userdata;
 } kb_buffer_create_info;
 
 typedef struct kb_vertex_attrib_info {
@@ -403,6 +406,8 @@ typedef struct kb_pipeline_create_info {
   kb_shader_info            compute_shader;
   uint32_t                  pass;
   kb_shader_stage           stages;
+  const char*               debug_label;
+  void*                     userdata;
 } kb_pipeline_create_info;
 
 typedef struct kb_graphics_init_info {
@@ -435,7 +440,6 @@ typedef struct kb_uniform_binding {
 } kb_uniform_binding;
 
 typedef struct kb_render_call {
-//  uint32_t                  pass;
   kb_pipeline               pipeline;
   uint32_t                  first_vertex;
   uint32_t                  first_index;
@@ -450,7 +454,6 @@ typedef struct kb_render_call {
 } kb_render_call;
 
 typedef struct kb_compute_call {
-//  uint32_t                  pass;
   kb_pipeline               pipeline;
   kb_int3                   groups;
   kb_int3                   group_size;
@@ -466,6 +469,33 @@ typedef struct kb_uniform_slot {
   kb_binding_type           type;
 } kb_uniform_slot;
 
+typedef struct kb_graphics_stats {
+  float                          platform_frametime;
+  float                          platform_frametime_avg;
+  float                          platform_frametime_min;
+  float                          platform_frametime_max;
+  
+  float                          frametime;
+  float                          frametime_avg;
+  float                          frametime_min;
+  float                          frametime_max;
+  
+  uint32_t                       buffer_count;
+  uint32_t                       texture_count;
+  uint32_t                       pipeline_count;
+  
+  uint32_t                       encoders_allocated;
+  uint32_t                       encoders_used;
+  
+  uint32_t                       draw_calls_allocated;
+  uint32_t                       draw_calls_used;
+  
+  uint32_t                       compute_calls_allocated;
+  uint32_t                       compute_calls_used;
+  
+  uint32_t                       transient_allocated;
+  uint32_t                       transient_used;
+} kb_graphics_stats;
 
 KB_RESOURCE_HASHED_FUNC_DECLS (buffer         , kb_buffer         , kb_buffer_create_info         )
 KB_RESOURCE_HASHED_FUNC_DECLS (pipeline       , kb_pipeline       , kb_pipeline_create_info       )
@@ -478,6 +508,7 @@ KB_RESOURCE_ALLOC_FUNC_DECLS  (texture        , kb_texture        , kb_texture_c
 KB_API void                 kb_graphics_init                          (const kb_graphics_init_info info);
 KB_API void                 kb_graphics_deinit                        (void);
 KB_API void                 kb_graphics_frame                         (void);
+KB_API void                 kb_graphics_get_stats                     (kb_graphics_stats* dst);
 KB_API void                 kb_graphics_run_encoders                  (void);
 KB_API kb_int2              kb_graphics_get_extent                    (void);
 KB_API float                kb_graphics_get_aspect                    (void);
@@ -501,6 +532,9 @@ KB_API void                 kb_encoder_bind_texture                   (kb_encode
 KB_API void                 kb_encoder_bind_uniform                   (kb_encoder encoder, const kb_uniform_slot slot, kb_buffer_memory memory);
 KB_API void                 kb_encoder_submit_draw                    (kb_encoder encoder, uint32_t first_vertex, uint32_t first_index, uint32_t index_count, uint32_t instance_count);
 KB_API void                 kb_encoder_submit_compute                 (kb_encoder encoder, kb_int3 group_size, kb_int3 groups);
+
+//KB_API void                 kb_encoder_submit_texture_blit            (kb_encoder encoder, kb_int3 group_size, kb_int3 groups);
+//KB_API void                 kb_encoder_submit_buffer_blit             (kb_encoder encoder, kb_int3 group_size, kb_int3 groups);
 
 KB_API void                 kb_encoder_reset_frame                    (kb_encoder encoder);
 KB_API void                 kb_texture_read                           (kb_texture_data* dst, kb_stream* src);

@@ -69,16 +69,22 @@
 #define STRING(_x) STRING_(_x)
 #define STRING_(_x) #_x
 
-#define KB_KILO(value) ((value)/1024LL)
-#define KB_MEGA(value) (KB_KILO(value)/1024LL)
-#define KB_GIGA(value) (KB_MEGA(value)/1024LL)
-#define KB_TERA(value) (KB_GIGA(value)/1024LL)
+#define KB_KILO(_v) ((_v)/1024LL)
+#define KB_MEGA(_v) (KB_KILO(_v)/1024LL)
+#define KB_GIGA(_v) (KB_MEGA(_v)/1024LL)
+#define KB_TERA(_v) (KB_GIGA(_v)/1024LL)
 
+#define KB_MACRO_STR_HELPER(x) #x
+#define KB_MACRO_STR(x) KB_MACRO_STR_HELPER(x)
 
 //#####################################################################################################################
 // Build
 //#####################################################################################################################
 
+#define KB_NAME "Kimberlite"
+
+#define KB_VERSION 000001
+#define KB_VERSION_STR "0.0.1"
 
 #define KB_BUILD_MODE_DEBUG    0
 #define KB_BUILD_MODE_RELEASE  0
@@ -286,35 +292,35 @@
 // Graphics Library
 //#####################################################################################################################
 
-
-#define KB_GRAPHICS_LIB_VULKAN                  0
-#define KB_GRAPHICS_LIB_METAL                   0
-#define KB_GRAPHICS_LIB_NOOP                    0
-#define KB_GRAPHICS_LIB_NAME                    "Unknown"
-
-#if defined(KB_SETUP_GRAPHICS_LIB_VULKAN)
-#	undef  KB_GRAPHICS_LIB_VULKAN
-#	define KB_GRAPHICS_LIB_VULKAN 1
-#elif defined(KB_SETUP_GRAPHICS_LIB_METAL)
-#	undef  KB_GRAPHICS_LIB_METAL
-#	define KB_GRAPHICS_LIB_METAL 1
-#elif defined(KB_SETUP_GRAPHICS_LIB_NOOP)
-#	undef  KB_GRAPHICS_LIB_NOOP
-#	define KB_GRAPHICS_LIB_NOOP 1
-#endif
-
-#if KB_GRAPHICS_LIB_VULKAN
-#	undef  KB_GRAPHICS_LIB_NAME
-#	define KB_GRAPHICS_LIB_NAME "Vulkan"
-#elif KB_GRAPHICS_LIB_METAL
-#	undef  KB_GRAPHICS_LIB_NAME
-#	define KB_GRAPHICS_LIB_NAME "Metal"
-#elif KB_GRAPHICS_LIB_NOOP
-#	undef  KB_GRAPHICS_LIB_NAME
-#	define KB_GRAPHICS_LIB_NAME "Noop"
-// #else
-// #	error "Unknown KB_GRAPHICS_LIB!"
-#endif
+//
+//#define KB_GRAPHICS_LIB_VULKAN                  0
+//#define KB_GRAPHICS_LIB_METAL                   0
+//#define KB_GRAPHICS_LIB_NOOP                    0
+//#define KB_GRAPHICS_LIB_NAME                    "Unknown"
+//
+//#if defined(KB_SETUP_GRAPHICS_LIB_VULKAN)
+//#	undef  KB_GRAPHICS_LIB_VULKAN
+//#	define KB_GRAPHICS_LIB_VULKAN 1
+//#elif defined(KB_SETUP_GRAPHICS_LIB_METAL)
+//#	undef  KB_GRAPHICS_LIB_METAL
+//#	define KB_GRAPHICS_LIB_METAL 1
+//#elif defined(KB_SETUP_GRAPHICS_LIB_NOOP)
+//#	undef  KB_GRAPHICS_LIB_NOOP
+//#	define KB_GRAPHICS_LIB_NOOP 1
+//#endif
+//
+//#if KB_GRAPHICS_LIB_VULKAN
+//#	undef  KB_GRAPHICS_LIB_NAME
+//#	define KB_GRAPHICS_LIB_NAME "Vulkan"
+//#elif KB_GRAPHICS_LIB_METAL
+//#	undef  KB_GRAPHICS_LIB_NAME
+//#	define KB_GRAPHICS_LIB_NAME "Metal"
+//#elif KB_GRAPHICS_LIB_NOOP
+//#	undef  KB_GRAPHICS_LIB_NAME
+//#	define KB_GRAPHICS_LIB_NAME "Noop"
+//// #else
+//// #	error "Unknown KB_GRAPHICS_LIB!"
+//#endif
 
 
 //#####################################################################################################################
@@ -344,13 +350,13 @@
 #define KB_CONFIG_MAX_VERTEX_ATTRIBS            16 * KB_CONFIG_MAX_VERTEX_ATTRIB_BUFFERS
 #define KB_CONFIG_MAX_UNIFORM_BINDINGS          16
 
-#define KB_CONFIG_MAX_DRAW_CALLS                128
+#define KB_CONFIG_MAX_DRAW_CALLS                512
 #define KB_CONFIG_MAX_ENCODERS                  16
 #define KB_CONFIG_MAX_PASS_COLOR_ATTACHMENTS    16
 #define KB_CONFIG_MAX_PIPE_ATTACHMENTS          16
 #define KB_CONFIG_MAX_PASSES                    16
 #define KB_CONFIG_TRANSIENT_BUFFER_SIZE         16 * 1024 * KB_CONFIG_MAX_DRAW_CALLS
-#define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
+//#define KB_CONFIG_ENGINE_NAME                   "Kimberlite"
 #define KB_CONFIG_STATS_SAMPLE_COUNT            120
 #define KB_CONFIG_GIZMO_CACHE_SIZE              4096
 #define KB_CONFIG_GIZMO_STACK_SIZE              32

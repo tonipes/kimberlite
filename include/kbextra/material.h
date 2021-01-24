@@ -22,7 +22,7 @@ typedef struct kb_material_texture {
 
 typedef struct kb_material_uniform {
   kb_uniform_slot           slot;
-  void*                     data;
+  const void*               data;
   uint64_t                  size;
 } kb_material_uniform;
 

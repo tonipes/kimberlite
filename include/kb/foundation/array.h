@@ -41,6 +41,8 @@ KB_API void     kb_array_pop_back   (kb_array* array);
 
 #ifdef __cplusplus
 
+#include <initializer_list>
+
 namespace kb {
   template <typename T>
   class array: public kb_array {
@@ -48,7 +50,13 @@ namespace kb {
     array(uint64_t capacity = 0) {
       kb_array_create(this, sizeof(T), capacity);
     }
-
+    
+    array(std::initializer_list<T> ilist): array(ilist.size()) {
+      for (const T& v : ilist) {
+        this->push_back(v);
+      }
+    }
+    
     ~array() {
       for (uint32_t i = 0; i < this->pos; ++i) {
         ((T*)kb_array_at(this, i))->~T();

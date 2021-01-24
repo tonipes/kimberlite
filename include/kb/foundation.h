@@ -9,6 +9,7 @@
 #include "foundation/algo.h"
 #include "foundation/alloc.h"
 #include "foundation/array.h"
+#include "foundation/build.h"
 #include "foundation/core.h"
 #include "foundation/crt.h"
 #include "foundation/freelist.h"
