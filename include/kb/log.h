@@ -36,37 +36,38 @@ KB_API void kb_log_set_header  (bool enabled);
 #include <fmt/format.h>
 #include <kb/foundation/crt.h>
 
-template <typename... T>
-KB_API_INLINE auto kb_log_trace(const T&... args) -> void {
-  kb_log_line(KB_LOG_LEVEL_TRACE, fmt::format(args...).c_str());
-};
-
-template <typename... T>
-KB_API_INLINE auto kb_log_debug(const T&... args) -> void {
-  kb_log_line(KB_LOG_LEVEL_DEBUG, fmt::format(args...).c_str());
-};
-
-template <typename... T>
-KB_API_INLINE auto kb_log_info(const T&... args) -> void  {
-  kb_log_line(KB_LOG_LEVEL_INFO, fmt::format(args...).c_str());
-};
-
-template <typename... T>
-KB_API_INLINE auto kb_log_warn(const T&... args) -> void  {
-  kb_log_line(KB_LOG_LEVEL_WARN, fmt::format(args...).c_str());
-};
-
-template <typename... T>
-KB_API_INLINE auto kb_log_error(const T&... args) -> void {
-  kb_log_line(KB_LOG_LEVEL_ERROR, fmt::format(args...).c_str());
-};
-
-template <typename... T>
-KB_API_INLINE auto kb_log_fatal(const T&... args) -> void {
-  kb_log_line(KB_LOG_LEVEL_FATAL, fmt::format(args...).c_str());
-};
-
 namespace kb {
+
+  template <typename... T>
+  KB_API_INLINE auto log_trace(const T&... args) -> void {
+    kb_log_line(KB_LOG_LEVEL_TRACE, fmt::format(args...).c_str());
+  };
+
+  template <typename... T>
+  KB_API_INLINE auto log_debug(const T&... args) -> void {
+    kb_log_line(KB_LOG_LEVEL_DEBUG, fmt::format(args...).c_str());
+  };
+
+  template <typename... T>
+  KB_API_INLINE auto log_info(const T&... args) -> void  {
+    kb_log_line(KB_LOG_LEVEL_INFO, fmt::format(args...).c_str());
+  };
+
+  template <typename... T>
+  KB_API_INLINE auto log_warn(const T&... args) -> void  {
+    kb_log_line(KB_LOG_LEVEL_WARN, fmt::format(args...).c_str());
+  };
+
+  template <typename... T>
+  KB_API_INLINE auto log_error(const T&... args) -> void {
+    kb_log_line(KB_LOG_LEVEL_ERROR, fmt::format(args...).c_str());
+  };
+
+  template <typename... T>
+  KB_API_INLINE auto log_fatal(const T&... args) -> void {
+    kb_log_line(KB_LOG_LEVEL_FATAL, fmt::format(args...).c_str());
+  };
+
   template <typename... T>
   KB_API uint64_t strfmt(char* dst, int32_t size, const T&... args) {
     kb_strncpy(dst, fmt::format(args...).c_str(), size);

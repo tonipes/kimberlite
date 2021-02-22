@@ -90,10 +90,10 @@ uint32_t kb_vertex_layout_size(const kb_vertex_layout* layout, uint32_t attrib) 
 void kb_vertex_layout_dump(const kb_vertex_layout* layout) {
   KB_ASSERT_NOT_NULL(layout);
 
-  kb_log_debug("Vertex Layout (Stride: {}):", kb_vertex_layout_stride(layout));
+  kb::log_debug("Vertex Layout (Stride: {}):", kb_vertex_layout_stride(layout));
   for (uint32_t i = 0; i < layout->attrib_count; i++) {
     auto& attrib = layout->attribs[i];
-    kb_log_debug("\tlocation: {}, size: {}, offset: {}", attrib.location, attrib.size, attrib.offset);
+    kb::log_debug("\tlocation: {}, size: {}, offset: {}", attrib.location, attrib.size, attrib.offset);
   }
 }
 

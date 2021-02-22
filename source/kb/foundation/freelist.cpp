@@ -87,10 +87,10 @@ KB_API bool kb_freelist_free(kb_freelist* freelist, uint32_t handle) {
   uint32_t last = dense[freelist->pos];
   
   dense   [freelist->pos] = handle;
-  sparse  [last]            = index;
-  dense   [index]           = last;
+  sparse  [last]          = index;
+  dense   [index]         = last;
   
-  sparse  [handle]          = UINT32_MAX;
+  sparse  [handle]        = UINT32_MAX;
   
   return true;
 }

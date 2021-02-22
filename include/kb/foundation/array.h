@@ -65,37 +65,20 @@ namespace kb {
       kb_array_destroy(this);
     }
     
-    array(const array& other) {
-      kb_array_copy(this, &other);
+    array(const array& other): array(other.capacity()) {
+      for (uint32_t i = 0; i < other.pos; ++i) {
+        this->push_back(other.at(i));
+      }
     }
-    
-    array& operator=(const array& other) {
-      kb_array_copy(this, &other);
-      return *this;
-    }
- 
-    array(array&& other) {
-      this->data  = other.data;
-      this->pos   = other.pos;
-      this->cap   = other.cap;
-      
-      other.data  = nullptr;
-      other.pos   = 0;
-      other.cap   = 0;
-    } 
-    
-    array& operator=(array&& other) noexcept {
-      this->data  = other.data;
-      this->pos   = other.pos;
-      this->cap   = other.cap;
-      
-      other.data  = nullptr;
-      other.pos   = 0;
-      other.cap   = 0;
+        
+    array& operator=(array other) noexcept {
+      std::swap(data, other.data);
+      std::swap(pos, other.pos);
+      std::swap(cap, other.cap);
       
       return *this;
     }
-    
+
     uint64_t capacity() const {
       return kb_array_capacity(this);
     }

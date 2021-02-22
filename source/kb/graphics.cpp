@@ -80,8 +80,8 @@ uint32_t compute_call_count;
 // Stats
 int64_t frame_timestamp = 0.0f;
 
-kb::sampler frametime_sampler(100);
-kb::sampler platform_frametime_sampler(100);
+kb::sampler frametime_sampler(KB_CONFIG_STATS_SAMPLE_COUNT);
+kb::sampler platform_frametime_sampler(KB_CONFIG_STATS_SAMPLE_COUNT);
 
 kb_graphics_stats stats_cache;
 
@@ -198,16 +198,20 @@ KB_API kb_buffer_memory kb_graphics_transient_alloc(uint64_t size, kb_buffer_usa
   };
 }
 
-KB_API kb_buffer_memory kb_graphics_transient_write(const void* src, uint64_t size, kb_buffer_usage usage) {
+KB_API void kb_graphics_memory_write(const void* src, uint64_t size, kb_buffer_memory memory) {
   if (size == 0) return;
-  
-  kb_buffer_memory memory = kb_graphics_transient_alloc(size, usage);
-  
+
   if (src != NULL) {
     void* dst = kb_platform_graphics_buffer_mapped(memory);
     kb_memcpy(dst, src, size);
   }
+}
+
+KB_API kb_buffer_memory kb_graphics_transient_write(const void* src, uint64_t size, kb_buffer_usage usage) {
+  kb_buffer_memory memory = kb_graphics_transient_alloc(size, usage);
   
+  kb_graphics_memory_write(src, size, memory);
+
   return memory;
 }
 
@@ -341,22 +345,19 @@ KB_API void kb_graphics_run_encoders() {
   }
     
   // Run passes
-  for (uint32_t pass_i = 0; pass_i < KB_CONFIG_MAX_RENDERPASSES; ++pass_i) {
+  for (uint32_t pass_i = 0; pass_i < graphics_pipe->pass_count; ++pass_i) {
+    // Sort draw calls
     if (draw_call_cache_pos[pass_i] > 0) {
-      // Sort draw calls
       kb_sort(draw_call_cache[pass_i], draw_call_cache_pos[pass_i], sizeof(kb_render_call), draw_call_compare);
-
-      // Submit render calls
-      kb_platform_graphics_submit_render_pass(pass_i, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
-      
-      stats_cache.draw_calls_used += draw_call_cache_pos[pass_i];
     }
+    // Submit render calls
+    kb_platform_graphics_submit_render_pass(pass_i, draw_call_cache[pass_i], draw_call_cache_pos[pass_i]);
+    stats_cache.draw_calls_used += draw_call_cache_pos[pass_i];
+
     
     if (compute_call_cache_pos[pass_i] > 0) {
-
       // Submit compute calls
       kb_platform_graphics_submit_compute_pass(pass_i, compute_call_cache[pass_i], compute_call_cache_pos[pass_i]);
-
       stats_cache.compute_calls_used += compute_call_cache_pos[pass_i];
     }
     
@@ -370,7 +371,7 @@ KB_API void kb_graphics_frame() {
 
   if (extent.x != current_extent.x || extent.y != current_extent.y) {
     current_extent = extent;
-    kb_log_debug("Surface resized ({} {})", current_extent.x, current_extent.y);
+    kb::log_debug("Surface resized ({} {})", current_extent.x, current_extent.y);
 
     // Resize attachments
     for (uint32_t attachment_i = 0; attachment_i < graphics_pipe->attachment_count; ++attachment_i) {
@@ -470,7 +471,7 @@ KB_API bool kb_graphics_pipe_attachment_surface_proxy(uint32_t attachment) {
 KB_API void kb_graphics_pipe_destruct(kb_graphics_pipe handle) {
   KB_ASSERT_VALID(handle);
 
-  kb_log_debug("kb_graphics_pipe_destruct");
+  kb::log_debug("kb_graphics_pipe_destruct");
 }
 
 KB_API void kb_pipeline_construct(kb_pipeline handle, const kb_pipeline_create_info info) {

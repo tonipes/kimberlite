@@ -119,7 +119,7 @@ int main(int argc, const char* argv[]) {
   }
 
   for (uint32_t i = 0; i < range_count; ++i) {
-    kb_log_debug("Range with {} chars: ({} - {})", ranges[i].to - ranges[i].from, ranges[i].from, ranges[i].to);
+    kb::log_debug("Range with {} chars: ({} - {})", ranges[i].to - ranges[i].from, ranges[i].from, ranges[i].to);
   }
 
   // Load (modified from https://github.com/raysan5/raylib/blob/master/src/text.c#L568)
@@ -134,7 +134,7 @@ int main(int argc, const char* argv[]) {
     uint64_t font_data_size = kb_stream_size(rwops_in);
     unsigned char* font_data = (unsigned char*) KB_DEFAULT_ALLOC(font_data_size);
     uint64_t read = kb_stream_read(rwops_in, font_data, 1, font_data_size);
-    kb_log_debug("Size: {}, Read: {}", font_data_size, read);
+    kb::log_debug("Size: {}, Read: {}", font_data_size, read);
 
     stbtt_fontinfo font_info;
     stbtt_InitFont(&font_info, font_data, stbtt_GetFontOffsetForIndex(font_data, 0));
@@ -209,7 +209,7 @@ int main(int argc, const char* argv[]) {
     stbrp_node*     nodes    = KB_DEFAULT_ALLOC_TYPE(stbrp_node, font.info.char_count);
     stbrp_rect*     rects    = KB_DEFAULT_ALLOC_TYPE(stbrp_rect, font.info.char_count);
 
-    kb_log_info("Atlas size {} x {}", font.atlas_bitmap_width, font.atlas_bitmap_height);
+    kb::log_info("Atlas size {} x {}", font.atlas_bitmap_width, font.atlas_bitmap_height);
     stbrp_init_target(context, font.atlas_bitmap_width, font.atlas_bitmap_height, nodes, font.info.char_count);
     
     for (uint32_t i = 0; i < font.info.char_count; i++) {
@@ -241,7 +241,7 @@ int main(int argc, const char* argv[]) {
         } 
 
       } else {
-        kb_log_warn("Char {} not packed!", i);
+        kb::log_warn("Char {} not packed!", i);
       }
       
       // UV Rect

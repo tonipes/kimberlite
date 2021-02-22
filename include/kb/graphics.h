@@ -514,6 +514,7 @@ KB_API kb_int2              kb_graphics_get_extent                    (void);
 KB_API float                kb_graphics_get_aspect                    (void);
 KB_API uint32_t             kb_graphics_get_current_resource_slot     (void);
 KB_API void*                kb_graphics_get_buffer_mapped             (kb_buffer_memory memory);
+KB_API void                 kb_graphics_memory_write                  (const void* src, uint64_t size, kb_buffer_memory memory);
 KB_API kb_buffer_memory     kb_graphics_transient_alloc               (uint64_t size, kb_buffer_usage usage);
 KB_API kb_buffer_memory     kb_graphics_transient_write               (const void* src, uint64_t size, kb_buffer_usage usage);
 KB_API kb_texture           kb_graphics_pipe_attachment_texture       (uint32_t attachment);

@@ -4,6 +4,7 @@
 //  Copyright 2020 Toni Pesola. All Rights Reserved.
 // ============================================================================
 
+#include "foundation/algo.cpp"
 #include "foundation/alloc.cpp"
 #include "foundation/array.cpp"
 #include "foundation/build.cpp"

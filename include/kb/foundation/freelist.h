@@ -49,26 +49,15 @@ namespace kb {
     freelist(const freelist& other) {
       kb_freelist_copy(this, &other);
     }
-    
-    freelist& operator=(const freelist& other) {
-      return *this = freelist(other);
-    }
- 
-    freelist(freelist&& other) {
-      *this = other;
-      other.data  = nullptr;
-      other.pos   = 0;
-      other.cap   = 0;
-    }
-    
-    freelist& operator=(freelist&& other) noexcept {
-      *this = other;
-      other.data  = nullptr;
-      other.pos   = 0;
-      other.cap   = 0;
+
+    freelist& operator=(freelist other) noexcept {
+      std::swap(data, other.data);
+      std::swap(pos, other.pos);
+      std::swap(cap, other.cap);
+      
       return *this;
     }
-    
+
     uint32_t capacity() const {
       return kb_freelist_capacity(this);
     }

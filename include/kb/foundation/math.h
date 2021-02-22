@@ -33,6 +33,10 @@ extern "C" {
 #define _ELEMW_OP2_T3(func) { func(a.x, b.x), func(a.y, b.y), func(a.z, b.z) }
 #define _ELEMW_OP2_T4(func) { func(a.x, b.x), func(a.y, b.y), func(a.z, b.z), func(a.w, b.w) }
 
+#define _ELEMW_OP3_T2(func) { func(a.x, b.x, c.x), func(a.y, b.y, c.y) }
+#define _ELEMW_OP3_T3(func) { func(a.x, b.x, c.x), func(a.y, b.y, c.y), func(a.z, b.z, c.z) }
+#define _ELEMW_OP3_T4(func) { func(a.x, b.x, c.x), func(a.y, b.y, c.y), func(a.z, b.z, c.z), func(a.w, b.w, c.w) }
+
 #define _ELEMW_OP2_F_T2(func, f) { func(a.x, b.x, f), func(a.y, b.y, f) }
 #define _ELEMW_OP2_F_T3(func, f) { func(a.x, b.x, f), func(a.y, b.y, f), func(a.z, b.z, f) }
 #define _ELEMW_OP2_F_T4(func, f) { func(a.x, b.x, f), func(a.y, b.y, f), func(a.z, b.z, f), func(a.w, b.w, f) }
@@ -224,6 +228,7 @@ static const kb_float4x4 kb_float4x4_zero = { .m = {
 }};
 
 KB_API_INLINE kb_int      kb_int_neg          (kb_int a)                                                  { return -a; }
+KB_API_INLINE bool        kb_int_bool         (kb_int a)                                                  { return (bool) a;  }
 KB_API_INLINE kb_int      kb_int_add          (kb_int a, kb_int b)                                        { return a + b; }
 KB_API_INLINE kb_int      kb_int_sub          (kb_int a, kb_int b)                                        { return a - b; }
 KB_API_INLINE kb_int      kb_int_mul          (kb_int a, kb_int b)                                        { return a * b; }
@@ -236,8 +241,10 @@ KB_API_INLINE kb_int      kb_int_min          (kb_int a, kb_int b)              
 KB_API_INLINE kb_int      kb_int_log2         (kb_int a)                                                  { return log2(a); }
 KB_API_INLINE kb_int      kb_int_clamp        (kb_int v, kb_int min, kb_int max)                          { return kb_int_max(kb_int_min(v, max), min); }
 KB_API_INLINE kb_int      kb_int_square       (kb_int a)                                                  { return a * a; }
+KB_API_INLINE kb_float    kb_int_to_float     (kb_int a)                                                  { return (kb_float) a; }
 
 KB_API_INLINE bool        kb_float_is_nan     (kb_float a)                                                { return isnan(a); }
+KB_API_INLINE bool        kb_float_bool       (kb_float a)                                                { return (bool) a;  }
 KB_API_INLINE kb_float    kb_float_nms        (kb_float a, kb_float b, kb_float c)                        { return c - a * b; }
 KB_API_INLINE kb_float    kb_float_mad        (kb_float a, kb_float b, kb_float c)                        { return a * b + c; }
 KB_API_INLINE kb_float    kb_float_neg        (kb_float a)                                                { return -a; }
@@ -286,6 +293,7 @@ KB_API_INLINE kb_float    kb_float_remap      (kb_float x, kb_float a, kb_float 
 KB_API_INLINE kb_float    kb_float_saturate   (kb_float a)                                                { return kb_float_clamp(a, 0.0f, 1.0f); }
 KB_API_INLINE kb_float    kb_float_wrap       (kb_float v, kb_float wrap)                                 { const kb_float tmp = kb_float_mod(v, wrap); return tmp < 0.0f ? wrap + tmp : tmp; }
 KB_API_INLINE bool        kb_float_equal      (kb_float a, kb_float b)                                    { return kb_float_abs(a - b) < FLT_EPSILON * kb_float_max(kb_float_max(1.0f, kb_float_abs(a)), kb_float_abs(b)); }
+KB_API_INLINE kb_int      kb_float_to_int     (kb_float a)                                                { return (kb_int) a; }
 
 KB_API_INLINE kb_int2      kb_int2_add          (const kb_int2 a, const kb_int2 b)                        { return (kb_int2) _ELEMW_OP2_T2(kb_int_add); }
 KB_API_INLINE kb_int2      kb_int2_sub          (const kb_int2 a, const kb_int2 b)                        { return (kb_int2) _ELEMW_OP2_T2(kb_int_sub); }
@@ -298,9 +306,11 @@ KB_API_INLINE kb_int2      kb_int2_neg          (const kb_int2 a)               
 KB_API_INLINE kb_int2      kb_int2_abs          (const kb_int2 a)                                         { return (kb_int2) _ELEMW_OP1_T2(kb_int_abs); }
 KB_API_INLINE kb_int2      kb_int2_sign         (const kb_int2 a)                                         { return (kb_int2) _ELEMW_OP1_T2(kb_int_sign); }
 KB_API_INLINE kb_int2      kb_int2_square       (const kb_int2 a)                                         { return (kb_int2) _ELEMW_OP1_T2(kb_int_square); }
+KB_API_INLINE kb_int2      kb_int2_clamp        (const kb_int2 a, const kb_int2 b, const kb_int2 c)       { return (kb_int2) _ELEMW_OP3_T2(kb_int_clamp); }
 KB_API_INLINE kb_int       kb_int2_dot          (const kb_int2 a, const kb_int2 b)                        { return _ELEMW_COMB_OP2_T2(kb_int_mul, +); }
 KB_API_INLINE bool         kb_int2_equal        (const kb_int2 a, const kb_int2 b)                        { return _ELEMW_COMB_OP2_T2(kb_int_equal, &&); }
 KB_API_INLINE float        kb_int2_len          (const kb_int2 a)                                         { return kb_float_sqrt(kb_int2_dot(a, a)); }
+KB_API_INLINE kb_float2    kb_int2_to_float     (const kb_int2 a)                                         { return (kb_float2) _ELEMW_OP1_T2(kb_int_to_float); }
 
 KB_API_INLINE kb_int3      kb_int3_add          (const kb_int3 a, const kb_int3 b)                        { return (kb_int3) _ELEMW_OP2_T3(kb_int_add); }
 KB_API_INLINE kb_int3      kb_int3_sub          (const kb_int3 a, const kb_int3 b)                        { return (kb_int3) _ELEMW_OP2_T3(kb_int_sub); }
@@ -313,9 +323,11 @@ KB_API_INLINE kb_int3      kb_int3_neg          (const kb_int3 a)               
 KB_API_INLINE kb_int3      kb_int3_abs          (const kb_int3 a)                                         { return (kb_int3) _ELEMW_OP1_T3(kb_int_abs); }
 KB_API_INLINE kb_int3      kb_int3_sign         (const kb_int3 a)                                         { return (kb_int3) _ELEMW_OP1_T3(kb_int_sign); }
 KB_API_INLINE kb_int3      kb_int3_square       (const kb_int3 a)                                         { return (kb_int3) _ELEMW_OP1_T3(kb_int_square); }
+KB_API_INLINE kb_int3      kb_int3_clamp        (const kb_int3 a, const kb_int3 b, const kb_int3 c)       { return (kb_int3) _ELEMW_OP3_T3(kb_int_clamp); }
 KB_API_INLINE kb_int       kb_int3_dot          (const kb_int3 a, const kb_int3 b)                        { return _ELEMW_COMB_OP2_T3(kb_int_mul, +); }
 KB_API_INLINE bool         kb_int3_equal        (const kb_int3 a, const kb_int3 b)                        { return _ELEMW_COMB_OP2_T3(kb_int_equal, &&); }
 KB_API_INLINE kb_float     kb_int3_len          (const kb_int3 a)                                         { return kb_float_sqrt(kb_int3_dot(a, a)); }
+KB_API_INLINE kb_float3    kb_int3_to_float     (const kb_int3 a)                                         { return (kb_float3) _ELEMW_OP1_T3(kb_int_to_float); }
 
 KB_API_INLINE kb_int4      kb_int4_add          (const kb_int4 a, const kb_int4 b)                        { return (kb_int4) _ELEMW_OP2_T4(kb_int_add); }
 KB_API_INLINE kb_int4      kb_int4_sub          (const kb_int4 a, const kb_int4 b)                        { return (kb_int4) _ELEMW_OP2_T4(kb_int_sub); }
@@ -328,9 +340,11 @@ KB_API_INLINE kb_int4      kb_int4_neg          (const kb_int4 a)               
 KB_API_INLINE kb_int4      kb_int4_abs          (const kb_int4 a)                                         { return (kb_int4) _ELEMW_OP1_T4(kb_int_abs); }
 KB_API_INLINE kb_int4      kb_int4_sign         (const kb_int4 a)                                         { return (kb_int4) _ELEMW_OP1_T4(kb_int_sign); }
 KB_API_INLINE kb_int4      kb_int4_square       (const kb_int4 a)                                         { return (kb_int4) _ELEMW_OP1_T4(kb_int_square); }
+KB_API_INLINE kb_int4      kb_int4_clamp        (const kb_int4 a, const kb_int4 b, const kb_int4 c)       { return (kb_int4) _ELEMW_OP3_T4(kb_int_clamp); }
 KB_API_INLINE kb_int       kb_int4_dot          (const kb_int4 a, const kb_int4 b)                        { return _ELEMW_COMB_OP2_T4(kb_int_mul, +); }
 KB_API_INLINE bool         kb_int4_equal        (const kb_int4 a, const kb_int4 b)                        { return _ELEMW_COMB_OP2_T4(kb_int_equal, &&); }
 KB_API_INLINE kb_float     kb_int4_len          (const kb_int4 a)                                         { return kb_float_sqrt(kb_int4_dot(a, a)); }
+KB_API_INLINE kb_float4    kb_int4_to_float     (const kb_int4 a)                                         { return (kb_float4) _ELEMW_OP1_T4(kb_int_to_float); }
 
 KB_API_INLINE kb_float2    kb_float2_abs        (const kb_float2 a)                                       { return (kb_float2) _ELEMW_OP1_T2(kb_float_abs); }
 KB_API_INLINE kb_float2    kb_float2_neg        (const kb_float2 a)                                       { return (kb_float2) _ELEMW_OP1_T2(kb_float_neg); }
@@ -343,6 +357,7 @@ KB_API_INLINE kb_float2    kb_float2_max        (const kb_float2 a, const kb_flo
 KB_API_INLINE kb_float2    kb_float2_scale      (const kb_float2 a, const kb_float f)                     { return (kb_float2) _ELEMW_OP1_F_T2(kb_float_mul, f); }
 KB_API_INLINE kb_float2    kb_float2_recip      (const kb_float2 a)                                       { return (kb_float2) _ELEMW_OP1_T2(kb_float_recip); }
 KB_API_INLINE kb_float2    kb_float2_lerp       (const kb_float2 a, const kb_float2 b, const kb_float v)  { return (kb_float2) _ELEMW_OP2_F_T2(kb_float_lerp, v); }
+KB_API_INLINE kb_float2    kb_float2_clamp      (const kb_float2 a, const kb_float2 b, const kb_float2 c) { return (kb_float2) _ELEMW_OP3_T2(kb_float_clamp); }
 KB_API_INLINE kb_float2    kb_float2_saturate   (const kb_float2 a)                                       { return (kb_float2) _ELEMW_OP1_T2(kb_float_saturate); }
 KB_API_INLINE kb_float2    kb_float2_smoothstep (const kb_float2 a)                                       { return (kb_float2) _ELEMW_OP1_T2(kb_float_smoothstep); }
 KB_API_INLINE kb_float2    kb_float2_square     (const kb_float2 a)                                       { return (kb_float2) _ELEMW_OP1_T2(kb_float_square); }
@@ -360,6 +375,7 @@ KB_API_INLINE kb_float     kb_float2_len        (const kb_float2 a)             
 KB_API_INLINE kb_float2    kb_float2_norm       (const kb_float2 a)                                       { return kb_float2_scale(a, kb_float_recip(kb_float2_len(a))); }
 KB_API_INLINE kb_float2    kb_float2_div        (const kb_float2 a, const kb_float2 b)                    { return kb_float2_mul(a, kb_float2_recip(b)); }
 KB_API_INLINE kb_float     kb_float2_dist       (const kb_float2 a, const kb_float2 b)                    { return kb_float2_len(kb_float2_sub(b, a)); }
+KB_API_INLINE kb_int2      kb_float2_to_int     (const kb_float2 a)                                       { return (kb_int2) _ELEMW_OP1_T2(kb_float_to_int); }
 
 KB_API_INLINE kb_float3    kb_float3_abs        (const kb_float3 a)                                       { return (kb_float3) _ELEMW_OP1_T3(kb_float_abs); }
 KB_API_INLINE kb_float3    kb_float3_neg        (const kb_float3 a)                                       { return (kb_float3) _ELEMW_OP1_T3(kb_float_neg); }
@@ -372,6 +388,7 @@ KB_API_INLINE kb_float3    kb_float3_max        (const kb_float3 a, const kb_flo
 KB_API_INLINE kb_float3    kb_float3_scale      (const kb_float3 a, const kb_float f)                     { return (kb_float3) _ELEMW_OP1_F_T3(kb_float_mul, f); }
 KB_API_INLINE kb_float3    kb_float3_recip      (const kb_float3 a)                                       { return (kb_float3) _ELEMW_OP1_T3(kb_float_recip); }
 KB_API_INLINE kb_float3    kb_float3_lerp       (const kb_float3 a, const kb_float3 b, const kb_float v)  { return (kb_float3) _ELEMW_OP2_F_T3(kb_float_lerp, v); }
+KB_API_INLINE kb_float3    kb_float3_clamp      (const kb_float3 a, const kb_float3 b, const kb_float3 c) { return (kb_float3) _ELEMW_OP3_T3(kb_float_clamp); }
 KB_API_INLINE kb_float3    kb_float3_saturate   (const kb_float3 a)                                       { return (kb_float3) _ELEMW_OP1_T3(kb_float_saturate); }
 KB_API_INLINE kb_float3    kb_float3_smoothstep (const kb_float3 a)                                       { return (kb_float3) _ELEMW_OP1_T3(kb_float_smoothstep); }
 KB_API_INLINE kb_float3    kb_float3_square     (const kb_float3 a)                                       { return (kb_float3) _ELEMW_OP1_T3(kb_float_square); }
@@ -390,6 +407,7 @@ KB_API_INLINE kb_float3    kb_float3_norm       (const kb_float3 a)             
 KB_API_INLINE kb_float3    kb_float3_div        (const kb_float3 a, const kb_float3 b)                    { return kb_float3_mul(a, kb_float3_recip(b)); }
 KB_API_INLINE kb_float     kb_float3_dist       (const kb_float3 a, const kb_float3 b)                    { return kb_float3_len(kb_float3_sub(b, a)); }
 KB_API_INLINE kb_float3    kb_float3_cross      (const kb_float3 a, const kb_float3 b)                    { return (kb_float3) { a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x };}
+KB_API_INLINE kb_int3      kb_float3_to_int     (const kb_float3 a)                                       { return (kb_int3) _ELEMW_OP1_T3(kb_float_to_int); }
 
 KB_API_INLINE kb_float4    kb_float4_abs        (const kb_float4 a)                                       { return (kb_float4) _ELEMW_OP1_T4(kb_float_abs); }
 KB_API_INLINE kb_float4    kb_float4_neg        (const kb_float4 a)                                       { return (kb_float4) _ELEMW_OP1_T4(kb_float_neg); }
@@ -402,6 +420,7 @@ KB_API_INLINE kb_float4    kb_float4_max        (const kb_float4 a, const kb_flo
 KB_API_INLINE kb_float4    kb_float4_scale      (const kb_float4 a, const kb_float f)                     { return (kb_float4) _ELEMW_OP1_F_T4(kb_float_mul, f); }
 KB_API_INLINE kb_float4    kb_float4_recip      (const kb_float4 a)                                       { return (kb_float4) _ELEMW_OP1_T4(kb_float_recip); }
 KB_API_INLINE kb_float4    kb_float4_lerp       (const kb_float4 a, const kb_float4 b, const kb_float v)  { return (kb_float4) _ELEMW_OP2_F_T4(kb_float_lerp, v); }
+KB_API_INLINE kb_float4    kb_float4_clamp      (const kb_float4 a, const kb_float4 b, const kb_float4 c) { return (kb_float4) _ELEMW_OP3_T4(kb_float_clamp); }
 KB_API_INLINE kb_float4    kb_float4_saturate   (const kb_float4 a)                                       { return (kb_float4) _ELEMW_OP1_T4(kb_float_saturate); }
 KB_API_INLINE kb_float4    kb_float4_smoothstep (const kb_float4 a)                                       { return (kb_float4) _ELEMW_OP1_T4(kb_float_smoothstep); }
 KB_API_INLINE kb_float4    kb_float4_square     (const kb_float4 a)                                       { return (kb_float4) _ELEMW_OP1_T4(kb_float_square); }
@@ -419,6 +438,7 @@ KB_API_INLINE kb_float     kb_float4_len        (const kb_float4 a)             
 KB_API_INLINE kb_float4    kb_float4_norm       (const kb_float4 a)                                       { return kb_float4_scale(a, kb_float_recip(kb_float4_len(a))); }
 KB_API_INLINE kb_float4    kb_float4_div        (const kb_float4 a, const kb_float4 b)                    { return kb_float4_mul(a, kb_float4_recip(b)); }
 KB_API_INLINE kb_float     kb_float4_dist       (const kb_float4 a, const kb_float4 b)                    { return kb_float4_len(kb_float4_sub(b, a)); }
+KB_API_INLINE kb_int4      kb_float4_to_int     (const kb_float4 a)                                       { return (kb_int4) _ELEMW_OP1_T4(kb_float_to_int); }
 
 KB_API        kb_quat      kb_quat_inv          (const kb_quat a);
 KB_API        kb_quat      kb_quat_norm         (const kb_quat a);
@@ -457,6 +477,9 @@ KB_API_INLINE bool         kb_deactivated             (uint8_t* curr, uint8_t* p
 KB_API_INLINE kb_float     kb_deg_to_rad              (kb_float deg)                                   { return deg * PI / 180.0f; }
 KB_API_INLINE kb_float     kb_rad_to_deg              (kb_float rad)                                   { return rad * 180.0f / PI; }
 KB_API        bool         kb_aabb_contains           (kb_aabb_int aabb, kb_int3 pos);
+KB_API        kb_aabb_int  kb_aabb_union              (kb_aabb_int a, kb_aabb_int b);
+KB_API        bool         kb_aabb_is_inverted        (kb_aabb_int a);
+
 KB_API        kb_float4x4  kb_look_at                 (const kb_float3 from, const kb_float3 to, const kb_float3 up);
 KB_API        kb_float4x4  kb_perspective             (kb_float fov, kb_float aspect, kb_float near, kb_float far);
 KB_API        kb_float4x4  kb_orthographic            (kb_float left, kb_float right, kb_float top, kb_float bottom, kb_float near, kb_float far);
@@ -697,6 +720,16 @@ namespace kb {
   FUNC3_DEF_N(lerp,  float4, float4, scalar, kb_float4_lerp);
 
   FUNC2_DEF_N(cross, float3,   float3,    kb_float3_cross);
+
+  FUNC1_DEF_N(to_int,  scalar,  kb_float_to_int);
+  FUNC1_DEF_N(to_int,  float2,  kb_float2_to_int);
+  FUNC1_DEF_N(to_int,  float3,  kb_float3_to_int);
+  FUNC1_DEF_N(to_int,  float4,  kb_float4_to_int);
+  
+  FUNC1_DEF_N(to_float,  integer,  kb_int_to_float);
+  FUNC1_DEF_N(to_float,  int2,     kb_int2_to_float);
+  FUNC1_DEF_N(to_float,  int3,     kb_int3_to_float);
+  FUNC1_DEF_N(to_float,  int4,     kb_int4_to_float);
 };
 
 TYPE_OPERATORS(kb::float2, kb::scalar);

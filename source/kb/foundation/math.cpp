@@ -408,10 +408,21 @@ KB_API kb_quat kb_quat_axis_angle(const kb_float3 axis, kb_float angle) {
 
 KB_API bool kb_aabb_contains(kb_aabb_int aabb, kb_int3 pos) {
   return true
-    && pos.x >= aabb.min.x && pos.x < aabb.max.x
-    && pos.y >= aabb.min.y && pos.y < aabb.max.y
-    && pos.z >= aabb.min.z && pos.z < aabb.max.z
+    && pos.x >= aabb.min.x && pos.x <= aabb.max.x
+    && pos.y >= aabb.min.y && pos.y <= aabb.max.y
+    && pos.z >= aabb.min.z && pos.z <= aabb.max.z
   ;
+}
+
+KB_API bool kb_aabb_is_inverted(kb_aabb_int a) {
+  return a.min.x > a.max.x || a.min.y > a.max.y || a.min.z > a.max.z;
+}
+
+KB_API kb_aabb_int kb_aabb_union(kb_aabb_int a, kb_aabb_int b) {
+  return {
+    .min = kb::max(a.min, b.min),
+    .max = kb::min(a.max, b.max),
+  };
 }
 
 KB_API uint64_t kb_align_up(uint64_t a, uint64_t align) {

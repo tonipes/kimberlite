@@ -12,19 +12,19 @@
 void kb_geometry_data_dump_info(const kb_geometry_data* geom) {
   KB_ASSERT_NOT_NULL(geom);
 
-  kb_log_debug("Geometry:");
-  kb_log_debug("\tNodes: ({}):", geom->node_count);
+  kb::log_debug("Geometry:");
+  kb::log_debug("\tNodes: ({}):", geom->node_count);
   
   for (uint32_t i = 0; i < geom->node_count; i++) {
-    kb_log_debug("\t\tNode: {} ({}), mesh: {}", i, geom->nodes[i].name, geom->nodes[i].mesh);
+    kb::log_debug("\t\tNode: {} ({}), mesh: {}", i, geom->nodes[i].name, geom->nodes[i].mesh);
   }
 
-  kb_log_debug("\tMeshes: ({}):", geom->mesh_count);
+  kb::log_debug("\tMeshes: ({}):", geom->mesh_count);
   
   for (uint32_t i = 0; i < geom->mesh_count; i++) {
-    kb_log_debug("\t\tMesh {} ({}):", i, geom->meshes[i].name);
+    kb::log_debug("\t\tMesh {} ({}):", i, geom->meshes[i].name);
     for (uint32_t j = 0; j < geom->meshes[i].primitive_count; j++) {
-      kb_log_debug("\t\t\tPrim: index range: ({} - {} ({} indices)), vertex range: ({} - {} ({} verts)), material: {} ", 
+      kb::log_debug("\t\t\tPrim: index range: ({} - {} ({} indices)), vertex range: ({} - {} ({} verts)), material: {} ", 
         geom->meshes[i].primitives[j].first_index, geom->meshes[i].primitives[j].first_index + geom->meshes[i].primitives[j].index_count, geom->meshes[i].primitives[j].index_count,
         geom->meshes[i].primitives[j].first_vertex, geom->meshes[i].primitives[j].first_vertex + geom->meshes[i].primitives[j].vertex_count, geom->meshes[i].primitives[j].vertex_count,
         geom->meshes[i].primitives[j].material
@@ -32,18 +32,22 @@ void kb_geometry_data_dump_info(const kb_geometry_data* geom) {
     }
   }
 
-  kb_log_debug("\tMaterials: ({})", geom->material_count);
-  kb_log_debug("\tIndices: ({})", geom->index_data_size / geom->index_size);
-  kb_log_debug("\tIndex data: {} bytes", geom->index_data_size);
-  kb_log_debug("\tVertex data: {} bytes", geom->vertex_data_size);
+  kb::log_debug("\tMaterials: ({})", geom->material_count);
+  kb::log_debug("\tIndices: ({})", geom->index_data_size / geom->index_size);
+  kb::log_debug("\tIndex data: {} bytes", geom->index_data_size);
+  kb::log_debug("\tVertex data: {} bytes", geom->vertex_data_size);
 }
+//
+//void kb_geometry_data_destroy(kb_geometry_data* geom) {
+//
+//}
 
 void kb_geometry_data_read(kb_geometry_data* geom, kb_stream* rwops) {
   KB_ASSERT_NOT_NULL(geom);
   KB_ASSERT_NOT_NULL(rwops);
 
   if (!kb_stream_check_magic(rwops, KB_CONFIG_FILE_MAGIC_GEOM)) {
-    kb_log_debug("Did not find correct magic number!");
+    kb::log_debug("Did not find correct magic number!");
     return;
   }
 
@@ -278,7 +282,9 @@ void kb_geometry_construct(kb_geometry handle, const kb_geometry_create_info inf
         
     kb_mesh_mark(geometry_ref(handle)->meshes[i], kb_hash_string(geom.meshes[i].name));
   }
-
+  
+  kb_geometry_data_destroy(&geom);
+  
   kb_geometry_set_initialized(handle, true);
 }
 
@@ -321,10 +327,12 @@ KB_API void kb_encoder_submit_mesh(kb_encoder encoder, kb_mesh mesh, uint32_t in
   KB_ASSERT_VALID(encoder);
   KB_ASSERT_VALID(mesh);
   
-  for (uint32_t i = 0; i < mesh_ref(mesh)->primitive_count; ++i) {
+  kb_mesh_ref* ref = mesh_ref(mesh);
+  
+  for (uint32_t i = 0; i < ref->primitive_count; ++i) {
     kb_encoder_push(encoder);
 
-    kb_material material = mesh_ref(mesh)->primitives[i].material;
+    kb_material material = ref->primitives[i].material;
     
     if (bind_material && kb_is_valid(material) && kb_material_is_initialized(material)) {
       kb_encoder_bind_material(encoder, material);
